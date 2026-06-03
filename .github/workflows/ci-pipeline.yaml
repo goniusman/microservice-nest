@@ -83,21 +83,18 @@ jobs:
       - name: Update Service Tag in Helm values.yaml
         if: ${{ matrix.enabled == 'true' }}
         run: |
-          # 1. Navigate to the exact directory containing your values.yaml
           cd gitops-repo/infra/helm/charts
           
-          # 2. Update the specific service tag using short, clean sed syntax
-          # This replaces the tag inside the block under your matrix service name
-          sed -i '/^${{ matrix.service_name }}:/,/^  [^ ]/ s/tag:.*/tag: "sha-${{ github.sha }}"/' values.yaml
+          # FIXED: Variables cleanly isolated with proper double curly braces
+          sed -i '/^'${{ matrix.service_name }}':/,/^  [^ ]/ s/tag:.*/tag: "sha-'${{ github.sha }}'"/' values.yaml
           
-          # 3. Configure Git credentials for the commit
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@://github.com"
           
-          # 4. Stage, commit, and push the updated values.yaml
           git add values.yaml
           git commit -m "chore(cd): auto-update ${{ matrix.service_name }} image tag to sha-${{ github.sha }}"
           git push
+
 
 
 
