@@ -15,7 +15,7 @@ auth:
   replicaCount: 1
   image:
     repository: docker.io/goniusman/auth 
-    tag: "sha-31e351a"
+    tag: "sha-40028a1"
   service:
     port: 3001
 
