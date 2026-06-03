@@ -35,8 +35,8 @@ jobs:
     needs: detect-changes
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false # Prevents one microservice failure from breaking other running services
       matrix:
-        # We create an execution matrix based on the paths matched above
         include:
           - service_name: gateway
             enabled: ${{ needs.detect-changes.outputs.gateway }}
@@ -47,12 +47,7 @@ jobs:
           - service_name: order
             enabled: ${{ needs.detect-changes.outputs.order }}
     steps:
-      # Skip matrix items for services that didn't change
-      - name: Check if Execution is Required
-        if: ${{ matrix.enabled != 'true' }}
-        run: |
-          echo "No changes detected for ${{ matrix.service_name }}. Skipping."
-          exit 0
+      # FIXED: Removed the dangerous step that used 'exit 0' to abort the container
 
       - name: Checkout Source Code
         if: ${{ matrix.enabled == 'true' }}
@@ -69,7 +64,6 @@ jobs:
         if: ${{ matrix.enabled == 'true' }}
         uses: docker/build-push-action@v5
         with:
-          # FIXED: Changed triple curly braces {{{ }}} to standard double curly braces ${{ }}
           context: ./services/${{ matrix.service_name }}
           file: ./services/${{ matrix.service_name }}/Dockerfile
           push: true
@@ -88,10 +82,9 @@ jobs:
         run: |
           cd gitops-repo/infra/helm/charts
           
-          # FIXED: Clean shell variable interpolation prevents expression parsing errors
+          # Variables cleanly isolated with single quotes for local execution safely
           sed -i '/^'${{ matrix.service_name }}':/,/^  [^ ]/ s/tag:.*/tag: "sha-'${{ github.sha }}'"/' values.yaml
           
-          # FIXED: Corrected invalid action email format
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
