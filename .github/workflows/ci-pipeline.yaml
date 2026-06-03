@@ -32,7 +32,7 @@ jobs:
             order: 'services/order/**'
 
   # JOB 2: Build and deploy the modified services
-  build-and-push:
+  build-and-deploy:
     needs: detect-changes
     runs-on: ubuntu-latest
     strategy:
@@ -47,8 +47,12 @@ jobs:
             enabled: ${{ needs.detect-changes.outputs.book }}
           - service_name: order
             enabled: ${{ needs.detect-changes.outputs.order }}
-    steps:
-      # FIXED: Removed the dangerous step that used 'exit 0' to abort the container
+
+      steps:
+      # If this specific service did not change, exit cleanly without error
+      - name: Check if Execution is Required
+        if: ${{ matrix.enabled != 'true' }}
+        run: echo "No changes for ${{ matrix.service_name }}. Skipping."
 
       - name: Checkout Source Code
         if: ${{ matrix.enabled == 'true' }}
@@ -61,34 +65,109 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Generates a reliable short 7-character Git commit hash string
+      - name: Set Short SHA Output
+        if: ${{ matrix.enabled == 'true' }}
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Build and Push Container Image
         if: ${{ matrix.enabled == 'true' }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
+          # Sets the context folder to the specific service subfolder
           context: ./services/${{ matrix.service_name }}
           file: ./services/${{ matrix.service_name }}/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service_name }}:sha-${{ github.sha }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service_name }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service_name }}:sha-${{ steps.vars.outputs.sha_short }}
 
       - name: Checkout GitOps Deployment Repo
         if: ${{ matrix.enabled == 'true' }}
         uses: actions/checkout@v4
         with:
-          repository: 'goniusman/microservice-nest' 
+          repository: '${{ github.repository_owner }}/bookverse-gitops'
           token: ${{ secrets.GITOPS_PAT }}
           path: gitops-repo
 
-      - name: Update Service Tag in Helm values.yaml
+      # Replaces the old tag pattern safely using a specific, targeted line-matching rule
+      - name: Write New Target Tag to values.yaml
         if: ${{ matrix.enabled == 'true' }}
         run: |
-          cd gitops-repo/infra/helm/charts
+          cd gitops-repo/charts/bookverse-stack
           
-          # Variables cleanly isolated with single quotes for local execution safely
-          sed -i '/^'${{ matrix.service_name }}':/,/^  [^ ]/ s/tag:.*/tag: "sha-'${{ github.sha }}'"/' values.yaml
+          # Find the block starting with your service name, find the next 'tag:' statement, and overwrite it safely
+          sed -i "/^${{ matrix.service_name }}:/,/^[^ ]/ s/tag: .*/tag: \"sha-${{ steps.vars.outputs.sha_short }}\"/" values.yaml
           
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
           git add values.yaml
-          git commit -m "chore(cd): auto-update ${{ matrix.service_name }} image tag to sha-${{ github.sha }}"
+          git commit -m "chore(cd): auto-bump ${{ matrix.service_name }} image to sha-${{ steps.vars.outputs.sha_short }}"
           git push
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # steps:
+    #   # FIXED: Removed the dangerous step that used 'exit 0' to abort the container
+
+    #   - name: Checkout Source Code
+    #     if: ${{ matrix.enabled == 'true' }}
+    #     uses: actions/checkout@v4
+
+    #   - name: Log in to Docker Hub
+    #     if: ${{ matrix.enabled == 'true' }}
+    #     uses: docker/login-action@v3
+    #     with:
+    #       username: ${{ secrets.DOCKERHUB_USERNAME }}
+    #       password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    #   - name: Build and Push Container Image
+    #     if: ${{ matrix.enabled == 'true' }}
+    #     uses: docker/build-push-action@v5
+    #     with:
+    #       context: ./services/${{ matrix.service_name }}
+    #       file: ./services/${{ matrix.service_name }}/Dockerfile
+    #       push: true
+    #       tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service_name }}:sha-${{ github.sha }}
+
+    #   - name: Checkout GitOps Deployment Repo
+    #     if: ${{ matrix.enabled == 'true' }}
+    #     uses: actions/checkout@v4
+    #     with:
+    #       repository: 'goniusman/microservice-nest' 
+    #       token: ${{ secrets.GITOPS_PAT }}
+    #       path: gitops-repo
+
+    #   - name: Update Service Tag in Helm values.yaml
+    #     if: ${{ matrix.enabled == 'true' }}
+    #     run: |
+    #       cd gitops-repo/infra/helm/charts
+          
+    #       # Variables cleanly isolated with single quotes for local execution safely
+    #       sed -i '/^'${{ matrix.service_name }}':/,/^  [^ ]/ s/tag:.*/tag: "sha-'${{ github.sha }}'"/' values.yaml
+          
+    #       git config --global user.name "github-actions[bot]"
+    #       git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+    #       git add values.yaml
+    #       git commit -m "chore(cd): auto-update ${{ matrix.service_name }} image tag to sha-${{ github.sha }}"
+    #       git push
