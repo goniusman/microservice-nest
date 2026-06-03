@@ -38,16 +38,20 @@ jobs:
       matrix:
         include:
           - service_name: gateway
-            context_path: ./gateway
+            context_path: ./services/gateway
+            file_path: ./services/gateway/Dockerfile
             enabled: ${{ needs.detect-changes.outputs.gateway }}
           - service_name: auth
             context_path: ./services/auth
+            file_path: ./services/auth/Dockerfile
             enabled: ${{ needs.detect-changes.outputs.auth }}
           - service_name: book
             context_path: ./services/book
+            file_path: ./services/book/Dockerfile
             enabled: ${{ needs.detect-changes.outputs.book }}
           - service_name: order
             context_path: ./services/order
+            file_path: ./services/order/Dockerfile
             enabled: ${{ needs.detect-changes.outputs.order }}
     steps:
       # If this specific service did not change, exit cleanly without error
