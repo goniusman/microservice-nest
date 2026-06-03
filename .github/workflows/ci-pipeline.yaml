@@ -88,13 +88,13 @@ jobs:
       - name: Checkout GitOps Deployment Repo
         uses: actions/checkout@v4
         with:
-          repository: '${{ github.repository_owner }}/bookverse-gitops'
+          repository: '${{ github.repository_owner }}/microservice-nest'
           token: ${{ secrets.GITOPS_PAT }}
           path: gitops-repo
 
       - name: Write New Target Tag to values.yaml
         run: |
-          cd gitops-repo/charts/bookverse-stack
+          cd gitops-repo/infra/helm/charts
           
           # Find the block starting with your service name, find the next 'tag:' statement, and overwrite it safely
           sed -i "/^${{ matrix.service_name }}:/,/^[^ ]/ s/tag: .*/tag: \"sha-${{ steps.vars.outputs.sha_short }}\"/" values.yaml
