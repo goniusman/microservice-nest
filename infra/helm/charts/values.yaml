@@ -5,7 +5,7 @@ gateway:
   replicaCount: 1
   image:
     repository: docker.io/goniusman/gateway 
-    tag: "sha-a4cf130"
+    tag: "sha-47d09c1"
     pullPolicy: IfNotPresent
   service:
     port: 3000
@@ -15,7 +15,7 @@ auth:
   replicaCount: 1
   image:
     repository: docker.io/goniusman/auth 
-    tag: "sha-a4cf130"
+    tag: "sha-47d09c1"
   service:
     port: 3001
 
@@ -23,7 +23,7 @@ book:
   replicaCount: 1
   image:
     repository: docker.io/goniusman/book 
-    tag: "sha-a4cf130"
+    tag: "sha-47d09c1"
   service:
     port: 3002
 
@@ -31,7 +31,7 @@ order:
   replicaCount: 1
   image:
     repository: docker.io/goniusman/order 
-    tag: "sha-a4cf130"
+    tag: "sha-47d09c1"
   service:
     port: 3003
 
