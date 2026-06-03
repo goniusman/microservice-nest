@@ -7,6 +7,7 @@ on:
     paths:
       - 'gateway/**'
       - 'services/**'
+      - '.github/workflows/ci-pipeline.yaml' # Triggers when updating this pipeline file itself
 
 jobs:
   detect-changes:
