@@ -1,0 +1,83 @@
+version: "3.9"
+
+services:
+
+
+  # auth-service:
+  #   build:
+  #     context: ./services/auth-service
+  #   ports:
+  #     - "3001:3001"
+  #   env_file:
+  #     - ./services/auth/.env
+  #   depends_on:
+  #     - postgres
+
+
+
+
+
+
+
+
+  postgres:
+    image: postgres:16
+    container_name: bookverse-postgres
+    environment:
+      POSTGRES_USER: bookverse
+      POSTGRES_PASSWORD: bookverse
+      POSTGRES_DB: bookverse_auth
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # pgweb:
+  #   image: sosedoff/pgweb:latest
+  #   container_name: postgres-visualizer
+  #   ports:
+  #     - "8081:8081"
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+  #   restart: always
+
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin-visualizer
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: YourSecurePassword
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: always
+
+  mongodb:
+    image: mongo:7
+    container_name: bookverse-mongo
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7
+    container_name: bookverse-redis
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: bookverse-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+volumes:
+  postgres_data:
+  mongo_data:

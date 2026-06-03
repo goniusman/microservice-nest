@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: bookverse
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/your-github-username/bookverse-gitops.git' # REPLACEME: Your actual GitOps repo
+    targetRevision: HEAD
+    path: charts/bookverse
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: bookverse
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

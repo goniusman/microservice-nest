@@ -1,0 +1,32 @@
+global:
+  namespace: bookverse
+
+gateway:
+  replicaCount: 1
+  image:
+    repository: docker.io/goniusman/gateway 
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    port: 3001
+    type: ClusterIP
+
+# auth:
+#   image:
+#     repository: myrepo/auth
+#     tag: latest
+
+# book:
+#   image:
+#     repository: myrepo/book
+#     tag: latest
+
+# order:
+#   image:
+#     repository: myrepo/order
+#     tag: latest
+
+# notification:
+#   image:
+#     repository: myrepo/notification
+#     tag: latest

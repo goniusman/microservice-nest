@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgadmin
+  namespace: bookverse
+  labels:
+    app: pgadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pgadmin
+  template:
+    metadata:
+      labels:
+        app: pgadmin
+    spec:
+      containers:
+        - name: pgadmin
+          image: dpage/pgadmin4:8.9
+          ports:
+            - containerPort: 80
+          env:
+            # Change these to your preferred web dashboard login details
+            - name: PGADMIN_DEFAULT_EMAIL
+              value: "admin@bookverse.com"
+            - name: PGADMIN_DEFAULT_PASSWORD
+              value: "AdminPass123"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgadmin
+  namespace: bookverse
+spec:
+  selector:
+    app: pgadmin
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP

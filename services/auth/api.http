@@ -1,0 +1,31 @@
+GET http://localhost:3001/auth HTTP/1.1
+
+###
+
+POST http://localhost:80/auth/register HTTP/1.1
+content-type: application/json
+
+{
+    "email": "goniusman600@gmail.com",
+    "password": "Osman@#1"
+}
+
+###
+
+POST http://localhost:80/auth/login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "goniusman400@gmail.com",
+    "password": "Osman@#1"
+}
+
+###
+
+
+# POST /auth/register
+# POST /auth/login
+# POST /auth/refresh
+# POST /auth/logout
+# GET  /auth/profile
+# GET  /auth/admin (ADMIN only)
