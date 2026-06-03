@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'services/**' # Trigger only when files inside the services directory change
+      - '.github/workflows/ci-pipeline.yaml' # Triggers when updating this pipeline file itself
 
 jobs:
   # JOB 1: Detect which specific microservice folders were modified
