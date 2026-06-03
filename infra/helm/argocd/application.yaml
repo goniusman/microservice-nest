@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/your-github-username/bookverse-gitops.git' # REPLACEME: Your actual GitOps repo
+    repoURL: 'https://github.com/goniusman/microservice-nest'
     targetRevision: HEAD
     path: charts/bookverse
     helm:

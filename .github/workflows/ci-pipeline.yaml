@@ -1,0 +1,93 @@
+name: Monorepo CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'services/**' # Trigger only when files inside the services directory change
+
+jobs:
+  # JOB 1: Detect which specific microservice folders were modified
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      auth: ${{ steps.filter.outputs.auth }}
+      book: ${{ steps.filter.outputs.book }}
+      order: ${{ steps.filter.outputs.order }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Paths Filter Engine
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            auth: 'services/auth/**'
+            book: 'services/book/**'
+            order: 'services/order/**'
+
+  # JOB 2: Build and deploy the modified services
+  build-and-push:
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # We create an execution matrix based on the paths matched above
+        include:
+          - service_name: auth
+            enabled: ${{ needs.detect-changes.outputs.auth }}
+          - service_name: book
+            enabled: ${{ needs.detect-changes.outputs.book }}
+          - service_name: order
+            enabled: ${{ needs.detect-changes.outputs.order }}
+    steps:
+      # Skip matrix items for services that didn't change
+      - name: Check if Execution is Required
+        if: ${{ matrix.enabled != 'true' }}
+        run: echo "No changes detected for ${{ matrix.service_name }}. Skipping." && exit 0
+
+      - name: Checkout Source Code
+        if: ${{ matrix.enabled == 'true' }}
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        if: ${{ matrix.enabled == 'true' }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Container Image
+        if: ${{ matrix.enabled == 'true' }}
+        uses: docker/build-push-action@v5
+        with:
+          context: ./services/${{{ matrix.service_name }}}
+          file: ./services/${{{ matrix.service_name }}}/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service_name }}:sha-${{ github.sha }}
+
+      - name: Checkout GitOps Deployment Repo
+        if: ${{ matrix.enabled == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          repository: 'your-github-username/bookverse-gitops' # REPLACEME
+          token: ${{ secrets.GITOPS_PAT }}
+          path: gitops-repo
+
+      - name: Update Service Tag in Helm values.yaml
+        if: ${{ matrix.enabled == 'true' }}
+        run: |
+          cd gitops-repo/charts/bookverse-stack
+          
+          # This dynamic sed command searches for "[service_name]: tag: ..." and updates it
+          # example: 'auth:\n    tag: "sha-1234"'
+          sed -i '/^${{ matrix.service_name }}:/,/^  image:/ { s/tag:.*/tag: "sha-${{ github.sha }}"/ }' values.yaml
+          
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add values.yaml
+          git commit -m "chore(cd): auto-update ${{ matrix.service_name }} image tag to sha-${{ github.sha }}"
+          git push

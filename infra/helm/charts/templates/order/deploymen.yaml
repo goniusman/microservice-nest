@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth
+  name: order
   namespace: {{ .Values.global.namespace }}
 spec:
-  replicas: {{ .Values.auth.replicaCount }}
+  replicas: {{ .Values.order.replicaCount }}
   selector:
     matchLabels:
-      app: auth
+      app: order
   template:
     metadata:
       labels:
-        app: auth
+        app: order
     spec:
       containers:
-        - name: auth
-          image: "{{ .Values.auth.image.repository }}:{{ .Values.auth.image.tag }}"
+        - name: order
+          image: "{{ .Values.order.image.repository }}:{{ .Values.order.image.tag }}"
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: {{ .Values.auth.service.port }}
+            - containerPort: {{ .Values.order.service.port }}
 
           envFrom:
             - configMapRef:

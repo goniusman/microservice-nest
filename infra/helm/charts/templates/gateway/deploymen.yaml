@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth
+  name: gateway
   namespace: {{ .Values.global.namespace }}
 spec:
-  replicas: {{ .Values.auth.replicaCount }}
+  replicas: {{ .Values.gateway.replicaCount }}
   selector:
     matchLabels:
-      app: auth
+      app: gateway
   template:
     metadata:
       labels:
-        app: auth
+        app: gateway
     spec:
       containers:
-        - name: auth
-          image: "{{ .Values.auth.image.repository }}:{{ .Values.auth.image.tag }}"
+        - name: gateway
+          image: "{{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag }}"
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: {{ .Values.auth.service.port }}
+            - containerPort: {{ .Values.gateway.service.port }}
 
           envFrom:
             - configMapRef:
@@ -30,12 +30,12 @@ spec:
           readinessProbe:
             httpGet:
               path: /health/ready
-              port: 3001
+              port: 3000
 
           livenessProbe:
             httpGet:
               path: /health/live
-              port: 3001
+              port: 3000
 
           resources:
             requests:

@@ -8,8 +8,33 @@ gateway:
     tag: latest
     pullPolicy: IfNotPresent
   service:
-    port: 3001
+    port: 3000
     type: ClusterIP
+
+auth:
+  replicaCount: 1
+  image:
+    repository: docker.io/goniusman/auth 
+    tag: latest
+  service:
+    port: 3001
+
+book:
+  replicaCount: 1
+  image:
+    repository: docker.io/goniusman/book 
+    tag: latest
+  service:
+    port: 3002
+
+order:
+  replicaCount: 1
+  image:
+    repository: docker.io/goniusman/order 
+    tag: latest
+  service:
+    port: 3003
+
 
 # auth:
 #   image:
