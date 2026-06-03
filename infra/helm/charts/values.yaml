@@ -23,7 +23,7 @@ book:
   replicaCount: 1
   image:
     repository: docker.io/goniusman/book 
-    tag: "sha-a27c714"
+    tag: "sha-a4cf130"
   service:
     port: 3002
 
