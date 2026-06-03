@@ -48,7 +48,7 @@ jobs:
           - service_name: order
             enabled: ${{ needs.detect-changes.outputs.order }}
 
-      steps:
+    steps:
       # If this specific service did not change, exit cleanly without error
       - name: Check if Execution is Required
         if: ${{ matrix.enabled != 'true' }}
