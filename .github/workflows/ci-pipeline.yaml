@@ -50,7 +50,9 @@ jobs:
       # Skip matrix items for services that didn't change
       - name: Check if Execution is Required
         if: ${{ matrix.enabled != 'true' }}
-        run: echo "No changes detected for ${{ matrix.service_name }}. Skipping." && exit 0
+        run: |
+          echo "No changes detected for ${{ matrix.service_name }}. Skipping."
+          exit 0
 
       - name: Checkout Source Code
         if: ${{ matrix.enabled == 'true' }}
@@ -67,8 +69,9 @@ jobs:
         if: ${{ matrix.enabled == 'true' }}
         uses: docker/build-push-action@v5
         with:
-          context: ./services/${{{ matrix.service_name }}}
-          file: ./services/${{{ matrix.service_name }}}/Dockerfile
+          # FIXED: Changed triple curly braces {{{ }}} to standard double curly braces ${{ }}
+          context: ./services/${{ matrix.service_name }}
+          file: ./services/${{ matrix.service_name }}/Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service_name }}:sha-${{ github.sha }}
 
@@ -85,18 +88,13 @@ jobs:
         run: |
           cd gitops-repo/infra/helm/charts
           
-          # FIXED: Variables cleanly isolated with proper double curly braces
+          # FIXED: Clean shell variable interpolation prevents expression parsing errors
           sed -i '/^'${{ matrix.service_name }}':/,/^  [^ ]/ s/tag:.*/tag: "sha-'${{ github.sha }}'"/' values.yaml
           
+          # FIXED: Corrected invalid action email format
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@://github.com"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
           git add values.yaml
           git commit -m "chore(cd): auto-update ${{ matrix.service_name }} image tag to sha-${{ github.sha }}"
           git push
-
-
-
-
-
-
