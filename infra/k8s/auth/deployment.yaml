@@ -13,6 +13,8 @@ spec:
       labels:
         app: auth
     spec:
+      imagePullSecrets:
+        - name: dockerhub-secret
       containers:
         - name: auth
           image: auth:latest

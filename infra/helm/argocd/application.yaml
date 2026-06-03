@@ -7,8 +7,8 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/goniusman/microservice-nest'
-    targetRevision: HEAD
-    path: charts/bookverse
+    targetRevision: main  # Changed from HEAD to your explicit branch name
+    path: infra/helm/charts  # FIXED: Points to the exact folder where Chart.yaml lives
     helm:
       valueFiles:
         - values.yaml
