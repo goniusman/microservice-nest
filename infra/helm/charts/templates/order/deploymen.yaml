@@ -22,8 +22,11 @@ spec:
 
           envFrom:
             - configMapRef:
+                name: order-config
+            - configMapRef:
                 name: app-config
-
+            - secretRef:
+                name: order-secrets
             - secretRef:
                 name: app-secrets
 

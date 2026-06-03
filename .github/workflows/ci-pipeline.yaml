@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'gateway/**'
+      - 'infra/**'
       - 'services/**'
       - '.github/workflows/ci-pipeline.yaml' # Triggers when updating this pipeline file itself
 

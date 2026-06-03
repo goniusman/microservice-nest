@@ -22,8 +22,11 @@ spec:
 
           envFrom:
             - configMapRef:
+                name: book-config
+            - configMapRef:
                 name: app-config
-
+            - secretRef:
+                name: book-secrets
             - secretRef:
                 name: app-secrets
 
