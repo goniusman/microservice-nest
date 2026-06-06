@@ -58,42 +58,39 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ github.sha }}
 
-  gitops-update:
-    needs: build-and-push
-    runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout GitOps Repo
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ github.repository_owner }}/microservice-nest
-          token: ${{ secrets.GITOPS_PAT }}
-          path: gitops
+gitops-update:
+  needs: build-and-push
+  runs-on: ubuntu-latest
 
-      - name: Setup yq
-        run: |
-          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
-          sudo chmod +x /usr/bin/yq
+  steps:
+    - name: Checkout GitOps Repo
+      uses: actions/checkout@v4
+      with:
+        repository: org-name/microservice-nest
+        token: ${{ secrets.GITOPS_PAT }}
+        path: gitops
+        fetch-depth: 0
 
-      - name: Update Helm values (safe, no sed)
-        run: |
-          cd gitops/infra/helm/charts
+    - name: Verify repo access
+      run: |
+        cd gitops
+        git status
 
-          # Update all services using SHA tag
-          yq e '.gateway.tag = "${{ github.sha }}"' -i values.yaml
-          yq e '.auth.tag = "${{ github.sha }}"' -i values.yaml
-          yq e '.book.tag = "${{ github.sha }}"' -i values.yaml
-          yq e '.order.tag = "${{ github.sha }}"' -i values.yaml
-          yq e '.notification.tag = "${{ github.sha }}"' -i values.yaml
+    - name: Setup yq
+      run: |
+        sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+        sudo chmod +x /usr/bin/yq
 
-      - name: Create Pull Request (NO direct push → avoids loop)
-        uses: peter-evans/create-pull-request@v6
-        with:
-          path: gitops
-          branch: gitops/update-${{ github.sha }}
-          base: main
-          title: "chore: update service images to ${{ github.sha }}"
-          commit-message: "chore(cd): update images to ${{ github.sha }} [skip ci]"
-          body: |
-            Automated GitOps update from CI pipeline.
-            This PR updates all microservices to latest build SHA.
+    - name: Update values.yaml
+      run: |
+        cd gitops/infra/helm/charts
+        yq e '.gateway.tag = "${{ github.sha }}"' -i values.yaml
+
+    - name: Create PR
+      uses: peter-evans/create-pull-request@v6
+      with:
+        path: gitops
+        branch: gitops/update-${{ github.sha }}
+        title: "chore: update images"
+        commit-message: "update images [skip ci]"
