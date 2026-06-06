@@ -8,6 +8,10 @@ on:
       - 'infra/helm/charts/**'
       - '.github/workflows/ci-pipeline.yaml'
 
+permissions:
+  contents: write
+  pull-requests: write
+
 concurrency:
   group: monorepo-ci-cd
   cancel-in-progress: true
