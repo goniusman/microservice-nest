@@ -31,7 +31,7 @@ order:
   replicaCount: 1
   image:
     repository: docker.io/goniusman/order 
-    tag: "sha-a9b86b4"
+    tag: "sha-b14f679"
   service:
     port: 3003
 
