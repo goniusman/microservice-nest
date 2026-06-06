@@ -17,3 +17,4 @@ data:
   MONGO_HOST: "mongodb"
   POSTGRES_HOST: "postgres"
   RABBITMQ_HOST: "rabbitmq"
+  RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672"
