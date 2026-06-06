@@ -29,3 +29,4 @@ content-type: application/json
 # POST /auth/logout
 # GET  /auth/profile
 # GET  /auth/admin (ADMIN only)
+# More functionalities
