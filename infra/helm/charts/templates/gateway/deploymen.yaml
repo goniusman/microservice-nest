@@ -27,15 +27,15 @@ spec:
             - secretRef:
                 name: app-secrets
 
-          readinessProbe:
-            httpGet:
-              path: /health/ready
-              port: 3000
+          # readinessProbe:
+          #   httpGet:
+          #     path: /health/ready
+          #     port: 3000
 
-          livenessProbe:
-            httpGet:
-              path: /health/live
-              port: 3000
+          # livenessProbe:
+          #   httpGet:
+          #     path: /health/live
+          #     port: 3000
 
           resources:
             requests:

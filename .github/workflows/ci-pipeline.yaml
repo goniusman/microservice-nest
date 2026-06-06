@@ -95,7 +95,7 @@ jobs:
 
           echo "Updating Helm values..."
 
-          if echo "$CHANGED" | grep -q "gateway"; then
+          if echo "$CHANGED" | grep -q "services/gateway"; then
             yq e '.gateway.tag = "${{ github.sha }}"' -i values.yaml
           fi
 

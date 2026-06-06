@@ -26,6 +26,11 @@ spec:
               value: "admin@bookverse.com"
             - name: PGADMIN_DEFAULT_PASSWORD
               value: "AdminPass123"
+
+
+
+
+
 ---
 apiVersion: v1
 kind: Service
@@ -37,6 +42,6 @@ spec:
     app: pgadmin
   ports:
     - protocol: TCP
-      port: 80
+      port: 5050
       targetPort: 80
   type: ClusterIP
