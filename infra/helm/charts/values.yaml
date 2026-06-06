@@ -35,6 +35,14 @@ order:
   service:
     port: 3003
 
+notification:
+  replicaCount: 1
+  image:
+    repository: docker.io/goniusman/notification 
+    tag: "latest"
+  # service:
+  #   port: 3003
+
 
 # auth:
 #   image:

@@ -17,6 +17,7 @@ jobs:
       auth: ${{ steps.filter.outputs.auth }}
       book: ${{ steps.filter.outputs.book }}
       order: ${{ steps.filter.outputs.order }}
+      notification: ${{ steps.filter.outputs.notification }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -30,6 +31,7 @@ jobs:
             auth: 'services/auth/**'
             book: 'services/book/**'
             order: 'services/order/**'
+            notification: 'services/notification/**'
 
   build-and-deploy:
     needs: detect-changes
@@ -39,8 +41,8 @@ jobs:
       matrix:
         include:
           - service_name: gateway
-            context_path: ./services/gateway
-            file_path: ./services/gateway/Dockerfile
+            context_path: ./gateway
+            file_path: ./gateway/Dockerfile
             enabled: ${{ needs.detect-changes.outputs.gateway }}
           - service_name: auth
             context_path: ./services/auth
@@ -54,6 +56,10 @@ jobs:
             context_path: ./services/order
             file_path: ./services/order/Dockerfile
             enabled: ${{ needs.detect-changes.outputs.order }}
+          - service_name: notification
+            context_path: ./services/notification
+            file_path: ./services/notification/Dockerfile
+            enabled: ${{ needs.detect-changes.outputs.notification }}
     steps:
       # If this specific service did not change, exit cleanly without error
       - name: Check if Execution is Required
