@@ -39,7 +39,7 @@ notification:
   replicaCount: 1
   image:
     repository: docker.io/goniusman/notification 
-    tag: "sha-7b94215"
+    tag: "sha-fb40719"
   # service:
   #   port: 3003
 
