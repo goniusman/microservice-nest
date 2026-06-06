@@ -1,179 +1,99 @@
-name: Monorepo CI/CD Pipeline
+name: Monorepo CI/CD (GitOps Safe)
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
-      - 'infra/**'
+      - 'infra/helm/charts/templates/**'
       - 'services/**'
-      - '.github/workflows/ci-pipeline.yaml' # Triggers when updating this pipeline file itself
+      - '.github/workflows/ci-pipeline.yaml'
+
+concurrency:
+  group: monorepo-ci-cd
+  cancel-in-progress: true
 
 jobs:
-  detect-changes:
+  build-and-push:
     runs-on: ubuntu-latest
-    outputs:
-      gateway: ${{ steps.filter.outputs.gateway }}
-      auth: ${{ steps.filter.outputs.auth }}
-      book: ${{ steps.filter.outputs.book }}
-      order: ${{ steps.filter.outputs.order }}
-      notification: ${{ steps.filter.outputs.notification }}
+
+    strategy:
+      matrix:
+        service:
+          - gateway
+          - auth
+          - book
+          - order
+          - notification
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Paths Filter Engine
+      - name: Check if service changed
         id: filter
         uses: dorny/paths-filter@v4
         with:
           filters: |
-            gateway: 'gateway/**'
-            auth: 'services/auth/**'
-            book: 'services/book/**'
-            order: 'services/order/**'
-            notification: 'services/notification/**'
+            changed: '${{ matrix.service }}/**'
 
-  build-and-deploy:
-    needs: detect-changes
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - service_name: gateway
-            context_path: ./gateway
-            file_path: ./gateway/Dockerfile
-            enabled: ${{ needs.detect-changes.outputs.gateway }}
-          - service_name: auth
-            context_path: ./services/auth
-            file_path: ./services/auth/Dockerfile
-            enabled: ${{ needs.detect-changes.outputs.auth }}
-          - service_name: book
-            context_path: ./services/book
-            file_path: ./services/book/Dockerfile
-            enabled: ${{ needs.detect-changes.outputs.book }}
-          - service_name: order
-            context_path: ./services/order
-            file_path: ./services/order/Dockerfile
-            enabled: ${{ needs.detect-changes.outputs.order }}
-          - service_name: notification
-            context_path: ./services/notification
-            file_path: ./services/notification/Dockerfile
-            enabled: ${{ needs.detect-changes.outputs.notification }}
-    steps:
-      # If this specific service did not change, exit cleanly without error
-      - name: Check if Execution is Required
-        if: ${{ matrix.enabled != 'true' }}
-        run: |
-          echo "No changes for ${{ matrix.service_name }}. Skipping."
-          exit 0
-
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
+      - name: Skip if not changed
+        if: steps.filter.outputs.changed != 'true'
+        run: echo "No changes for ${{ matrix.service }}"
 
       - name: Log in to Docker Hub
+        if: steps.filter.outputs.changed == 'true'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set Short SHA Output
-        id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
-      - name: Build and Push Container Image
+      - name: Build and Push Image
+        if: steps.filter.outputs.changed == 'true'
         uses: docker/build-push-action@v6
         with:
-          context: ${{ matrix.context_path }}
-          file: ${{ matrix.context_path }}/Dockerfile
+          context: ./${{ matrix.service }}
+          file: ./${{ matrix.service }}/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service_name }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service_name }}:sha-${{ steps.vars.outputs.sha_short }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ github.sha }}
 
-      - name: Checkout GitOps Deployment Repo
+  gitops-update:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitOps Repo
         uses: actions/checkout@v4
         with:
-          repository: '${{ github.repository_owner }}/microservice-nest'
+          repository: ${{ github.repository_owner }}/microservice-nest
           token: ${{ secrets.GITOPS_PAT }}
-          path: gitops-repo
+          path: gitops
 
-      - name: Write New Target Tag to values.yaml
+      - name: Setup yq
         run: |
-          cd gitops-repo/infra/helm/charts
-          
-          # Update the image tag safely using sed
-          sed -i "/^${{ matrix.service_name }}:/,/^[^ ]/ s/tag: .*/tag: \"sha-${{ steps.vars.outputs.sha_short }}\"/" values.yaml
-          
-          # Configure Git identity
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-          git add values.yaml
-          git commit -m "chore(cd): auto-bump ${{ matrix.service_name }} image to sha-${{ steps.vars.outputs.sha_short }}"
-          
-          # CRITICAL FIX: Pull down any changes pushed by sibling service matrix runs first!
-          # The loop ensures that if another push happens during this rebase, it tries again up to 3 times.
-          for i in {1..3}; do
-            git pull --rebase origin main && git push origin main && break
-            echo "Push collided with another service build. Retrying in 5 seconds..."
-            sleep 5
-          done
+          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
 
+      - name: Update Helm values (safe, no sed)
+        run: |
+          cd gitops/infra/helm/charts
 
+          # Update all services using SHA tag
+          yq e '.gateway.tag = "${{ github.sha }}"' -i values.yaml
+          yq e '.auth.tag = "${{ github.sha }}"' -i values.yaml
+          yq e '.book.tag = "${{ github.sha }}"' -i values.yaml
+          yq e '.order.tag = "${{ github.sha }}"' -i values.yaml
+          yq e '.notification.tag = "${{ github.sha }}"' -i values.yaml
 
-
-
-
-
-
-
-
-
-
-
-    # steps:
-    #   # FIXED: Removed the dangerous step that used 'exit 0' to abort the container
-
-    #   - name: Checkout Source Code
-    #     if: ${{ matrix.enabled == 'true' }}
-    #     uses: actions/checkout@v4
-
-    #   - name: Log in to Docker Hub
-    #     if: ${{ matrix.enabled == 'true' }}
-    #     uses: docker/login-action@v3
-    #     with:
-    #       username: ${{ secrets.DOCKERHUB_USERNAME }}
-    #       password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    #   - name: Build and Push Container Image
-    #     if: ${{ matrix.enabled == 'true' }}
-    #     uses: docker/build-push-action@v5
-    #     with:
-    #       context: ./services/${{ matrix.service_name }}
-    #       file: ./services/${{ matrix.service_name }}/Dockerfile
-    #       push: true
-    #       tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service_name }}:sha-${{ github.sha }}
-
-    #   - name: Checkout GitOps Deployment Repo
-    #     if: ${{ matrix.enabled == 'true' }}
-    #     uses: actions/checkout@v4
-    #     with:
-    #       repository: 'goniusman/microservice-nest' 
-    #       token: ${{ secrets.GITOPS_PAT }}
-    #       path: gitops-repo
-
-    #   - name: Update Service Tag in Helm values.yaml
-    #     if: ${{ matrix.enabled == 'true' }}
-    #     run: |
-    #       cd gitops-repo/infra/helm/charts
-          
-    #       # Variables cleanly isolated with single quotes for local execution safely
-    #       sed -i '/^'${{ matrix.service_name }}':/,/^  [^ ]/ s/tag:.*/tag: "sha-'${{ github.sha }}'"/' values.yaml
-          
-    #       git config --global user.name "github-actions[bot]"
-    #       git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
-    #       git add values.yaml
-    #       git commit -m "chore(cd): auto-update ${{ matrix.service_name }} image tag to sha-${{ github.sha }}"
-    #       git push
+      - name: Create Pull Request (NO direct push → avoids loop)
+        uses: peter-evans/create-pull-request@v6
+        with:
+          path: gitops
+          branch: gitops/update-${{ github.sha }}
+          base: main
+          title: "chore: update service images to ${{ github.sha }}"
+          commit-message: "chore(cd): update images to ${{ github.sha }} [skip ci]"
+          body: |
+            Automated GitOps update from CI pipeline.
+            This PR updates all microservices to latest build SHA.
