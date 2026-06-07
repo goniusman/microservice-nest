@@ -6,6 +6,7 @@ on:
     paths:
       - 'services/**'
       - 'infra/helm/charts/**'
+      - 'infra/k8s/**'
       - '.github/workflows/ci-pipeline.yaml'
 
 permissions:
