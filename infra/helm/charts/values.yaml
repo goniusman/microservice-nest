@@ -9,7 +9,7 @@ gateway:
     pullPolicy: IfNotPresent
   service:
     port: 80
-    port: 3000
+    targetPort: 3000
     type: ClusterIP
 
 auth:
