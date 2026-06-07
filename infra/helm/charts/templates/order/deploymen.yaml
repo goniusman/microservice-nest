@@ -16,7 +16,7 @@ spec:
       containers:
         - name: order
           image: "{{ .Values.order.image.repository }}:{{ .Values.order.image.tag }}"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: {{ .Values.order.service.port }}
 
@@ -33,12 +33,12 @@ spec:
           readinessProbe:
             httpGet:
               path: /health/ready
-              port: 3001
+              port: 3003
 
           livenessProbe:
             httpGet:
               path: /health/live
-              port: 3001
+              port: 3003
 
           resources:
             requests:

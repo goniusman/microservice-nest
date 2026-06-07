@@ -16,7 +16,7 @@ spec:
       containers:
         - name: notification
           image: "{{ .Values.notification.image.repository }}:{{ .Values.notification.image.tag }}"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
           envFrom:
             - configMapRef:

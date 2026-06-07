@@ -16,7 +16,7 @@ spec:
       containers:
         - name: book
           image: "{{ .Values.book.image.repository }}:{{ .Values.book.image.tag }}"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: {{ .Values.book.service.port }}
 
