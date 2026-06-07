@@ -1,23 +1,76 @@
-version: "3.9"
+# version: "3.9"
 
 services:
 
+  gateway:
+    build:
+      context: ./services/gateway
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./services/gateway/.env
+    environment:
+      - AUTH_SERVICE_URL=http://auth:3001
+      - BOOK_SERVICE_URL=http://book:3002
+      - ORDER_SERVICE_URL=http://order:3003
 
-  # auth-service:
-  #   build:
-  #     context: ./services/auth-service
-  #   ports:
-  #     - "3001:3001"
-  #   env_file:
-  #     - ./services/auth/.env
-  #   depends_on:
-  #     - postgres
+    # depends_on:
+    #   - postgres
 
+  auth:
+    build:
+      context: ./services/auth
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./services/auth/.env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: bookverse
+      DB_PASSWORD: bookverse
+      DB_NAME: bookverse_auth
+    depends_on:
+      - postgres
 
+  book:
+    build:
+      context: ./services/book
+    ports:
+      - "3002:3002"
+    # env_file:
+    #   - ./services/book/.env
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017/bookverse_books
+    depends_on:
+      - mongodb
+  
+  order:
+    build:
+      context: ./services/order
+    ports:
+      - "3003:3003"
+    # env_file:
+    #   - ./services/order/.env
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017/bookverse_books
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - mongodb
+      - rabbitmq
 
-
-
-
+  notification:
+    build:
+      context: ./services/notification
+    # ports:
+    #   - "3001:3001"
+    # env_file:
+    #   - ./services/notification/.env
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - rabbitmq
+      - mongodb
 
 
   postgres:
@@ -40,7 +93,6 @@ services:
   #   extra_hosts:
   #     - "host.docker.internal:host-gateway"
   #   restart: always
-
 
   pgadmin:
     image: dpage/pgadmin4:latest

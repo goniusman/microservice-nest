@@ -41,4 +41,17 @@ export class AuthProxy {
     );
     return res.data;
   }
+
+  async logout(token: string) {
+    const res = await axios.get(
+      `${this.baseUrl}/auth/logout`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
+    );
+    return res.data;
+  }
+
 }

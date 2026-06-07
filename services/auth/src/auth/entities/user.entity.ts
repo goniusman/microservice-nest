@@ -31,7 +31,7 @@ export class User {
   })
   role: UserRole;
 
-  @Column({ nullable: true, select: false })
+  @Column({ nullable: true })
   refreshToken?: string;
 
   @CreateDateColumn()

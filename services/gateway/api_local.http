@@ -1,0 +1,137 @@
+GET http://localhost:3000/health/live HTTP/1.1
+
+###
+GET http://localhost:3000/health/ready HTTP/1.1
+
+### (Auth Service)
+POST http://localhost:3000/auth/register HTTP/1.1
+content-type: application/json
+
+{
+    "email": "goniusman600@gmail.com",
+    "password": "Osman@#1"
+}
+
+###
+POST http://localhost:3000/auth/login HTTP/1.1
+content-type: application/json
+
+{
+    "email": "goniusman600@gmail.com",
+    "password": "Osman@#1"
+}
+
+###
+POST http://localhost:3000/auth/refresh HTTP/1.1
+content-type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkMy0yODQ2LTQxYjEtOGVjMy1hNGIwODZjNDUwNzkiLCJlbWFpbCI6Imdvbml1c21hbjQwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MDgyNjUyOCwiZXhwIjoxNzgxNDMxMzI4fQ.ibmT6NvaHDeGXeVfRI7MAEv15Z-ZUJAhJPhx86BJcsU"
+}
+
+###
+POST http://localhost:3000/auth/logout HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkMy0yODQ2LTQxYjEtOGVjMy1hNGIwODZjNDUwNzkiLCJlbWFpbCI6Imdvbml1c21hbjQwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MDgyOTgxNCwiZXhwIjoxNzgxNDM0NjE0fQ.Mvs9758YFaD48YmtEuVJEiCNd-AkqSZGIu2F9YBl1q0
+
+
+###
+GET http://localhost:3000/auth/profile HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkMy0yODQ2LTQxYjEtOGVjMy1hNGIwODZjNDUwNzkiLCJlbWFpbCI6Imdvbml1c21hbjQwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MDgyOTgxNCwiZXhwIjoxNzgxNDM0NjE0fQ.Mvs9758YFaD48YmtEuVJEiCNd-AkqSZGIu2F9YBl1q0
+
+###( BooK Service)
+# GET http://localhost:3000/health/live HTTP/1.1
+# ###
+# GET http://localhost:3000/health/ready HTTP/1.1
+
+###
+POST http://localhost:3000/books HTTP/1.1
+content-type: application/json
+authorization: 
+
+{
+    "title": "Second Book",
+    "author": "Goni",
+    "description": "Second. interesting description is here",
+    "price": 23,
+    "isPublished" : false
+}
+
+####
+GET http://localhost:3000/books HTTP/1.1
+
+
+###
+GET http://localhost:3000/books/6a258e5e50be99bf757e1155 HTTP/1.1
+
+###
+PUT http://localhost:3000/books/6a258e5e50be99bf757e1155 HTTP/1.1
+content-type: application/json
+
+{
+    "title": "First Book update",
+    "author": "Osman Goni",
+    "description": "Interesting description is here",
+    "price": 30,
+    "isPublished" : false
+}
+
+####
+DELETE http://localhost:3000/books/6a1bdebe614ce908eaa87fad HTTP/1.1
+content-type: application/json
+
+
+### (Order Service)
+POST http://localhost:3000/orders HTTP/1.1
+content-type: application/json
+
+{
+    "userId": "2",
+    "bookId": "2",
+    "price": 23
+}
+
+####
+GET http://localhost:3000/orders HTTP/1.1
+
+####
+GET http://localhost:3000/orders/6a2595508b61bac01d214980 HTTP/1.1
+
+####
+PUT http://localhost:3000/orders/6a2595508b61bac01d214980 HTTP/1.1
+content-type: application/json
+
+{
+    "userId": "2",
+    "bookId": "2",
+    "price": 33
+}
+
+####
+DELETE http://localhost:3000/orders/6a1bdebe614ce908eaa87fad HTTP/1.1
+content-type: application/json
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

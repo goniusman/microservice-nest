@@ -12,7 +12,7 @@ import { AuthProxy } from '../proxy/auth.proxy';
 export class AuthController {
   constructor(
     private readonly authProxy: AuthProxy,
-  ) {}
+  ) { }
 
   @Post('register')
   register(@Body() body: any) {
@@ -36,4 +36,13 @@ export class AuthController {
   ) {
     return this.authProxy.profile(token);
   }
+
+  @Get('logout')
+  logOut(
+    @Headers('authorization')
+    token: string,
+  ) {
+    return this.authProxy.logout(token);
+  }
+
 }

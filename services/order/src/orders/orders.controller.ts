@@ -3,6 +3,9 @@ import {
   Post,
   Body,
   Get,
+  Param,
+  Put,
+  Delete,
 } from '@nestjs/common';
 
 import { OrdersService } from './orders.service';
@@ -23,4 +26,21 @@ export class OrdersController {
   findAll() {
     return this.ordersService.findAll();
   }
+
+   @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.ordersService.findOne(id);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() dto: any) {
+    return this.ordersService.update(id, dto);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.ordersService.delete(id);
+  }
+
+
 }

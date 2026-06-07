@@ -42,8 +42,8 @@ export class AuthService {
 
     const accessToken =
       this.jwtService.sign(payload, {
-        secret: process.env.JWT_ACCESS_SECRET,
-        expiresIn: '15m',
+        secret: process.env.JWT_SECRET,
+        expiresIn: '7d',
       });
 
     const refreshToken =
@@ -62,13 +62,13 @@ export class AuthService {
       .digest('hex');
   }
 
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  // create(createAuthDto: CreateAuthDto) {
+  //   return 'This action adds a new auth';
+  // }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  // findAll() {
+  //   return `This action returns all auth`;
+  // }
 
   findOne(id: number) {
     return `This action returns a #${id} auth`;
@@ -85,90 +85,104 @@ export class AuthService {
   async register(
     registerDto: RegisterDto,
   ) {
-    const existingUser =
-      await this.userRepository.findOne({
-        where: {
+
+    try {
+
+      const existingUser =
+        await this.userRepository.findOne({
+          where: {
+            email: registerDto.email,
+          },
+        });
+
+      if (existingUser) {
+        throw new ConflictException(
+          'Email already exists',
+        );
+      }
+
+      const hashedPassword =
+        await bcrypt.hash(
+          registerDto.password,
+          10,
+        );
+
+      const user =
+        this.userRepository.create({
           email: registerDto.email,
-        },
-      });
+          password: hashedPassword,
+        });
 
-    if (existingUser) {
-      throw new ConflictException(
-        'Email already exists',
-      );
+      await this.userRepository.save(user);
+
+      return {
+        message:
+          'User registered successfully',
+      };
+
+    } catch (error) {
+      throw error
     }
-
-    const hashedPassword =
-      await bcrypt.hash(
-        registerDto.password,
-        10,
-      );
-
-    const user =
-      this.userRepository.create({
-        email: registerDto.email,
-        password: hashedPassword,
-      });
-
-    await this.userRepository.save(user);
-
-    return {
-      message:
-        'User registered successfully',
-    };
   }
 
   async login(
     loginDto: LoginDto,
   ) {
-    const user =
-      await this.userRepository.findOne({
-        where: {
-          email: loginDto.email,
+    try {
+
+
+      const user =
+        await this.userRepository.findOne({
+          where: {
+            email: loginDto.email,
+          },
+        });
+
+      if (!user) {
+        throw new UnauthorizedException(
+          'Invalid credentials',
+        );
+      }
+
+      const isPasswordValid =
+        await bcrypt.compare(
+          loginDto.password,
+          user.password,
+        );
+
+      if (!isPasswordValid) {
+        throw new UnauthorizedException(
+          'Invalid credentials',
+        );
+      }
+
+      // const accessToken =
+      //   await this.generateAccessToken(user);
+
+      const tokens =
+        await this.generateTokens(user);
+
+      const hashed = await this.hashToken(
+        tokens.refreshToken,
+      );
+
+      await this.userRepository.update(
+        user.id,
+        {
+          refreshToken: hashed,
         },
-      });
-
-    if (!user) {
-      throw new UnauthorizedException(
-        'Invalid credentials',
       );
+
+
+      return {
+        message: 'Login successful',
+        userId: user.id,
+        tokens
+      };
+
+    } catch (error) {
+      throw error
     }
-
-    const isPasswordValid =
-      await bcrypt.compare(
-        loginDto.password,
-        user.password,
-      );
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException(
-        'Invalid credentials',
-      );
-    }
-
-    // const accessToken =
-    //   await this.generateAccessToken(user);
-
-    const tokens =
-      await this.generateTokens(user);
-
-    const hashed = await this.hashToken(
-      tokens.refreshToken,
-    );
-
-    await this.userRepository.update(
-      user.id,
-      {
-        refreshToken: hashed,
-      },
-    );
-
-
-    return {
-      message: 'Login successful',
-      userId: user.id,
-      tokens
-    };
   }
 
   async refreshToken(token: string) {
@@ -178,21 +192,21 @@ export class AuthService {
           secret:
             process.env.JWT_REFRESH_SECRET,
         });
-
+      
       const user =
         await this.userRepository.findOne({
           where: { id: payload.sub },
         });
-
+        
       if (!user || !user.refreshToken) {
-        throw new Error('Access denied');
+        throw new UnauthorizedException('Refresh Token Not Found!');
       }
 
       const hashed =
         await this.hashToken(token);
 
       if (hashed !== user.refreshToken) {
-        throw new Error('Invalid refresh token');
+        throw new UnauthorizedException('Invalid refresh token');
       }
 
       const tokens =
@@ -211,8 +225,8 @@ export class AuthService {
       );
 
       return tokens;
-    } catch (e) {
-      throw new Error('Invalid refresh token');
+    } catch (err) {
+      throw err;
     }
   }
 

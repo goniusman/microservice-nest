@@ -1,8 +1,14 @@
+GET http://localhost:3002/health/live HTTP/1.1
+
+####
+GET http://localhost:3002/health/ready HTTP/1.1
+
+####
 POST http://localhost:3002/books HTTP/1.1
 content-type: application/json
 
 {
-    "title": "First Book",
+    "title": " Last Book",
     "author": "Osman",
     "description": "wow. interesting description is here",
     "price": 23,
@@ -10,5 +16,25 @@ content-type: application/json
 }
 
 ####
+GET http://localhost:3002/books HTTP/1.1
 
-GET http://localhost:80/books HTTP/1.1
+####
+GET http://localhost:3002/books/6a1bdebe614ce908eaa87fad HTTP/1.1
+
+####
+PUT http://localhost:3002/books/6a1bdebe614ce908eaa87fad HTTP/1.1
+content-type: application/json
+
+{
+    "title": "First Book update",
+    "author": "Osman Goni",
+    "description": "Interesting description is here",
+    "price": 30,
+    "isPublished" : false
+}
+
+####
+DELETE http://localhost:3002/books/6a1bdebe614ce908eaa87fad HTTP/1.1
+content-type: application/json
+
+

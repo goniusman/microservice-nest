@@ -35,8 +35,9 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
     ]),
 
   ],
-  controllers: [AuthController, BookController, OrderController],
+  controllers: [AuthController, BookController, OrderController,AppController],
   providers: [
+    AppService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
