@@ -13,4 +13,5 @@ spec:
     - name: management    # Named port for the web dashboard
       port: 15672
       targetPort: 15672
-  type: NodePort          # Allows you to browse the dashboard easily
+  type: ClusterIP
+  # type: NodePort          # Allows you to browse the dashboard easily

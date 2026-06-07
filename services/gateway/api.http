@@ -34,10 +34,10 @@ authorization:
 
 ####
 
-GET http://localhost:3000/books HTTP/1.1
+GET http://localhost:80/books HTTP/1.1
 
 ###
-POST http://localhost:3000/orders HTTP/1.1
+POST http://localhost:80/orders HTTP/1.1
 content-type: application/json
 
 {
