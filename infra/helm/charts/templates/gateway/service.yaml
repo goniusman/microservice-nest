@@ -6,6 +6,6 @@ metadata:
 spec:
   ports:
     - port: {{ .Values.gateway.service.port }}
-      targetPort: {{ .Values.gateway.service.port }}
+      targetPort: {{ .Values.gateway.service.targetPort }}
   selector:
     app: gateway
