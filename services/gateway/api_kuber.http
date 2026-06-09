@@ -17,7 +17,7 @@ POST http://localhost:80/auth/login HTTP/1.1
 content-type: application/json
 
 {
-    "email": "goniusman400@gmail.com",
+    "email": "goniusman600@gmail.com",
     "password": "Osman@#1"
 }
 
@@ -63,10 +63,10 @@ GET http://localhost:80/books HTTP/1.1
 
 
 ###
-GET http://localhost:80/books/6a1bdebe614ce908eaa87fad HTTP/1.1
+GET http://localhost:80/books/6a258e5e50be99bf757e1155 HTTP/1.1
 
 ###
-PUT http://localhost:80/books/6a1bdebe614ce908eaa87fad HTTP/1.1
+PUT http://localhost:80/books/6a258e5e50be99bf757e1155 HTTP/1.1
 content-type: application/json
 
 {
@@ -94,6 +94,38 @@ content-type: application/json
 
 ####
 GET http://localhost:80/orders HTTP/1.1
+
+####
+GET http://localhost:80/orders/6a2595508b61bac01d214980 HTTP/1.1
+
+####
+PUT http://localhost:80/orders/6a2595508b61bac01d214980 HTTP/1.1
+content-type: application/json
+
+{
+    "userId": "2",
+    "bookId": "2",
+    "price": 33
+}
+
+####
+DELETE http://localhost:80/orders/6a1bdebe614ce908eaa87fad HTTP/1.1
+content-type: application/json
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

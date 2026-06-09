@@ -4,7 +4,6 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   await NestFactory.createApplicationContext(AppModule);
-
   console.log(
     '📨 Notification Service running (event consumer only)',
   );
