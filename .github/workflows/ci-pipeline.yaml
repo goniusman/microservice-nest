@@ -75,6 +75,17 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ github.sha }}
 
+      - name: Clean up old Docker Hub tags
+        if: steps.changes.outputs.changed == 'true'
+        uses: chiselstrike/delete-old-docker-html-tags@v1.0.1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ matrix.service }}
+          # Keeps the 'latest' tag safe from deletion
+          ignore-tags: 'latest'
+          # Keeps the 3 most recently pushed SHA/version tags
+          keep-last: 3
 
       # Trigger the GitOps Config Repo configuration update
       - name: Trigger GitOps CD Workflow
