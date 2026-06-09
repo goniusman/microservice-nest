@@ -52,5 +52,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkM
 # POST /auth/refresh
 # POST /auth/logout
 # GET  /auth/profile
+
 # GET  /auth/admin (ADMIN only)
 # More functionalities
