@@ -1,20 +1,19 @@
-name: Monorepo CI/CD (GitOps Safe)
+name: Monorepo CI Pipeline
 
 on:
   push:
     branches: [main]
     paths:
       - 'services/**'
-      - 'infra/helm/charts/**'
-      - 'infra/k8s/**'
       - '.github/workflows/ci-pipeline.yaml'
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+  # contents: write
+  # pull-requests: write
 
 concurrency:
-  group: monorepo-ci-cd
+  group: monorepo-ci
   cancel-in-progress: true
 
 jobs:
@@ -76,67 +75,83 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ github.sha }}
 
-  gitops-update:
-    needs: build-and-push
-    runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout GitOps Repo
-        uses: actions/checkout@v4
+      # Trigger the GitOps Config Repo configuration update
+      - name: Trigger GitOps CD Workflow
+        if: steps.changes.outputs.changed == 'true'
+        uses: peter-evans/repository-dispatch@v3
         with:
-          repository: goniusman/microservice-nest
           token: ${{ secrets.GITOPS_PAT }}
-          path: gitops
-          fetch-depth: 0
+          repository: goniusman/GitOps  # Change this if your config repo has a different name
+          event-type: update-image
+          client-payload: '{"service": "${{ matrix.service }}", "sha": "${{ github.sha }}"}'
 
-      - name: Configure Git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Setup yq
-        run: |
-          sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
-          sudo chmod +x /usr/bin/yq
 
-      - name: Update only changed services
-        run: |
-          cd gitops/infra/helm/charts
 
-          # Detect changed services again (safe + reliable)
-          CHANGED=$(git diff --name-only HEAD~1 HEAD || true)
 
-          echo "Updating Helm values..."
 
-          if echo "$CHANGED" | grep -q "services/gateway"; then
-            yq e '.gateway.tag = "${{ github.sha }}"' -i values.yaml
-          fi
+  # gitops-update:
+  #   needs: build-and-push
+  #   runs-on: ubuntu-latest
 
-          if echo "$CHANGED" | grep -q "services/auth"; then
-            yq e '.auth.tag = "${{ github.sha }}"' -i values.yaml
-          fi
+  #   steps:
+  #     - name: Checkout GitOps Repo
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: goniusman/microservice-nest
+  #         token: ${{ secrets.GITOPS_PAT }}
+  #         path: gitops
+  #         fetch-depth: 0
 
-          if echo "$CHANGED" | grep -q "services/book"; then
-            yq e '.book.tag = "${{ github.sha }}"' -i values.yaml
-          fi
+  #     - name: Configure Git
+  #       run: |
+  #         git config --global user.name "github-actions[bot]"
+  #         git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          if echo "$CHANGED" | grep -q "services/order"; then
-            yq e '.order.tag = "${{ github.sha }}"' -i values.yaml
-          fi
+  #     - name: Setup yq
+  #       run: |
+  #         sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+  #         sudo chmod +x /usr/bin/yq
 
-          if echo "$CHANGED" | grep -q "services/notification"; then
-            yq e '.notification.tag = "${{ github.sha }}"' -i values.yaml
-          fi
+  #     - name: Update only changed services
+  #       run: |
+  #         cd gitops/infra/helm/charts
 
-      - name: Create Pull Request (GitOps Safe)
-        uses: peter-evans/create-pull-request@v6
-        with:
-          path: gitops
-          branch: gitops/update-${{ github.sha }}
-          base: main
-          title: "chore: update service images"
-          commit-message: "chore(cd): update images to ${{ github.sha }} [skip ci]"
-          body: |
-            Automated GitOps update from CI pipeline.
-            - Only updated changed services
-            - No direct push to main
+  #         # Detect changed services again (safe + reliable)
+  #         CHANGED=$(git diff --name-only HEAD~1 HEAD || true)
+
+  #         echo "Updating Helm values..."
+
+  #         if echo "$CHANGED" | grep -q "services/gateway"; then
+  #           yq e '.gateway.tag = "${{ github.sha }}"' -i values.yaml
+  #         fi
+
+  #         if echo "$CHANGED" | grep -q "services/auth"; then
+  #           yq e '.auth.tag = "${{ github.sha }}"' -i values.yaml
+  #         fi
+
+  #         if echo "$CHANGED" | grep -q "services/book"; then
+  #           yq e '.book.tag = "${{ github.sha }}"' -i values.yaml
+  #         fi
+
+  #         if echo "$CHANGED" | grep -q "services/order"; then
+  #           yq e '.order.tag = "${{ github.sha }}"' -i values.yaml
+  #         fi
+
+  #         if echo "$CHANGED" | grep -q "services/notification"; then
+  #           yq e '.notification.tag = "${{ github.sha }}"' -i values.yaml
+  #         fi
+
+  #     # - name: Create Pull Request (GitOps Safe)
+  #     #   uses: peter-evans/create-pull-request@v6
+  #     #   with:
+  #     #     path: gitops
+  #     #     branch: gitops/update-${{ github.sha }}
+  #     #     base: main
+  #     #     title: "chore: update service images"
+  #     #     commit-message: "chore(cd): update images to ${{ github.sha }} [skip ci]"
+  #     #     body: |
+  #     #       Automated GitOps update from CI pipeline.
+  #     #       - Only updated changed services
+  #     #       - No direct push to main
