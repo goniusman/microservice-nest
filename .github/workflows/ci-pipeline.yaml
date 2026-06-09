@@ -75,18 +75,36 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ github.sha }}
 
-      - name: Clean up old Docker Hub tags
+      # ADD THIS STEP BELOW TO AUTOMATICALLY CLEAN UP OLD IMAGES
+      - name: Clean up old Docker Hub tags (Keep Last 3)
         if: steps.changes.outputs.changed == 'true'
-        uses: chiselstrike/delete-old-docker-html-tags@v1.0.1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ matrix.service }}
-          # Keeps the 'latest' tag safe from deletion
-          ignore-tags: 'latest'
-          # Keeps the 3 most recently pushed SHA/version tags
-          keep-last: 3
+        env:
+          USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+          REPO: ${{ matrix.service }}
+        run: |
+          echo "Authenticating with Docker Hub API..."
+          TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "'"$USERNAME"'", "password": "'"$PASSWORD"'"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
+          
+          if [ "$TOKEN" = "null" ] || [ -z "$TOKEN" ]; then
+            echo "::error::Failed to authenticate with Docker Hub. Check your credentials."
+            exit 1
+          fi
 
+          echo "Fetching image tags for $USERNAME/$REPO..."
+          # Retrieves up to 100 tags, ordered by last updated (newest first), and filters out 'latest'
+          TAGS=$(curl -s -H "Authorization: JWT $TOKEN" "https://hub.docker.com/v2/repositories/$USERNAME/$REPO/tags/?page_size=100&ordering=-last_updated" \
+            | jq -r '.results[] | select(.name != "latest") | .name')
+
+          # 'tail -n +4' skips the first 3 lines (the 3 newest tags) and outputs the rest for deletion
+          echo "$TAGS" | tail -n +4 | while read -r TAG; do
+            if [ -n "$TAG" ]; then
+              echo "Deleting old stale tag: $TAG"
+              curl -s -X DELETE -H "Authorization: JWT $TOKEN" "https://hub.docker.com/v2/repositories/$USERNAME/$REPO/tags/$TAG/"
+            fi
+          done
+      
+      
       # Trigger the GitOps Config Repo configuration update
       - name: Trigger GitOps CD Workflow
         if: steps.changes.outputs.changed == 'true'
