@@ -65,7 +65,7 @@ async function bootstrap() {
 
   // await app.listen(process.env.PORT ?? 3000);
 
-  app.use(compression());
+  // app.use(compression());
   const expressApp = app.getHttpAdapter().getInstance();
   // const bullBoardService = app.get(BullBoardService);
   // bullBoardService.registerBullBoard(expressApp);
