@@ -46,10 +46,11 @@ async function bootstrap() {
   app.useGlobalInterceptors(new MetricsInterceptor());
 
   // app.enableCors(CORS_CONFIG)
-  app.setGlobalPrefix(APP_ROUTE_PREFIX)
+  // app.setGlobalPrefix(APP_ROUTE_PREFIX)
+  // app.enableVersioning({ defaultVersion: '1', type: VersioningType.URI })
+  
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER))
   // app.useGlobalFilters(new CustomValidationFilter())
-  app.enableVersioning({ defaultVersion: '1', type: VersioningType.URI })
   app.useGlobalInterceptors(new LoggerInterceptor(logger))
   // const slackService = new SlackService(configService)
   app.useGlobalFilters(new AllExceptionsFilter(logger, configService));
@@ -70,8 +71,8 @@ async function bootstrap() {
   // const bullBoardService = app.get(BullBoardService);
   // bullBoardService.registerBullBoard(expressApp);
   SwaggerModule.setup(`${APP_ROUTE_PREFIX}-docs`, app, SwaggerModule.createDocument(app, config))
-  await app.listen(configService.get<string>('PORT') ?? 3000)
   logger.log(`Application is running on port ${configService.get<string>('PORT')}`, 'Bootstrap')
+  await app.listen(configService.get<string>('PORT') ?? 3000)
 
 
 
