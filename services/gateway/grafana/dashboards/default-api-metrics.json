@@ -1,0 +1,139 @@
+{
+  "title": "Node.js API Metrics",
+  "uid": "nodejs-api-overview-default",
+  "schemaVersion": 30,
+  "version": 1,
+  "tags": ["prometheus", "api", "nodejs", "nestjs"],
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Total HTTP Requests (1m)",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count[1m]))",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Error Rate (5xx)",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_count{status=~\"5..\"}[1m]))",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Avg Request Duration (s)",
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_sum[1m])) / sum(rate(http_request_duration_seconds_count[1m]))",
+          "refId": "A"
+        }
+      ],
+      "unit": "s"
+    },
+    {
+      "type": "stat",
+      "title": "95th Percentile Latency (s)",
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+          "refId": "A"
+        }
+      ],
+      "unit": "s"
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP Request Duration (Histogram)",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
+          "legendFormat": "P50",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))",
+          "legendFormat": "P95",
+          "refId": "B"
+        }
+      ],
+      "unit": "s"
+    },
+    {
+      "type": "timeseries",
+      "title": "CPU Usage (User + System)",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "rate(process_cpu_user_seconds_total[1m])",
+          "legendFormat": "user",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(process_cpu_system_seconds_total[1m])",
+          "legendFormat": "system",
+          "refId": "B"
+        }
+      ],
+      "unit": "s"
+    },
+    {
+      "type": "timeseries",
+      "title": "Memory Usage",
+      "gridPos": { "x": 0, "y": 10, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "process_resident_memory_bytes",
+          "legendFormat": "RSS",
+          "refId": "A"
+        },
+        {
+          "expr": "nodejs_heap_size_used_bytes",
+          "legendFormat": "Heap Used",
+          "refId": "B"
+        },
+        {
+          "expr": "nodejs_heap_size_total_bytes",
+          "legendFormat": "Heap Total",
+          "refId": "C"
+        }
+      ],
+      "unit": "bytes"
+    },
+    {
+      "type": "timeseries",
+      "title": "Event Loop Lag",
+      "gridPos": { "x": 12, "y": 10, "w": 12, "h": 6 },
+      "targets": [
+        {
+          "expr": "nodejs_eventloop_lag_seconds",
+          "legendFormat": "lag",
+          "refId": "A"
+        }
+      ],
+      "unit": "s"
+    }
+  ],
+  "templating": { "list": [] },
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "refresh": "30s"
+}

@@ -1,0 +1,138 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "annotations": { "list": [ { "builtIn": 1, "type": "dashboard" } ] },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1697043200000,
+  "panels": [
+    {
+      "type": "row",
+      "title": "🔹 HTTP Request Overview",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 1 },
+      "collapsed": false
+    },
+    {
+      "type": "stat",
+      "title": "Total Requests (/min)",
+      "targets": [
+        { "expr": "sum(rate(http_request_duration_seconds_count[1m]))", "refId": "A" }
+      ],
+      "gridPos": { "x": 0, "y": 1, "w": 6, "h": 4 },
+      "format": "none"
+    },
+    {
+      "type": "stat",
+      "title": "5xx Error Rate (/min)",
+      "targets": [
+        { "expr": "sum(rate(http_request_duration_seconds_count{status=~\"5..\"}[1m]))", "refId": "A" }
+      ],
+      "gridPos": { "x": 6, "y": 1, "w": 6, "h": 4 },
+      "format": "none",
+      "colorMode": "critical"
+    },
+    {
+      "type": "stat",
+      "title": "Avg Req Duration (s)",
+      "targets": [
+        {
+          "expr": "sum(rate(http_request_duration_seconds_sum[1m])) / sum(rate(http_request_duration_seconds_count[1m]))",
+          "refId": "A"
+        }
+      ],
+      "unit": "s",
+      "gridPos": { "x": 12, "y": 1, "w": 6, "h": 4 }
+    },
+    {
+      "type": "stat",
+      "title": "95th Pctl Latency (s)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+          "refId": "A"
+        }
+      ],
+      "unit": "s",
+      "gridPos": { "x": 18, "y": 1, "w": 6, "h": 4 }
+    },
+    {
+      "type": "row",
+      "title": "Detailed Breakdown",
+      "gridPos": { "x": 0, "y": 5, "w": 24, "h": 1 },
+      "collapsed": false
+    },
+    {
+      "type": "table",
+      "title": "Requests by Method / Route / Status",
+      "targets": [
+        {
+          "expr": "sum by (method, route, status) (rate(http_request_duration_seconds_count[5m]))",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 6, "w": 24, "h": 8 }
+    },
+    {
+      "type": "table",
+      "title": "Top Slow Endpoints",
+      "targets": [
+        {
+          "expr": "topk(10, sum by (route) (rate(http_request_duration_seconds_sum[5m]) / rate(http_request_duration_seconds_count[5m])))",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 14, "w": 24, "h": 8 }
+    },
+    {
+      "type": "row",
+      "title": "🔹 System Metrics",
+      "gridPos": { "x": 0, "y": 23, "w": 24, "h": 1 },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "CPU Usage (%)",
+      "targets": [
+        {
+          "expr": "100 - avg(irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 24, "w": 12, "h": 6 },
+      "unit": "percent"
+    },
+    {
+      "type": "timeseries",
+      "title": "Memory Usage (%)",
+      "targets": [
+        {
+          "expr": "100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 12, "y": 24, "w": 12, "h": 6 },
+      "unit": "percent"
+    },
+    {
+      "type": "timeseries",
+      "title": "Disk Usage (%)",
+      "targets": [
+        {
+          "expr": "100 * (node_filesystem_size_bytes{fstype!=\"tmpfs\"} - node_filesystem_avail_bytes{fstype!=\"tmpfs\"}) / node_filesystem_size_bytes{fstype!=\"tmpfs\"}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 30, "w": 12, "h": 6 },
+      "unit": "percent"
+    }
+  ],
+  "schemaVersion": 27,
+  "style": "dark",
+  "tags": ["nestjs", "prometheus", "overview"],
+  "templating": { "list": [] },
+  "title": "Prometheus Overview Dashboard",
+  "uid": "prometheus-overview-1",
+  "version": 1
+}

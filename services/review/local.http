@@ -1,0 +1,35 @@
+GET http://localhost:3005/health/live HTTP/1.1
+
+###
+GET http://localhost:3005/health/ready HTTP/1.1
+
+###
+POST http://localhost:3005/review HTTP/1.1
+content-type: application/json
+
+{
+    "description": "this is review",
+    "userId": "1",
+    "bookId": "1",
+    "status": true
+}
+
+###
+GET http://localhost:3005/review HTTP/1.1
+
+###
+PATCH http://localhost:3005/review/6a28fe8284fb75783fdae794 HTTP/1.1
+content-type: application/json
+
+{
+    "description": "this is review",
+    "userId": "1",
+    "bookId": "1",
+    "status": false
+}
+
+###
+GET http://localhost:3005/review/6a28fe4884fb75783fdae792 HTTP/1.1
+
+###
+DELETE http://localhost:3005/review/6a28fe4884fb75783fdae792 HTTP/1.1

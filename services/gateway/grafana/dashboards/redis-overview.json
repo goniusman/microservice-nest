@@ -1,0 +1,81 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "annotations": { "list": [ { "builtIn": 1, "type": "dashboard" } ] },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1697049980000,
+  "panels": [
+    {
+      "type": "row",
+      "title": "🔹 Redis Overview",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 1 },
+      "collapsed": false
+    },
+    {
+      "type": "stat",
+      "title": "Connected Clients",
+      "targets": [ { "expr": "redis_connected_clients", "refId": "A" } ],
+      "gridPos": { "x": 0, "y": 1, "w": 6, "h": 4 }
+    },
+    {
+      "type": "stat",
+      "title": "Memory Used (MB)",
+      "targets": [ { "expr": "redis_memory_used_bytes / 1024 / 1024", "refId": "A" } ],
+      "unit": "bytes"
+    },
+    {
+      "type": "stat",
+      "title": "Ops/sec",
+      "targets": [ { "expr": "rate(redis_commands_processed_total[1m])", "refId": "A" } ],
+      "gridPos": { "x": 12, "y": 1, "w": 6, "h": 4 }
+    },
+    {
+      "type": "stat",
+      "title": "Evicted Keys",
+      "targets": [ { "expr": "rate(redis_evicted_keys_total[5m])", "refId": "A" } ],
+      "gridPos": { "x": 18, "y": 1, "w": 6, "h": 4 },
+      "colorMode": "critical"
+    },
+    {
+      "type": "timeseries",
+      "title": "Memory Consumption Over Time",
+      "targets": [ { "expr": "redis_memory_used_bytes / 1024 / 1024", "refId": "A" } ],
+      "gridPos": { "x": 0, "y": 6, "w": 12, "h": 6 },
+      "unit": "bytes"
+    },
+    {
+      "type": "timeseries",
+      "title": "Ops/sec Over Time",
+      "targets": [ { "expr": "rate(redis_commands_processed_total[1m])", "refId": "A" } ],
+      "gridPos": { "x": 12, "y": 6, "w": 12, "h": 6 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Keyspace Hits vs Misses",
+      "targets": [
+        { "expr": "rate(redis_keyspace_hits_total[5m])", "refId": "A", "legendFormat": "hits" },
+        { "expr": "rate(redis_keyspace_misses_total[5m])", "refId": "B", "legendFormat": "misses" }
+      ],
+      "gridPos": { "x": 0, "y": 12, "w": 12, "h": 6 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Connected Clients vs Blocked Clients",
+      "targets": [
+        { "expr": "redis_connected_clients", "refId": "A", "legendFormat": "connected" },
+        { "expr": "redis_blocked_clients", "refId": "B", "legendFormat": "blocked" }
+      ],
+      "gridPos": { "x": 12, "y": 12, "w": 12, "h": 6 }
+    }
+  ],
+  "schemaVersion": 27,
+  "style": "dark",
+  "tags": ["redis", "caching", "performance"],
+  "templating": { "list": [] },
+  "title": "Redis Overview",
+  "uid": "redis-overview-1",
+  "version": 1
+}

@@ -1,9 +1,11 @@
 import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
 import { OrderProxy } from '../proxy/order.proxy';
+import { Public } from '../common/decorators/public.decorator';
 
+@Public() // 🔓 This endpoint is completely public
 @Controller('orders')
 export class OrderController {
-  constructor(private readonly OrderProxy: OrderProxy) {}
+  constructor(private readonly OrderProxy: OrderProxy) { }
 
   @Post()
   create(@Body() body: any) {

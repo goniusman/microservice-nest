@@ -1,26 +1,74 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    // private readonly jwtService: JwtService,
+  ) { }
+
+  async create(createUserDto: CreateUserDto) {
+     try {
+
+      const existingUser =
+        await this.userRepository.findOne({
+          where: {
+            email: createUserDto.email,
+          },
+        });
+
+      if (existingUser) {
+        throw new ConflictException(
+          'Email already exists',
+        );
+      }
+ 
+      const hashedPassword =
+        await bcrypt.hash(
+          createUserDto.password,
+          10,
+        );
+
+      const user =
+        this.userRepository.create({
+          email: createUserDto.email,
+          password: hashedPassword,
+        });
+
+      await this.userRepository.save(user);
+
+      return {
+        message:
+          'User registered successfully',
+      };
+
+    } catch (error) {
+      throw error
+    }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return await this.userRepository.find()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    return await this.userRepository.findOneBy({"id": id});
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    return await this.userRepository.update(id, updateUserDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    return await this.userRepository.delete(id);
   }
+  
 }

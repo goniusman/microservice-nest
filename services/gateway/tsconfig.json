@@ -23,5 +23,7 @@
     "noFallthroughCasesInSwitch": false,
     "strict": true,
     "strictPropertyInitialization": false,
+    "sourceRoot": "/",
+    "inlineSources": true,
   }
 }

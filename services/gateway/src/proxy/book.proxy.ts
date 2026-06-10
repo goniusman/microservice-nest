@@ -1,6 +1,7 @@
-import { Injectable, UseGuards } from '@nestjs/common';
+import { Injectable, UseGuards, UseInterceptors } from '@nestjs/common';
 import axios from 'axios';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { GatewayAuthGuard } from '../common/guards/jwt-auth.guard';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 
 
@@ -8,11 +9,13 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 export class BookProxy {
   private baseUrl = process.env.BOOK_SERVICE_URL;
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(GatewayAuthGuard)
   create(data: any) {
     return axios.post(`${this.baseUrl}/books`, data).then(r => r.data);
   }
 
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30000)
   findAll() {
     return axios.get(`${this.baseUrl}/books`).then(r => r.data);
   }

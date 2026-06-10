@@ -29,6 +29,8 @@ jobs:
           - book
           - order
           - notification
+          - user
+          - review
 
     steps:
       - name: Checkout Code

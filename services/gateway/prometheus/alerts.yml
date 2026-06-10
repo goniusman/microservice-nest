@@ -1,0 +1,55 @@
+groups:
+  - name: host-health
+    rules:
+      # CPU > 85% for 10 minutes
+      - alert: HighCPUUsage
+        expr: (100 - avg by (instance)(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage > 85% for 10m (current: {{ $value | printf \"%.1f\" }}%)."
+
+      # Memory available < 10% for 10 minutes
+      - alert: MemoryPressure
+        expr: (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) < 0.10
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low available memory on {{ $labels.instance }}"
+          description: "Available memory < 10% for 10m."
+
+      # Disk available < 10% for 15 minutes (ignores tmpfs/overlay/snap/docker)
+      - alert: DiskSpaceLow
+        expr: |
+          (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs",mountpoint!~"/(run|snap|var/lib/docker.*)"} 
+           / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs",mountpoint!~"/(run|snap|var/lib/docker.*)"}) < 0.10
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }} ({{ $labels.mountpoint }})"
+          description: "Free disk < 10% for 15m."
+
+      # Load avg higher than number of CPUs for 15 minutes
+      - alert: SystemLoadHigh
+        expr: |
+          node_load1 / on(instance) group_left
+          count by (instance) (node_cpu_seconds_total{mode="idle"}) > 1.0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High system load on {{ $labels.instance }}"
+          description: "Load1 > vCPU count for 15m."
+
+      # - alert: AlwaysFiring
+      #   expr: vector(1)
+      #   for: 10s
+      #   labels:
+      #     severity: critical
+      #   annotations:
+      #     summary: "This is a test alert"
+      #     description: "This alert always fires"

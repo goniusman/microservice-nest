@@ -1,0 +1,708 @@
+{
+    "__inputs": [],
+    "__requires": [],
+    "annotations": { "list": [ { "builtIn": 1, "type": "dashboard" } ] },
+    "editable": true,
+    "gnetId": null,
+    "graphTooltip": 0,
+    "id": null,
+    "uid": "Unified_monitoring_dashboard_extended",
+    "title": "Unified Monitoring: NGINX + Redis + Linux + App",
+    "timezone": "browser",
+    "schemaVersion": 36,
+    "version": 1,
+    "refresh": "10s",
+    "panels": [
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 0
+        },
+        "id": 1,
+        "title": "NGINX: Active Connections",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "nginx_connections_active",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 6,
+          "y": 0
+        },
+        "id": 2,
+        "title": "NGINX: Reading",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "nginx_connections_reading",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 12,
+          "y": 0
+        },
+        "id": 3,
+        "title": "NGINX: Writing",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "nginx_connections_writing",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 18,
+          "y": 0
+        },
+        "id": 4,
+        "title": "NGINX: Waiting",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "nginx_connections_waiting",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 12,
+          "x": 0,
+          "y": 4
+        },
+        "id": 5,
+        "title": "NGINX: Requests/sec",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(nginx_requests_total[1m])",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 12,
+          "x": 12,
+          "y": 4
+        },
+        "id": 16,
+        "title": "NGINX: Status Codes",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(nginx_http_response_status_total[1m])",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 8
+        },
+        "id": 6,
+        "title": "Redis: Memory Used",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "redis_memory_used_bytes",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 6,
+          "y": 8
+        },
+        "id": 7,
+        "title": "Redis: Connected Clients",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "redis_connected_clients",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 12,
+          "y": 8
+        },
+        "id": 8,
+        "title": "Redis: Ops/sec",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(redis_commands_processed_total[1m])",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 18,
+          "y": 8
+        },
+        "id": 9,
+        "title": "Redis: Keyspace Miss Rate",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(redis_keyspace_misses_total[1m])",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 12
+        },
+        "id": 10,
+        "title": "Linux: CPU Usage (%)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "100 - (avg by(instance)(rate(node_cpu_seconds_total{mode='idle'}[5m])) * 100)",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 6,
+          "y": 12
+        },
+        "id": 11,
+        "title": "Linux: Memory Usage",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 12,
+          "y": 12
+        },
+        "id": 12,
+        "title": "Linux: Disk Space Used",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "node_filesystem_size_bytes - node_filesystem_free_bytes",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "Bps",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 18,
+          "y": 12
+        },
+        "id": 13,
+        "title": "Linux: Network In",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(node_network_receive_bytes_total[1m])",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 16
+        },
+        "id": 14,
+        "title": "App: Total Requests",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[1m])",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 6,
+          "y": 16
+        },
+        "id": 15,
+        "title": "App: Errors (5xx)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{status=~'5..'}[1m])",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "reqps",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 12,
+          "y": 16
+        },
+        "id": 17,
+        "title": "App: Errors (4xx)",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total{status=~'4..'}[1m])",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      },
+      {
+        "datasource": "Prometheus",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "color": {
+              "mode": "palette-classic"
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 18,
+          "y": 16
+        },
+        "id": 18,
+        "title": "App: Average Latency",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(http_request_duration_seconds_sum[1m]) / rate(http_request_duration_seconds_count[1m])",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "options": {
+          "legend": {
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        }
+      }
+    ],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    }
+}

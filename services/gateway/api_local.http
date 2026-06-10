@@ -22,6 +22,12 @@ content-type: application/json
 }
 
 ###
+GET http://localhost:3000/auth/profile HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNmQ1YWNlNy04NjhlLTRkN2UtYmI1Ny0xYTZiYTY2ZWFjNjQiLCJlbWFpbCI6Imdvbml1c21hbjYwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MTAxMDkwMywiZXhwIjoxNzgxNjE1NzAzfQ.GnAksulJKg2FgTwYIHPz_oy5J_h77stV2OEZi160_U8
+
+
+###
 POST http://localhost:3000/auth/refresh HTTP/1.1
 content-type: application/json
 
@@ -34,11 +40,6 @@ POST http://localhost:3000/auth/logout HTTP/1.1
 content-type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkMy0yODQ2LTQxYjEtOGVjMy1hNGIwODZjNDUwNzkiLCJlbWFpbCI6Imdvbml1c21hbjQwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MDgyOTgxNCwiZXhwIjoxNzgxNDM0NjE0fQ.Mvs9758YFaD48YmtEuVJEiCNd-AkqSZGIu2F9YBl1q0
 
-
-###
-GET http://localhost:3000/auth/profile HTTP/1.1
-content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkMy0yODQ2LTQxYjEtOGVjMy1hNGIwODZjNDUwNzkiLCJlbWFpbCI6Imdvbml1c21hbjQwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MDgyOTgxNCwiZXhwIjoxNzgxNDM0NjE0fQ.Mvs9758YFaD48YmtEuVJEiCNd-AkqSZGIu2F9YBl1q0
 
 ###( BooK Service)
 # GET http://localhost:3000/health/live HTTP/1.1

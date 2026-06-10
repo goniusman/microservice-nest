@@ -1,0 +1,98 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+  log_level: debug
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis_exporter:9121']
+      
+  - job_name: nestapp-logs
+
+    static_configs:
+      # - targets:
+      #     - localhost
+      #   labels:
+      #     job: nestjs
+      #     app: seenyor
+      #     service_name: seenyor
+      #     severity: seenyor
+      #     __path__: /logs/**/*.log
+          # __path__: /var/lib/docker/volumes/nestapp-logs/_data/**/*.log
+
+      - targets:
+          - localhost
+        labels:
+          job: nestapp-api-error
+          service_name: nestapp-api-error
+          severity: error
+          environment: production
+          __path__: /logs/error/*
+
+      - targets:
+          - localhost
+        labels:
+          job: nestapp-api-info
+          service_name: nestapp-api-info
+          severity: info
+          environment: production
+          __path__: /logs/info/*
+
+
+    # Optional: Uncomment if you're using structured log parsing
+    pipeline_stages:
+      - regex:
+          expression: '^\[BOOKVERSE] - (?P<ts>\d{2}-\d{2}-\d{4} \d{2}:\d{2}:\d{2})\s+'
+      - timestamp:
+          source: ts
+          format: '02-01-2006 15:04:05'
+          fallback_to_current_time: true
+
+
+
+
+
+# static_configs:
+#       - targets:
+#           - localhost
+#         labels:
+#           job: nestapp
+#           service_name: nestapp-api-error
+#           severity: error
+#           environment: production
+#           __path__: /app/logs/error/*-error.log
+
+#       - targets:
+#           - localhost
+#         labels:
+#           job: nestapp
+#           service_name: nestapp-api-info
+#           severity: info
+#           environment: production
+#           __path__: /app/logs/info/*-info.log
+
+#       - targets:
+#           - localhost
+#         labels:
+#           job: nestapp
+#           service_name: access
+#           severity: access
+#           environment: production
+#           __path__: /app/logs/access.log
+      
+#       - targets:
+#           - localhost
+#         labels:
+#           job: nestapp
+#           service_name: error
+#           severity: accesserror
+#           environment: production
+#           __path__: /app/logs/error.log
+

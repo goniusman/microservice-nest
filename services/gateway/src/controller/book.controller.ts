@@ -1,10 +1,12 @@
 import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
 import { BookProxy } from '../proxy/book.proxy';
+import { Public } from '../common/decorators/public.decorator';
 
 @Controller('books')
 export class BookController {
   constructor(private readonly bookProxy: BookProxy) {}
 
+  @Public() // 🔓 This endpoint is completely public
   @Post()
   create(@Body() body: any) {
     return this.bookProxy.create(body);
