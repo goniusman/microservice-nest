@@ -17,8 +17,12 @@ export class AppController {
 
   @Get('health/ready')
   ready() {
+
     return { status: 'ready' };
+    
   }
+
+
 
 
 
