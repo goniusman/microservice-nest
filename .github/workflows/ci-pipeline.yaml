@@ -54,10 +54,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Set image tag
+        id: vars
+        run: echo "sha_short=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+        
       - name: Debug
         run: |
           echo "Docker user: ${{ secrets.DOCKERHUB_USERNAME }}"
-          echo "Image: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ github.sha }}"
+          echo "Image: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:sha-${{ steps.vars.outputs.sha_short }}"
 
       - name: Login to Docker Hub
         if: steps.changes.outputs.changed == 'true'
@@ -75,7 +79,7 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:sha-${{ steps.vars.outputs.sha_short }}
 
       # ADD THIS STEP BELOW TO AUTOMATICALLY CLEAN UP OLD IMAGES
       - name: Clean up old Docker Hub tags (Keep Last 3)

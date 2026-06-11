@@ -57,8 +57,8 @@ export class LoggerInterceptor implements NestInterceptor {
                         url: originalUrl,
                         ip: ip,
                         userAgent: userAgent,
-                        requestBody: requestBodyString,
-                        responseBody: responseBodyString,
+                        // requestBody: requestBodyString,
+                        // responseBody: responseBodyString,
                         statusCode: statusCode,
                         durationMs: duration, // Add request duration
                         context: 'LoggerInterceptor'

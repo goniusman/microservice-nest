@@ -64,6 +64,9 @@ import { AllExceptionsFilter } from './common/utils/exceptions.filter';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         transports: [
+          new winston.transports.Console({
+            format: winston.format.json(),
+          }),
           new DailyRotateFile({
             level: 'info',
             filename: `logs/info/%DATE%-info.log`,
@@ -100,6 +103,7 @@ import { AllExceptionsFilter } from './common/utils/exceptions.filter';
               nestWinstonModuleUtilities.format.nestLike('BOOKVERSE', { prettyPrint: true }),
             ),
           }),
+
         ],
       }),
     }),
