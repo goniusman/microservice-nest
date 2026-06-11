@@ -56,9 +56,15 @@ jobs:
 
       - name: Set image tag
         id: vars
-        run: echo "sha=${GITHUB_SHA}" >> $GITHUB_OUTPUT
-        # run: echo "sha_short=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+        run: |
+          echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "SHORT_SHA=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
         
+      - name: Debug tags
+        run: |
+          echo "FULL SHA: ${{ steps.vars.outputs.sha }}"
+          echo "SHORT SHA: ${{ steps.vars.outputs.SHORT_SHA }}"  
+          
       - name: Debug
         run: |
           echo "Docker user: ${{ secrets.DOCKERHUB_USERNAME }}"
