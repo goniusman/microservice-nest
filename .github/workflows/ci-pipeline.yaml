@@ -64,7 +64,7 @@ jobs:
         run: |
           echo "FULL SHA: ${{ steps.vars.outputs.sha }}"
           echo "SHORT SHA: ${{ steps.vars.outputs.SHORT_SHA }}"  
-          
+
       - name: Debug
         run: |
           echo "Docker user: ${{ secrets.DOCKERHUB_USERNAME }}"
@@ -77,6 +77,18 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # - name: Build and Push Image
+      #   if: steps.changes.outputs.changed == 'true'
+      #   uses: docker/build-push-action@v6
+      #   with:
+      #     context: ./services/${{ matrix.service }}
+      #     file: ./services/${{ matrix.service }}/Dockerfile
+      #     push: true
+      #     tags: |
+      #       ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
+      #       ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ steps.vars.outputs.sha }}
+
+
       - name: Build and Push Image
         if: steps.changes.outputs.changed == 'true'
         uses: docker/build-push-action@v6
@@ -84,9 +96,16 @@ jobs:
           context: ./services/${{ matrix.service }}
           file: ./services/${{ matrix.service }}/Dockerfile
           push: true
+
+          platforms: linux/amd64
+
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ steps.vars.outputs.sha }}
+            docker.io/goniusman/${{ matrix.service }}:latest
+            docker.io/goniusman/${{ matrix.service }}:${{ steps.vars.outputs.sha }}
+
+          provenance: false
+          sbom: false
+
 
       # ADD THIS STEP BELOW TO AUTOMATICALLY CLEAN UP OLD IMAGES
       - name: Clean up old Docker Hub tags (Keep Last 3)
