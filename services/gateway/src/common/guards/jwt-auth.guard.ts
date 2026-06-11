@@ -46,7 +46,7 @@ export class GatewayAuthGuard implements CanActivate {
       request.headers['x-user-id'] = payload.sub;
       request.headers['x-user-roles'] = payload.role;
       // request.headers['x-user-roles'] = payload.roles.join(',');
-console.log(payload)
+      console.log(payload)
     } catch {
       throw new UnauthorizedException('Invalid or expired token');
     }
@@ -69,5 +69,5 @@ console.log(payload)
     // 2. Case-insensitive check for 'Bearer'
     return type?.toLowerCase() === 'bearer' ? token : undefined;
   }
-  
+
 }

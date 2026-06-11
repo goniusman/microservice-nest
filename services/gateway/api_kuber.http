@@ -8,7 +8,7 @@ POST http://localhost:80/auth/register HTTP/1.1
 content-type: application/json
 
 {
-    "email": "goniusman600@gmail.com",
+    "email": "goniusman2000@gmail.com",
     "password": "Osman@#1"
 }
 
@@ -26,7 +26,7 @@ POST http://localhost:80/auth/refresh HTTP/1.1
 content-type: application/json
 
 {
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkMy0yODQ2LTQxYjEtOGVjMy1hNGIwODZjNDUwNzkiLCJlbWFpbCI6Imdvbml1c21hbjQwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MDgyNjUyOCwiZXhwIjoxNzgxNDMxMzI4fQ.ibmT6NvaHDeGXeVfRI7MAEv15Z-ZUJAhJPhx86BJcsU"
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4Y2E4YzlhOS1mM2RkLTQ2ZDMtOWI5MC1lNDRjYTY5NTViMGMiLCJlbWFpbCI6Imdvbml1c21hbjYwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MTE4MTAzMSwiZXhwIjoxNzgxNzg1ODMxfQ.ylrYqekdlqUWeDq8MW19YOdPM03ehpJrcKkCRSfJjmE"
 }
 
 ###
@@ -63,7 +63,8 @@ GET http://localhost:80/books HTTP/1.1
 
 
 ###
-GET http://localhost:80/books/6a258e5e50be99bf757e1155 HTTP/1.1
+GET http://localhost:80/books/6a2aaa9c4b0cb9dba479cbcd HTTP/1.1
+
 
 ###
 PUT http://localhost:80/books/6a258e5e50be99bf757e1155 HTTP/1.1
@@ -85,10 +86,12 @@ content-type: application/json
 ### (Order Service)
 POST http://localhost:80/orders HTTP/1.1
 content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkMy0yODQ2LTQxYjEtOGVjMy1hNGIwODZjNDUwNzkiLCJlbWFpbCI6Imdvbml1c21hbjQwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MDgyOTgxNCwiZXhwIjoxNzgxNDM0NjE0fQ.Mvs9758YFaD48YmtEuVJEiCNd-AkqSZGIu2F9YBl1q0
+
 
 {
-    "userId": "2",
-    "bookId": "2",
+    "userId": "fc931cd3-2846-41b1-8ec3-a4b086c45079",
+    "bookId": "6a2aaa9c4b0cb9dba479cbcd",
     "price": 23
 }
 
