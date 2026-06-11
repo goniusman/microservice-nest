@@ -102,9 +102,14 @@ jobs:
           tags: |
             docker.io/goniusman/${{ matrix.service }}:latest
             docker.io/goniusman/${{ matrix.service }}:${{ steps.vars.outputs.sha }}
-
           provenance: false
           sbom: false
+
+      - name: List build outputs (debug)
+        run: |
+          echo "Tags:"
+          echo "${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest"
+          echo "${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ steps.vars.outputs.sha }}"
 
 
       # ADD THIS STEP BELOW TO AUTOMATICALLY CLEAN UP OLD IMAGES
