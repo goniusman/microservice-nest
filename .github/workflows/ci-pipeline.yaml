@@ -62,7 +62,7 @@ jobs:
       - name: Debug
         run: |
           echo "Docker user: ${{ secrets.DOCKERHUB_USERNAME }}"
-          echo "Image: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:sha-${{ steps.vars.outputs.sha }}"
+          echo "Image: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ steps.vars.outputs.sha }}"
 
       - name: Login to Docker Hub
         if: steps.changes.outputs.changed == 'true'
@@ -80,7 +80,7 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:sha-${{ steps.vars.outputs.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ steps.vars.outputs.sha }}
 
       # ADD THIS STEP BELOW TO AUTOMATICALLY CLEAN UP OLD IMAGES
       - name: Clean up old Docker Hub tags (Keep Last 3)
@@ -120,7 +120,7 @@ jobs:
           token: ${{ secrets.GITOPS_PAT }}
           repository: goniusman/GitOps  # Change this if your config repo has a different name
           event-type: update-image
-          client-payload: '{"service": "${{ matrix.service }}", "sha": "sha-${{ steps.vars.outputs.sha }}"}'
+          client-payload: '{"service": "${{ matrix.service }}", "sha": "${{ steps.vars.outputs.sha }}"}'
 
 
 
