@@ -29,8 +29,8 @@ export class OrdersService {
         orderId: order.id,
         userId: dto.userId,
         bookId: dto.bookId,
-        price: dto.price,
-      },
+        price: dto.price
+      }
     );
 
     return order;
