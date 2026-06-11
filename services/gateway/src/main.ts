@@ -4,7 +4,6 @@ import { otelSDK } from './tracing';
 // Start the OpenTelemetry SDK before any other imports!
 otelSDK.start();
 
-
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { WINSTON_MODULE_NEST_PROVIDER, WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -20,7 +19,6 @@ import { ConfigService } from '@nestjs/config';
 import * as compression from 'compression';
 import { SwaggerModule } from '@nestjs/swagger';
 import { config } from './common/config/swagger.config';
-
 
 
 async function bootstrap() {
@@ -55,7 +53,6 @@ async function bootstrap() {
   // const slackService = new SlackService(configService)
   app.useGlobalFilters(new AllExceptionsFilter(logger, configService));
 
-
   // Configure CORS centrally 
   // app.enableCors({
   //   origin: ['https://yourfrontend.com'], 
@@ -74,11 +71,7 @@ async function bootstrap() {
   logger.log(`Application is running on port ${configService.get<string>('PORT')}`, 'Bootstrap')
   await app.listen(configService.get<string>('PORT') ?? 3000)
 
-
-
 }
 bootstrap();
 
-
-// testings is for docker hub...
 
