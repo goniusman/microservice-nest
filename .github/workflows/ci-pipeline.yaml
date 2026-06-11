@@ -121,24 +121,33 @@ jobs:
           REPO: ${{ matrix.service }}
         run: |
           echo "Authenticating with Docker Hub API..."
-          TOKEN=$(curl -s -H "Content-Type: application/json" -X POST -d '{"username": "'"$USERNAME"'", "password": "'"$PASSWORD"'"}' https://hub.docker.com/v2/users/login/ | jq -r .token)
-          
+
+          TOKEN=$(curl -s -H "Content-Type: application/json" \
+            -X POST \
+            -d '{"username": "'"$USERNAME"'", "password": "'"$PASSWORD"'"}' \
+            https://hub.docker.com/v2/users/login/ | jq -r .token)
+
           if [ "$TOKEN" = "null" ] || [ -z "$TOKEN" ]; then
-            echo "::error::Failed to authenticate with Docker Hub. Check your credentials."
+            echo "::error::Failed to authenticate"
             exit 1
           fi
 
-          echo "Fetching image tags for $USERNAME/$REPO..."
-          # Retrieves up to 100 tags, ordered by last updated (newest first), and filters out 'latest'
-          TAGS=$(curl -s -H "Authorization: JWT $TOKEN" "https://hub.docker.com/v2/repositories/$USERNAME/$REPO/tags/?page_size=100&ordering=-last_updated" \
-            | jq -r '.results[] | select(.name != "latest") | .name')
+          echo "Fetching tags..."
 
-          # 'tail -n +4' skips the first 3 lines (the 3 newest tags) and outputs the rest for deletion
-          echo "$TAGS" | tail -n +4 | while read -r TAG; do
-            if [ -n "$TAG" ]; then
-              echo "Deleting old stale tag: $TAG"
-              curl -s -X DELETE -H "Authorization: JWT $TOKEN" "https://hub.docker.com/v2/repositories/$USERNAME/$REPO/tags/$TAG/"
-            fi
+          curl -s -H "Authorization: JWT $TOKEN" \
+            "https://hub.docker.com/v2/repositories/$USERNAME/$REPO/tags/?page_size=100&ordering=-last_updated" \
+          | jq -r '.results
+            | map(select(.name != "latest"))
+            | .[:]
+            | .[3:] 
+            | .[].name' \
+          | while read -r TAG; do
+              if [ -n "$TAG" ]; then
+                echo "Deleting OLD tag: $TAG"
+                curl -s -X DELETE \
+                  -H "Authorization: JWT $TOKEN" \
+                  "https://hub.docker.com/v2/repositories/$USERNAME/$REPO/tags/$TAG/"
+              fi
           done
       
       
