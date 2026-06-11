@@ -100,8 +100,8 @@ jobs:
           platforms: linux/amd64
 
           tags: |
-            docker.io/goniusman/${{ matrix.service }}:latest
             docker.io/goniusman/${{ matrix.service }}:${{ steps.vars.outputs.sha }}
+            docker.io/goniusman/${{ matrix.service }}:latest
           provenance: false
           sbom: false
 
