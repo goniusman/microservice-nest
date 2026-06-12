@@ -1,9 +1,9 @@
-// metrics/metrics.registry.ts
-import { Registry, collectDefaultMetrics } from 'prom-client';
+// // metrics/metrics.registry.ts
+// import { Registry, collectDefaultMetrics } from 'prom-client';
 
-export const register = new Registry();
+// export const register = new Registry();
 
-collectDefaultMetrics({ register });
+// collectDefaultMetrics({ register });
 
 
 

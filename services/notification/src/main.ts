@@ -4,7 +4,7 @@ otelSDK.start();
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { startMetricsServer } from './metrics/metrics.server';
+// import { startMetricsServer } from './metrics/metrics.server';
 
 
 async function bootstrap() {
@@ -14,7 +14,7 @@ async function bootstrap() {
   );
 
     // 2. Start metrics server separately
-  await startMetricsServer(3006);
+  // await startMetricsServer(3006);
 }
 
 bootstrap();
