@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ReviewModule } from './review/review.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 @Module({
   imports: [
@@ -14,7 +15,9 @@ import { ConfigModule } from '@nestjs/config';
       process.env.MONGO_URL ||
       'mongodb://localhost:27017/bookverse_books',
     ),
-
+    PrometheusModule.register({
+      path: '/metrics', // The path Prometheus will scan
+    }),
     ReviewModule,
 
   ],

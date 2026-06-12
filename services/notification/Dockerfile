@@ -6,7 +6,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # 'npm ci' is faster and more strict than 'npm install' for automated builds
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 # Copy all your NestJS source code files
 COPY . .

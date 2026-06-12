@@ -3,7 +3,7 @@ import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) { }
 
   @Get()
   getHello(): string {
@@ -19,5 +19,10 @@ export class AppController {
   ready() {
     return { status: 'ready' };
   }
+
+  // @Get('/metrics')
+  // getMetrics() {
+  //   return this.prometheusService.getMetrics();
+  // }
 
 }

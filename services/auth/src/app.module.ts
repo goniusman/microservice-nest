@@ -7,6 +7,7 @@ import { getTypeOrmConfig } from './config/typeorm.config';
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 @Module({
   imports: [
@@ -19,9 +20,12 @@ import { AppService } from './app.service';
       useFactory: getTypeOrmConfig,
     }),
 
+    PrometheusModule.register({
+      path: '/metrics', // The path Prometheus will scan
+    }),
     AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService]
 })
-export class AppModule {}
+export class AppModule { }

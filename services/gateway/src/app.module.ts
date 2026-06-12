@@ -32,6 +32,7 @@ import { PromModule } from '@digikare/nestjs-prom'
 import { utilities as nestWinstonModuleUtilities } from 'nest-winston'
 import { LoggerInterceptor } from './common/interceptors/logger.Interceptor';
 import { AllExceptionsFilter } from './common/utils/exceptions.filter';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 
 @Module({
@@ -108,7 +109,9 @@ import { AllExceptionsFilter } from './common/utils/exceptions.filter';
       }),
     }),
 
-
+    PrometheusModule.register({
+      path: '/metrics', // The path Prometheus will scan
+    }),
 
   ],
   controllers: [AuthController, BookController, OrderController, AppController],

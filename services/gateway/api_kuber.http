@@ -88,7 +88,6 @@ POST http://localhost:80/orders HTTP/1.1
 content-type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkMy0yODQ2LTQxYjEtOGVjMy1hNGIwODZjNDUwNzkiLCJlbWFpbCI6Imdvbml1c21hbjQwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MDgyOTgxNCwiZXhwIjoxNzgxNDM0NjE0fQ.Mvs9758YFaD48YmtEuVJEiCNd-AkqSZGIu2F9YBl1q0
 
-
 {
     "userId": "fc931cd3-2846-41b1-8ec3-a4b086c45079",
     "bookId": "6a2aaa9c4b0cb9dba479cbcd",
@@ -99,15 +98,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkM
 GET http://localhost:80/orders HTTP/1.1
 
 ####
-GET http://localhost:80/orders/6a2595508b61bac01d214980 HTTP/1.1
+GET http://localhost:80/orders/6a2aab67e78144ae06f8126e HTTP/1.1
 
 ####
-PUT http://localhost:80/orders/6a2595508b61bac01d214980 HTTP/1.1
+PUT http://localhost:80/orders/6a2aac55e78144ae06f81270 HTTP/1.1
 content-type: application/json
 
 {
-    "userId": "2",
-    "bookId": "2",
+    // "userId": "2",
+    // "bookId": "2",
     "price": 33
 }
 
