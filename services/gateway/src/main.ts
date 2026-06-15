@@ -19,7 +19,12 @@ import { ConfigService } from '@nestjs/config';
 import * as compression from 'compression';
 import { SwaggerModule } from '@nestjs/swagger';
 import { config } from './common/config/swagger.config';
+import { randomUUID } from 'crypto';
 
+
+function generateId() {
+  return randomUUID();
+}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -46,7 +51,7 @@ async function bootstrap() {
   // app.enableCors(CORS_CONFIG)
   // app.setGlobalPrefix(APP_ROUTE_PREFIX)
   // app.enableVersioning({ defaultVersion: '1', type: VersioningType.URI })
-  
+
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER))
   // app.useGlobalFilters(new CustomValidationFilter())
   app.useGlobalInterceptors(new LoggerInterceptor(logger))
@@ -62,6 +67,21 @@ async function bootstrap() {
   // });
 
   // await app.listen(process.env.PORT ?? 3000);
+
+
+  app.use((req, res, next) => {
+    const traceId = req.headers['x-trace-id'] || generateId();
+
+    req['traceId'] = traceId;
+
+    console.log({
+      traceId,
+      path: req.path,
+      service: process.env.OTEL_SERVICE_NAME,
+    });
+
+    next();
+  });
 
   // app.use(compression());
   const expressApp = app.getHttpAdapter().getInstance();

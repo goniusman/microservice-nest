@@ -1,19 +1,19 @@
-GET http://localhost:80/health/live HTTP/1.1
+GET http://gateway.local/health/live HTTP/1.1
 
 ###
-GET http://localhost:80/health/ready HTTP/1.1
+GET http://gateway.local/health/ready HTTP/1.1
 
 ### (Auth Service)
-POST http://localhost:80/auth/register HTTP/1.1
+POST http://gateway.local/auth/register HTTP/1.1
 content-type: application/json
 
 {
-    "email": "goniusman2000@gmail.com",
+    "email": "goniusman7000@gmail.com",
     "password": "Osman@#1"
 }
 
 ###
-POST http://localhost:80/auth/login HTTP/1.1
+POST http://gateway.local/auth/login HTTP/1.1
 content-type: application/json
 
 {
@@ -22,7 +22,7 @@ content-type: application/json
 }
 
 ###
-POST http://localhost:80/auth/refresh HTTP/1.1
+POST http://gateway.local/auth/refresh HTTP/1.1
 content-type: application/json
 
 {
@@ -30,23 +30,23 @@ content-type: application/json
 }
 
 ###
-POST http://localhost:80/auth/logout HTTP/1.1
+POST http://gateway.local/auth/logout HTTP/1.1
 content-type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkMy0yODQ2LTQxYjEtOGVjMy1hNGIwODZjNDUwNzkiLCJlbWFpbCI6Imdvbml1c21hbjQwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MDgyOTgxNCwiZXhwIjoxNzgxNDM0NjE0fQ.Mvs9758YFaD48YmtEuVJEiCNd-AkqSZGIu2F9YBl1q0
 
 
 ###
-GET http://localhost:80/auth/profile HTTP/1.1
+GET http://gateway.local/auth/profile HTTP/1.1
 content-type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkMy0yODQ2LTQxYjEtOGVjMy1hNGIwODZjNDUwNzkiLCJlbWFpbCI6Imdvbml1c21hbjQwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MDgyOTgxNCwiZXhwIjoxNzgxNDM0NjE0fQ.Mvs9758YFaD48YmtEuVJEiCNd-AkqSZGIu2F9YBl1q0
 
 ###( BooK Service)
-# GET http://localhost:80/health/live HTTP/1.1
+# GET http://gateway.local/health/live HTTP/1.1
 # ###
-# GET http://localhost:80/health/ready HTTP/1.1
+# GET http://gateway.local/health/ready HTTP/1.1
 
 ###
-POST http://localhost:80/books HTTP/1.1
+POST http://gateway.local/books HTTP/1.1
 content-type: application/json
 authorization: 
 
@@ -59,15 +59,15 @@ authorization:
 }
 
 ####
-GET http://localhost:80/books HTTP/1.1
+GET http://gateway.local/books HTTP/1.1
 
 
 ###
-GET http://localhost:80/books/6a2aaa9c4b0cb9dba479cbcd HTTP/1.1
+GET http://gateway.local/books/6a2aaa9c4b0cb9dba479cbcd HTTP/1.1
 
 
 ###
-PUT http://localhost:80/books/6a258e5e50be99bf757e1155 HTTP/1.1
+PUT http://gateway.local/books/6a258e5e50be99bf757e1155 HTTP/1.1
 content-type: application/json
 
 {
@@ -79,29 +79,29 @@ content-type: application/json
 }
 
 ####
-DELETE http://localhost:80/books/6a1bdebe614ce908eaa87fad HTTP/1.1
+DELETE http://gateway.local/books/6a1bdebe614ce908eaa87fad HTTP/1.1
 content-type: application/json
 
 
 ### (Order Service)
-POST http://localhost:80/orders HTTP/1.1
+POST http://gateway.local/orders HTTP/1.1
 content-type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkMy0yODQ2LTQxYjEtOGVjMy1hNGIwODZjNDUwNzkiLCJlbWFpbCI6Imdvbml1c21hbjQwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MDgyOTgxNCwiZXhwIjoxNzgxNDM0NjE0fQ.Mvs9758YFaD48YmtEuVJEiCNd-AkqSZGIu2F9YBl1q0
 
 {
     "userId": "fc931cd3-2846-41b1-8ec3-a4b086c45079",
     "bookId": "6a2aaa9c4b0cb9dba479cbcd",
-    "price": 23
+    "price": 345
 }
 
 ####
-GET http://localhost:80/orders HTTP/1.1
+GET http://gateway.local/orders HTTP/1.1
 
 ####
-GET http://localhost:80/orders/6a2aab67e78144ae06f8126e HTTP/1.1
+GET http://gateway.local/orders/6a2aab67e78144ae06f8126e HTTP/1.1
 
 ####
-PUT http://localhost:80/orders/6a2aac55e78144ae06f81270 HTTP/1.1
+PUT http://gateway.local/orders/6a2aac55e78144ae06f81270 HTTP/1.1
 content-type: application/json
 
 {
@@ -111,7 +111,7 @@ content-type: application/json
 }
 
 ####
-DELETE http://localhost:80/orders/6a1bdebe614ce908eaa87fad HTTP/1.1
+DELETE http://gateway.local/orders/6a1bdebe614ce908eaa87fad HTTP/1.1
 content-type: application/json
 
 
