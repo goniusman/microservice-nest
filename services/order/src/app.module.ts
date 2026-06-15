@@ -16,7 +16,7 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
     }),
     MongooseModule.forRoot(
       process.env.MONGO_URL ||
-      'mongodb://localhost:27018/bookverse_books',
+      'mongodb://localhost:27017/bookverse_orders',
     ),
     OrdersModule
   ],
