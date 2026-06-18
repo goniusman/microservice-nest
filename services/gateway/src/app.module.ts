@@ -21,7 +21,6 @@ import {
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { CacheModule } from '@nestjs/cache-manager';
 import { JwtModule } from '@nestjs/jwt';
-import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
 import { GatewayAuthGuard } from './common/guards/jwt-auth.guard';
 // import { MongoExceptionFilter } from './common/utils/MongoExceptionFilter';
@@ -33,6 +32,7 @@ import { utilities as nestWinstonModuleUtilities } from 'nest-winston'
 import { LoggerInterceptor } from './common/interceptors/logger.Interceptor';
 import { AllExceptionsFilter } from './common/utils/exceptions.filter';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { HealthModule } from './health/health.module';
 
 
 @Module({
@@ -112,6 +112,8 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
     PrometheusModule.register({
       path: '/metrics', // The path Prometheus will scan
     }),
+
+    HealthModule,
 
   ],
   controllers: [AuthController, BookController, OrderController, AppController],

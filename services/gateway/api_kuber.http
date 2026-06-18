@@ -8,7 +8,7 @@ POST http://gateway.local/auth/register HTTP/1.1
 content-type: application/json
 
 {
-    "email": "goniusman7000@gmail.com",
+    "email": "goniusman1000@gmail.com",
     "password": "Osman@#1"
 }
 
@@ -63,11 +63,11 @@ GET http://gateway.local/books HTTP/1.1
 
 
 ###
-GET http://gateway.local/books/6a2aaa9c4b0cb9dba479cbcd HTTP/1.1
+GET http://gateway.local/books/6a33dda3633beb4145b9bbef HTTP/1.1
 
 
 ###
-PUT http://gateway.local/books/6a258e5e50be99bf757e1155 HTTP/1.1
+PUT http://gateway.local/books/6a33dda3633beb4145b9bbef HTTP/1.1
 content-type: application/json
 
 {
