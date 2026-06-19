@@ -8,7 +8,7 @@ POST http://gateway.local/auth/register HTTP/1.1
 content-type: application/json
 
 {
-    "email": "goniusman1000@gmail.com",
+    "email": "goniusman10400@gmail.com",
     "password": "Osman@#1"
 }
 
@@ -17,7 +17,7 @@ POST http://gateway.local/auth/login HTTP/1.1
 content-type: application/json
 
 {
-    "email": "goniusman600@gmail.com",
+    "email": "goniusman10400@gmail.com",
     "password": "Osman@#1"
 }
 
@@ -38,7 +38,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkM
 ###
 GET http://gateway.local/auth/profile HTTP/1.1
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkMy0yODQ2LTQxYjEtOGVjMy1hNGIwODZjNDUwNzkiLCJlbWFpbCI6Imdvbml1c21hbjQwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MDgyOTgxNCwiZXhwIjoxNzgxNDM0NjE0fQ.Mvs9758YFaD48YmtEuVJEiCNd-AkqSZGIu2F9YBl1q0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxN2FiYmYyMC1kMWU4LTQ4NTgtODA5MS00ZmRhYzU1NWRkYjEiLCJlbWFpbCI6Imdvbml1c21hbjEwNDAwQGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzgxODUwNjU4LCJleHAiOjE3ODI0NTU0NTh9.l3MyswPZlLWPaY4Ix6IfDJFzxhwjj0-LLma81mIP95o
 
 ###( BooK Service)
 # GET http://gateway.local/health/live HTTP/1.1

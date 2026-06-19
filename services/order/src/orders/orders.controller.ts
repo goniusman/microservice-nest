@@ -6,6 +6,7 @@ import {
   Param,
   Put,
   Delete,
+  Headers
 } from '@nestjs/common';
 
 import { OrdersService } from './orders.service';
@@ -15,10 +16,17 @@ import { CreateOrderDto } from './dto/create-order.dto';
 export class OrdersController {
   constructor(
     private readonly ordersService: OrdersService,
-  ) {}
+  ) { }
 
   @Post()
-  create(@Body() dto: CreateOrderDto) {
+  create(
+    @Headers('x-user-id') userId: string,
+    @Headers('x-user-email') userEmail: string,
+    @Headers('x-user-role') userRole: string,
+    @Body() dto: CreateOrderDto) {
+
+
+    console.log(`User ${userEmail} (${userId}) with role ${userRole} is making an order!`);
     return this.ordersService.create(dto);
   }
 
@@ -27,7 +35,7 @@ export class OrdersController {
     return this.ordersService.findAll();
   }
 
-   @Get(':id')
+  @Get(':id')
   findOne(@Param('id') id: string) {
     return this.ordersService.findOne(id);
   }

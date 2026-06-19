@@ -21,7 +21,7 @@ POST http://localhost:3001/auth/login HTTP/1.1
 content-type: application/json
 
 {
-    "email": "goniusman400@gmail.com",
+    "email": "goniusman300@gmail.com",
     "password": "Osman@#1"
 }
 
@@ -44,6 +44,10 @@ GET http://localhost:3001/auth/profile HTTP/1.1
 content-type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYzkzMWNkMy0yODQ2LTQxYjEtOGVjMy1hNGIwODZjNDUwNzkiLCJlbWFpbCI6Imdvbml1c21hbjQwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MDgyOTgxNCwiZXhwIjoxNzgxNDM0NjE0fQ.Mvs9758YFaD48YmtEuVJEiCNd-AkqSZGIu2F9YBl1q0
 
+###
+GET http://localhost:3001/auth/validate-gateway HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjNTZlZDE3Ny0xZjUwLTRkNTktODNmYS0yM2QyZWJmMjc5NDEiLCJlbWFpbCI6Imdvbml1c21hbjMwMEBnbWFpbC5jb20iLCJyb2xlIjoiVVNFUiIsImlhdCI6MTc4MTg2NDY3OCwiZXhwIjoxNzgyNDY5NDc4fQ.JvUxk5-S2M11xRx-489CD9qKmIkbqKS0qwpRc6ePo68
 
 
 ###

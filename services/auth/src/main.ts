@@ -26,15 +26,12 @@ async function bootstrap() {
 
   app.use((req, res, next) => {
     const traceId = req.headers['x-trace-id'] || generateId();
-
     req['traceId'] = traceId;
-
     console.log({
       traceId,
       path: req.path,
       service: process.env.OTEL_SERVICE_NAME,
     });
-
     next();
   });
 
