@@ -4,10 +4,41 @@ otelSDK.start();
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-
+import { randomUUID } from 'crypto'
+import { ValidationPipe } from '@nestjs/common';
+import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { GlobalExceptionFilter } from './common/interceptors/http-exception.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3002);
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
+
+  function generateId() {
+    return randomUUID();
+  }
+
+  app.use((req, res, next) => {
+    const traceId = req.headers['x-trace-id'] || generateId();
+    req['traceId'] = traceId;
+    console.log({
+      traceId,
+      path: req.path,
+      service: process.env.OTEL_SERVICE_NAME,
+    });
+    next();
+  });
+
+  app.useGlobalInterceptors(new TransformInterceptor());
+  app.useGlobalFilters(new GlobalExceptionFilter());
+  const port = process.env.PORT || 3002;
+  await app.listen(port);
+  console.log(`🚀 Book Application is running on: ${port}`);
+
 }
 
 bootstrap();

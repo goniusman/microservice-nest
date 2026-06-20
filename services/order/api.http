@@ -12,26 +12,27 @@ content-type: application/json
 
 {
     "userId": "1",
-    "bookId": "1",
-    "price": 23
+    "bookId": "6a36a14bf130e619a183136b",
+    "price": 23,
+    "quantity": 5
 }
 
 ####
 GET http://localhost:3003/orders/ HTTP/1.1
 
 ####
-GET http://localhost:3003/orders/6a1bdebe614ce908eaa87fad HTTP/1.1
+GET http://localhost:3003/orders/6a36c2aa2cce04886bdf2749 HTTP/1.1
 
 ####
-PUT http://localhost:3003/orders/6a1bdebe614ce908eaa87fad HTTP/1.1
+PUT http://localhost:3003/orders/6a36c2aa2cce04886bdf2749 HTTP/1.1
 content-type: application/json
 
 {
     "userId": "2",
-    "bookId": "2",
+    "bookId": "6a36a14bf130e619a183136b",
     "price": 23
 }
 
 ####
-DELETE http://localhost:3003/orders/6a1bdebe614ce908eaa87fad HTTP/1.1
+DELETE http://localhost:3003/orders/6a36c2aa2cce04886bdf2749 HTTP/1.1
 content-type: application/json

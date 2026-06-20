@@ -5,6 +5,8 @@ import { OrdersModule } from './orders/orders.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -12,17 +14,16 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
       isGlobal: true,
     }),
     PrometheusModule.register({
-      path: '/metrics', // The path Prometheus will scan
+      path: '/metrics',
     }),
     MongooseModule.forRoot(
       process.env.MONGO_URL ||
       'mongodb://localhost:27017/bookverse_orders',
     ),
-    OrdersModule
+    OrdersModule,
+    HealthModule
   ],
   controllers: [AppController],
-  providers: [
-    AppService
-  ],
+  providers: [AppService],
 })
 export class AppModule { }

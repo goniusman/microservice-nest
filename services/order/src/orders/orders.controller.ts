@@ -11,6 +11,7 @@ import {
 
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { EventPattern, Payload } from '@nestjs/microservices';
 
 @Controller('orders')
 export class OrdersController {
@@ -24,10 +25,9 @@ export class OrdersController {
     @Headers('x-user-email') userEmail: string,
     @Headers('x-user-role') userRole: string,
     @Body() dto: CreateOrderDto) {
-
-
     console.log(`User ${userEmail} (${userId}) with role ${userRole} is making an order!`);
-    return this.ordersService.create(dto);
+    console.log(dto)
+    return this.ordersService.placeOrder(dto);
   }
 
   @Get()
@@ -49,6 +49,5 @@ export class OrdersController {
   delete(@Param('id') id: string) {
     return this.ordersService.delete(id);
   }
-
 
 }

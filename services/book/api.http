@@ -9,6 +9,7 @@ content-type: application/json
 
 {
     "title": " Last Book",
+    "quantity": 100,
     "author": "Osman",
     "description": "wow. interesting description is here",
     "price": 23,

@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getTypeOrmConfig } from './common/config/typeorm.config';
 import { UsersModule } from './users/users.module';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -19,8 +20,8 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
       inject: [ConfigService],
       useFactory: getTypeOrmConfig,
     }),
-
-    UsersModule
+    UsersModule,
+    HealthModule
   ],
   controllers: [AppController],
   providers: [AppService],

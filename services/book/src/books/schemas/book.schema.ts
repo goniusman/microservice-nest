@@ -17,6 +17,9 @@ export class Book {
   @Prop({ required: true })
   price: number;
 
+  @Prop({ required: true })
+  quantity: number;
+
   @Prop({ default: true })
   isPublished: boolean;
 }

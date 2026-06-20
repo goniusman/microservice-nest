@@ -5,6 +5,16 @@ export type OrderDocument = Order & Document;
 
 @Schema({ timestamps: true })
 export class Order {
+
+  @Prop({ 
+    type: String,
+    required: true, 
+    unique: true, 
+    index: true,
+    default: () => `order_${Date.now()}` 
+  })
+  orderId: string;
+
   @Prop({ required: true })
   userId: string;
 

@@ -5,6 +5,7 @@ import { ReviewModule } from './review/review.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
       path: '/metrics', // The path Prometheus will scan
     }),
     ReviewModule,
-
+    HealthModule
   ],
   controllers: [AppController],
   providers: [AppService],

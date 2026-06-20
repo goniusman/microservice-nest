@@ -2,12 +2,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { getTypeOrmConfig } from './config/typeorm.config';
+import { getTypeOrmConfig } from './common/config/typeorm.config';
 
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PrometheusModule } from '@willsoto/nestjs-prometheus';
       path: '/metrics', // The path Prometheus will scan
     }),
     AuthModule,
+    HealthModule
   ],
   controllers: [AppController],
   providers: [AppService]

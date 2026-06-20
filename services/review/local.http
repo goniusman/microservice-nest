@@ -18,7 +18,7 @@ content-type: application/json
 GET http://localhost:3005/review HTTP/1.1
 
 ###
-PATCH http://localhost:3005/review/6a28fe8284fb75783fdae794 HTTP/1.1
+PATCH http://localhost:3005/review/6a36c49f5f07c97684eab7e1 HTTP/1.1
 content-type: application/json
 
 {
@@ -29,7 +29,7 @@ content-type: application/json
 }
 
 ###
-GET http://localhost:3005/review/6a28fe4884fb75783fdae792 HTTP/1.1
+GET http://localhost:3005/review/6a36c49f5f07c97684eab7e1 HTTP/1.1
 
 ###
 DELETE http://localhost:3005/review/6a28fe4884fb75783fdae792 HTTP/1.1

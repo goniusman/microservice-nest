@@ -8,10 +8,10 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 
+import { GlobalExceptionFilter } from './common/interceptors/http-exception.filter';
+import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
-function generateId() {
-  return randomUUID();
-}
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,6 +23,9 @@ async function bootstrap() {
     }),
   );
 
+  function generateId() {
+    return randomUUID();
+  }
 
   app.use((req, res, next) => {
     const traceId = req.headers['x-trace-id'] || generateId();
@@ -35,7 +38,11 @@ async function bootstrap() {
     next();
   });
 
-  await app.listen(process.env.PORT ?? 3001);
+  app.useGlobalInterceptors(new TransformInterceptor());
+  app.useGlobalFilters(new GlobalExceptionFilter());
+  const port = process.env.PORT || 3001;
+  await app.listen(port);
+  console.log(`🚀 Auth Application is running on: ${port}`);
 }
 bootstrap();
 

@@ -4,19 +4,56 @@ otelSDK.start();
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-// import { startMetricsServer } from './metrics/metrics.server';
-
+import {randomUUID} from 'crypto'
 
 async function bootstrap() {
+  // Bootstraps using whatever configuration is defined in AppModule
   const app = await NestFactory.createApplicationContext(AppModule);
-  console.log(
-    '📨 Notification Service running (event consumer only)',
-  );
+  // const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+  //   transport: Transport.RMQ,
+  //   options: {
+  //     urls: [`${process.env.RABBITMQ_URL}`],
+  //     queue: 'notification_email_queue', // Isolated queue
+  //     queueOptions: {
+  //       channelOptions: {
+  //         exchange: 'bookverse_global_exchange', // Binds to the same global exchange
+  //         exchangeType: 'fanout',
+  //       },
+  //     },
+  //   },
+  // });
 
-    // 2. Start metrics server separately
-  // await startMetricsServer(3006);
+
+  // app.useGlobalPipes(
+  //   new ValidationPipe({
+  //     whitelist: true,
+  //     transform: true,
+  //   }),
+  // );
+
+  // function generateId() {
+  //   return randomUUID();
+  // }
+
+  // app.use((req, res, next) => {
+  //   const traceId = req.headers['x-trace-id'] || generateId();
+  //   req['traceId'] = traceId;
+  //   console.log({
+  //     traceId,
+  //     path: req.path,
+  //     service: process.env.OTEL_SERVICE_NAME,
+  //   });
+  //   next();
+  // });
+
+  // app.useGlobalInterceptors(new TransformInterceptor());
+  // app.useGlobalFilters(new GlobalExceptionFilter());
+  // const port = process.env.PORT || 3002;
+  // await app.listen(port);
+  // console.log(`🚀 Book Application is running on: ${port}`);
+  console.log('📨 Notification Service running (event consumer only)')
+
 }
-
 bootstrap();
 
 
