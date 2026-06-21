@@ -18,7 +18,7 @@ import { HealthModule } from './health/health.module';
       'mongodb://localhost:27017/bookverse_books',
     ),
     PrometheusModule.register({
-      path: '/metrics', // The path Prometheus will scan
+      path: '/metrics', 
     }),
     BooksModule,
     HealthModule

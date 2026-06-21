@@ -14,7 +14,7 @@ import { HealthModule } from './health/health.module';
       isGlobal: true,
     }),
     PrometheusModule.register({
-      path: '/metrics', // The path Prometheus will scan
+      path: '/metrics', 
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
