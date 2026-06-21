@@ -4,7 +4,7 @@ otelSDK.start();
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-// import {randomUUID} from 'crypto'
+import {randomUUID} from 'crypto'
 
 async function bootstrap() {
   // Bootstraps using whatever configuration is defined in AppModule
