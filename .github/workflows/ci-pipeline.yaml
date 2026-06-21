@@ -2,235 +2,154 @@ name: Monorepo CI Pipeline
 
 on:
   push:
-    branches: [main]
-    # paths:
-    #   - 'services/**'
-    #   - '.github/workflows/ci-pipeline.yaml'
+    branches:
+      - main
 
 permissions:
   contents: read
-  # contents: write
-  # pull-requests: write
 
 concurrency:
-  group: monorepo-ci-${{ github.workflow }}-${{ github.ref }}
-  # group: build-${{ github.workflow }}-${{ github.run_id }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+
+################################################################################
+# DETECT CHANGED SERVICES
+################################################################################
+
+  detect-changes:
+    runs-on: ubuntu-latest
+
+    outputs:
+      services: ${{ steps.changed.outputs.services }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: changed
+        run: |
+          SERVICES=()
+
+          for service in gateway auth book order notification user review
+          do
+            if git diff --name-only \
+              ${{ github.event.before }} \
+              ${{ github.sha }} \
+              | grep -q "^services/$service/"
+            then
+              SERVICES+=("\"$service\"")
+            fi
+          done
+
+          JSON=$(printf '%s\n' "${SERVICES[@]}" | jq -s -c .)
+
+          echo "services=$JSON" >> $GITHUB_OUTPUT
+
+          echo "Changed services:"
+          echo $JSON
+
+################################################################################
+# BUILD IMAGES
+################################################################################
+
   build-and-push:
+    needs: detect-changes
+
+    if: needs.detect-changes.outputs.services != '[]'
+
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        service:
-          - gateway
-          - auth
-          - book
-          - order
-          - notification
-          - user
-          - review
+        service: ${{ fromJson(needs.detect-changes.outputs.services) }}
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
 
-      - name: Detect changes for service
-        id: changes
-        run: |
-          if git diff --name-only HEAD~1 HEAD | grep -q "services/${{ matrix.service }}/"; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-          fi
+      - uses: actions/checkout@v4
 
-      - name: Skip if not changed
-        if: steps.changes.outputs.changed != 'true'
-        run: echo "Skipping ${{ matrix.service }}"
-
-      - name: Login to Docker Hub
-        if: steps.changes.outputs.changed == 'true'
+      - name: Docker Login
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set up Docker Buildx
+      - name: Setup Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Set image tag
-        id: vars
-        run: |
-          echo "sha=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
-          echo "SHORT_SHA=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
-        
-      - name: Debug tags
-        run: |
-          echo "FULL SHA: ${{ steps.vars.outputs.sha }}"
-          echo "SHORT SHA: ${{ steps.vars.outputs.SHORT_SHA }}"  
-
-      - name: Debug
-        run: |
-          echo "Docker user: ${{ secrets.DOCKERHUB_USERNAME }}"
-          echo "Image: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ steps.vars.outputs.sha }}"
-
-
-      # - name: Build and Push Image
-      #   if: steps.changes.outputs.changed == 'true'
-      #   uses: docker/build-push-action@v6
-      #   with:
-      #     context: ./services/${{ matrix.service }}
-      #     file: ./services/${{ matrix.service }}/Dockerfile
-      #     push: true
-      #     tags: |
-      #       ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
-      #       ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ steps.vars.outputs.sha }}
-
-
-      - name: Build and Push Image
-        if: steps.changes.outputs.changed == 'true'
+      - name: Build and Push
         uses: docker/build-push-action@v6
         with:
           context: ./services/${{ matrix.service }}
           file: ./services/${{ matrix.service }}/Dockerfile
+
           push: true
 
           platforms: linux/amd64
 
           tags: |
-            docker.io/goniusman/${{ matrix.service }}:${{ steps.vars.outputs.sha }}
-            docker.io/goniusman/${{ matrix.service }}:latest
+            docker.io/goniusman/${{ matrix.service }}:${{ github.sha }}
+
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
           provenance: false
           sbom: false
 
-      - name: List build outputs (debug)
+      - name: Save built service
         run: |
-          echo "Tags:"
-          echo "${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest"
-          echo "${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ steps.vars.outputs.sha }}"
+          mkdir output
+          echo "${{ matrix.service }}" > output/service.txt
 
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.service }}
+          path: output/service.txt
 
-      # ADD THIS STEP BELOW TO AUTOMATICALLY CLEAN UP OLD IMAGES
-      - name: Clean up old Docker Hub tags (Keep Last 3)
-        if: steps.changes.outputs.changed == 'true'
-        env:
-          USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
-          REPO: ${{ matrix.service }}
+################################################################################
+# TRIGGER GITOPS ONCE
+################################################################################
+
+  trigger-gitops:
+
+    needs:
+      - detect-changes
+      - build-and-push
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Build service list
+        id: services
         run: |
-          echo "Authenticating with Docker Hub API..."
+          SERVICES=$(find artifacts -name service.txt \
+            -exec cat {} \; \
+            | jq -R . \
+            | jq -s -c .)
 
-          TOKEN=$(curl -s -H "Content-Type: application/json" \
-            -X POST \
-            -d '{"username": "'"$USERNAME"'", "password": "'"$PASSWORD"'"}' \
-            https://hub.docker.com/v2/users/login/ | jq -r .token)
+          echo "services=$SERVICES" >> $GITHUB_OUTPUT
 
-          if [ "$TOKEN" = "null" ] || [ -z "$TOKEN" ]; then
-            echo "::error::Failed to authenticate"
-            exit 1
-          fi
+          echo $SERVICES
 
-          echo "Fetching tags..."
-
-          curl -s -H "Authorization: JWT $TOKEN" \
-            "https://hub.docker.com/v2/repositories/$USERNAME/$REPO/tags/?page_size=100&ordering=-last_updated" \
-          | jq -r '
-            .results
-            | map(select(.name != "latest"))
-            | sort_by(.last_updated)
-            | reverse
-            | .[3:]
-            | .[].name
-          ' \
-          | while read -r TAG; do
-              if [ -n "$TAG" ]; then
-                echo "Deleting OLD tag: $TAG"
-                curl -s -X DELETE \
-                  -H "Authorization: JWT $TOKEN" \
-                  "https://hub.docker.com/v2/repositories/$USERNAME/$REPO/tags/$TAG/"
-              fi
-          done
-      
-      
-      # Trigger the GitOps Config Repo configuration update
-      - name: Trigger GitOps CD Workflow
-        if: steps.changes.outputs.changed == 'true'
+      - name: Trigger GitOps
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.GITOPS_PAT }}
-          repository: goniusman/GitOps  # Change this if your config repo has a different name
-          event-type: update-image
-          client-payload: '{"service": "${{ matrix.service }}", "sha": "${{ steps.vars.outputs.sha }}"}'
+          repository: goniusman/GitOps
 
+          event-type: update-images
 
-
-
-
-  # gitops-update:
-  #   needs: build-and-push
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - name: Checkout GitOps Repo
-  #       uses: actions/checkout@v4
-  #       with:
-  #         repository: goniusman/microservice-nest
-  #         token: ${{ secrets.GITOPS_PAT }}
-  #         path: gitops
-  #         fetch-depth: 0
-
-  #     - name: Configure Git
-  #       run: |
-  #         git config --global user.name "github-actions[bot]"
-  #         git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-  #     - name: Setup yq
-  #       run: |
-  #         sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
-  #         sudo chmod +x /usr/bin/yq
-
-  #     - name: Update only changed services
-  #       run: |
-  #         cd gitops/infra/helm/charts
-
-  #         # Detect changed services again (safe + reliable)
-  #         CHANGED=$(git diff --name-only HEAD~1 HEAD || true)
-
-  #         echo "Updating Helm values..."
-
-  #         if echo "$CHANGED" | grep -q "services/gateway"; then
-  #           yq e '.gateway.tag = "${{ github.sha }}"' -i values.yaml
-  #         fi
-
-  #         if echo "$CHANGED" | grep -q "services/auth"; then
-  #           yq e '.auth.tag = "${{ github.sha }}"' -i values.yaml
-  #         fi
-
-  #         if echo "$CHANGED" | grep -q "services/book"; then
-  #           yq e '.book.tag = "${{ github.sha }}"' -i values.yaml
-  #         fi
-
-  #         if echo "$CHANGED" | grep -q "services/order"; then
-  #           yq e '.order.tag = "${{ github.sha }}"' -i values.yaml
-  #         fi
-
-  #         if echo "$CHANGED" | grep -q "services/notification"; then
-  #           yq e '.notification.tag = "${{ github.sha }}"' -i values.yaml
-  #         fi
-
-  #     # - name: Create Pull Request (GitOps Safe)
-  #     #   uses: peter-evans/create-pull-request@v6
-  #     #   with:
-  #     #     path: gitops
-  #     #     branch: gitops/update-${{ github.sha }}
-  #     #     base: main
-  #     #     title: "chore: update service images"
-  #     #     commit-message: "chore(cd): update images to ${{ github.sha }} [skip ci]"
-  #     #     body: |
-  #     #       Automated GitOps update from CI pipeline.
-  #     #       - Only updated changed services
-  #     #       - No direct push to main
+          client-payload: >-
+            {
+              "services": ${{ steps.services.outputs.services }},
+              "sha": "${{ github.sha }}"
+            }
