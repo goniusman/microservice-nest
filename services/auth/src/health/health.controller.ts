@@ -4,7 +4,6 @@ import { HealthCheckService, HttpHealthIndicator, HealthCheck, TypeOrmHealthIndi
 import { BypassInterceptor } from '../common/decorators/bypass.decorator';
 
 @Controller('health')
-@BypassInterceptor()
 export class HealthController {
     constructor(
         // private health: HealthCheckService,
@@ -21,11 +20,13 @@ export class HealthController {
 
 
     @Get('live')
+    @BypassInterceptor()
     live() {
         return { status: 'ok' };
     }
 
     @Get('ready')
+    @BypassInterceptor()
     ready() {
         return { status: 'ready' };
     }

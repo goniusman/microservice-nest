@@ -10,6 +10,8 @@ import { AppService } from './app.service';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { HealthModule } from './health/health.module';
 import { EnterpriseLoggerMiddleware } from './common/middleware/logger.middleware';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
 @Module({
   imports: [
@@ -29,7 +31,13 @@ import { EnterpriseLoggerMiddleware } from './common/middleware/logger.middlewar
     HealthModule
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [
+    AppService,
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: TransformInterceptor, // 👈 Registers it globally with DI framework tracking
+    // },
+  ]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -33,16 +33,16 @@ async function bootstrap() {
     return randomUUID();
   }
 
-  app.use((req, res, next) => {
-    const traceId = req.headers['x-trace-id'] || generateId();
-    req['traceId'] = traceId;
-    console.log({
-      traceId,
-      path: req.path,
-      service: process.env.OTEL_SERVICE_NAME,
-    });
-    next();
-  });
+  // app.use((req, res, next) => {
+  //   const traceId = req.headers['x-trace-id'] || generateId();
+  //   req['traceId'] = traceId;
+  //   console.log({
+  //     traceId,
+  //     path: req.path,
+  //     service: process.env.OTEL_SERVICE_NAME,
+  //   });
+  //   next();
+  // });
 
   const reflector = app.get(Reflector);
   app.useGlobalInterceptors(new TransformInterceptor(reflector));

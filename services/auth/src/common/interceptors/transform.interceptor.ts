@@ -24,16 +24,28 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
     context: ExecutionContext,
     next: CallHandler,
   ): Observable<Response<T>> {
+    const httpContext = context.switchToHttp();
+    const request = httpContext.getRequest();
 
-    // Check if the handler method has the bypass metadata
+
+    // 1. HARD EXCLUSIONS: Instantly bypass by URL path strings
+    // This catches Kubernetes liveness probes and Prometheus metrics endpoints perfectly!
+    const excludedUrls = ['/health/live', '/health/ready', '/metrics'];
+    if (excludedUrls.includes(request.url)) {
+      return next.handle();
+    }
+
+    // 2. DECORATOR BYPASS: Check if your custom methods are explicitly tagged
     const isBypassed = this.reflector.getAllAndOverride<boolean>(BYPASS_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
 
     if (isBypassed) {
-      return next.handle(); // Skip processing and return raw data
+      return next.handle();
     }
+
+
 
     const response = context.switchToHttp().getResponse();
     const statusCode = response.statusCode;
