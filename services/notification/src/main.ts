@@ -4,11 +4,17 @@ otelSDK.start();
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import {randomUUID} from 'crypto'
+import { randomUUID } from 'crypto'
 
 async function bootstrap() {
   // Bootstraps using whatever configuration is defined in AppModule
-  const app = await NestFactory.createApplicationContext(AppModule);
+  const app = await NestFactory.createApplicationContext(AppModule, {
+    logger: process.env.NODE_ENV === 'production'
+      ? ['error', 'warn']
+      : ['log', 'error', 'warn']
+  });
+
+
   // const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   //   transport: Transport.RMQ,
   //   options: {
@@ -51,6 +57,11 @@ async function bootstrap() {
   // const port = process.env.PORT || 3002;
   // await app.listen(port);
   // console.log(`🚀 Book Application is running on: ${port}`);
+
+  // const reflector = app.get(Reflector);
+  // app.useGlobalInterceptors(new TransformInterceptor(reflector));
+  // app.useGlobalFilters(new GlobalExceptionFilter());
+
   console.log('📨 Notification Service running (event consumer only)')
 
 }

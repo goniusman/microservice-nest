@@ -35,7 +35,7 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
     AppService,
     // {
     //   provide: APP_INTERCEPTOR,
-    //   useClass: TransformInterceptor, // 👈 Registers it globally with DI framework tracking
+    //   useClass: TransformInterceptor, 
     // },
   ]
 })

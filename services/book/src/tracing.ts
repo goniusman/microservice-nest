@@ -5,9 +5,10 @@ import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 
 // The URL points directly to the Jaeger Kubernetes service we created in Step 2
 const traceExporter = new OTLPTraceExporter({
-  url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://jaeger.bookverse.svc.cluster.local:4317',
+  url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT ||
+    process.env.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT ||
+    'http://jaeger-collector.istio-system.svc.cluster.local:4317',
 });
-
 export const otelSDK = new NodeSDK({
   traceExporter,
   instrumentations: [

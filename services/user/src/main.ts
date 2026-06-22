@@ -2,7 +2,7 @@ import { otelSDK } from './tracing';
 // Start the OpenTelemetry SDK before any other imports!
 otelSDK.start();
 
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { randomUUID } from 'crypto'
@@ -18,23 +18,8 @@ async function bootstrap() {
     }),
   );
 
-  function generateId() {
-    return randomUUID();
-  }
-
-  app.use((req, res, next) => {
-    const traceId = req.headers['x-trace-id'] || generateId();
-    req['traceId'] = traceId;
-    console.log({
-      traceId,
-      path: req.path,
-      service: process.env.OTEL_SERVICE_NAME,
-    });
-    next();
-  });
-
-  
-  app.useGlobalInterceptors(new TransformInterceptor());
+  const reflector = app.get(Reflector);
+  app.useGlobalInterceptors(new TransformInterceptor(reflector));
   app.useGlobalFilters(new GlobalExceptionFilter());
   const port = process.env.PORT || 3004;
   await app.listen(port);

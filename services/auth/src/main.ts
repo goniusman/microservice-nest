@@ -29,9 +29,9 @@ async function bootstrap() {
     }),
   );
 
-  function generateId() {
-    return randomUUID();
-  }
+  // function generateId() {
+  //   return randomUUID();
+  // }
 
   // app.use((req, res, next) => {
   //   const traceId = req.headers['x-trace-id'] || generateId();
