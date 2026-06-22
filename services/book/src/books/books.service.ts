@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { Book, BookDocument } from './schemas/book.schema';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { AmqpConnection, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
 // export class BooksService implements OnModuleInit {
@@ -104,6 +104,20 @@ export class BooksService {
         orderId: payload.orderId
       });
     }
+  }
+
+  @RabbitRPC({
+    exchange: 'bookverse_global_exchange',
+    routingKey: 'book.validate',
+    queue: 'book_rpc_queue',
+  })
+  async validateBook(data: { bookId: string }) {
+    const book = await this.bookModel.findById(data.bookId);
+
+    return {
+      valid: !!book,
+      book,
+    };
   }
 
 

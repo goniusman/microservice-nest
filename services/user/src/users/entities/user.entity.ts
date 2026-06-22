@@ -24,6 +24,9 @@ export class User {
   @Column()
   password: string;
 
+  @Column({ default: 'ACTIVE' })
+  status: string;
+
   @Column({
     type: 'enum',
     enum: UserRole,

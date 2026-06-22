@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { HealthModule } from './health/health.module';
+import { UsersModule } from './users/user.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { HealthModule } from './health/health.module';
       path: '/metrics', 
     }),
     BooksModule,
-    HealthModule
+    HealthModule,
+    UsersModule
   ],
   controllers: [AppController],
   providers: [AppService],

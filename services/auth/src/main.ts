@@ -14,7 +14,13 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: process.env.NODE_ENV === 'production'
+      ? ['error', 'warn']
+      : ['log', 'error', 'warn']
+
+      // logger: false, // 👈 Total silence from NestJS framework logs
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -27,16 +33,16 @@ async function bootstrap() {
     return randomUUID();
   }
 
-  app.use((req, res, next) => {
-    const traceId = req.headers['x-trace-id'] || generateId();
-    req['traceId'] = traceId;
-    console.log({
-      traceId,
-      path: req.path,
-      service: process.env.OTEL_SERVICE_NAME,
-    });
-    next();
-  });
+  // app.use((req, res, next) => {
+  //   const traceId = req.headers['x-trace-id'] || generateId();
+  //   req['traceId'] = traceId;
+  //   console.log({
+  //     traceId,
+  //     path: req.path,
+  //     service: process.env.OTEL_SERVICE_NAME,
+  //   });
+  //   next();
+  // });
 
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(new GlobalExceptionFilter());

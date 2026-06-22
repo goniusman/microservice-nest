@@ -1,4 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
+import { RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,7 +17,7 @@ export class UsersService {
   ) { }
 
   async create(createUserDto: CreateUserDto) {
-     try {
+    try {
 
       const existingUser =
         await this.userRepository.findOne({
@@ -30,7 +31,7 @@ export class UsersService {
           'Email already exists',
         );
       }
- 
+
       const hashedPassword =
         await bcrypt.hash(
           createUserDto.password,
@@ -60,7 +61,7 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    return await this.userRepository.findOneBy({"id": id});
+    return await this.userRepository.findOneBy({ "id": id });
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
@@ -70,5 +71,26 @@ export class UsersService {
   async remove(id: string) {
     return await this.userRepository.delete(id);
   }
-  
+
+
+  @RabbitRPC({
+    exchange: 'bookverse_global_exchange',
+    routingKey: 'user.validate',
+    queue: 'user_rpc_queue',
+  })
+  async validateUser(data: { userId: string }) {
+    console.log('[User Service] RPC validateUser:', data);
+
+    const user = this.userRepository.findOneBy({ "id": data?.userId })
+
+    if (!user) {
+      return { valid: false };
+    }
+
+    return {
+      valid: true,
+      user,
+    };
+  }
+
 }
