@@ -1,8 +1,10 @@
 
 import { Controller, Get } from '@nestjs/common';
 import { HealthCheckService, HttpHealthIndicator, HealthCheck, TypeOrmHealthIndicator, DiskHealthIndicator, MemoryHealthIndicator } from '@nestjs/terminus';
+import { BypassInterceptor } from '../common/decorators/bypass.decorator';
 
 @Controller('health')
+@BypassInterceptor()
 export class HealthController {
     constructor(
         // private health: HealthCheckService,

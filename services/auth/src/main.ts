@@ -3,7 +3,7 @@ import { otelSDK } from './tracing';
 otelSDK.start();
 
 
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { randomUUID } from 'crypto';
@@ -33,18 +33,19 @@ async function bootstrap() {
     return randomUUID();
   }
 
-  // app.use((req, res, next) => {
-  //   const traceId = req.headers['x-trace-id'] || generateId();
-  //   req['traceId'] = traceId;
-  //   console.log({
-  //     traceId,
-  //     path: req.path,
-  //     service: process.env.OTEL_SERVICE_NAME,
-  //   });
-  //   next();
-  // });
+  app.use((req, res, next) => {
+    const traceId = req.headers['x-trace-id'] || generateId();
+    req['traceId'] = traceId;
+    console.log({
+      traceId,
+      path: req.path,
+      service: process.env.OTEL_SERVICE_NAME,
+    });
+    next();
+  });
 
-  app.useGlobalInterceptors(new TransformInterceptor());
+  const reflector = app.get(Reflector);
+  app.useGlobalInterceptors(new TransformInterceptor(reflector));
   app.useGlobalFilters(new GlobalExceptionFilter());
   const port = process.env.PORT || 3001;
   await app.listen(port);

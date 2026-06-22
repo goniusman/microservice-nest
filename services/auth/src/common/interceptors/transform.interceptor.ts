@@ -4,9 +4,10 @@ import {
   ExecutionContext,
   CallHandler,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
+import { BYPASS_KEY } from '../decorators/bypass.decorator';
 
 export interface Response<T> {
   success: boolean;
@@ -18,10 +19,22 @@ export interface Response<T> {
 
 @Injectable()
 export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> {
+  constructor(private reflector: Reflector) { }
   intercept(
     context: ExecutionContext,
     next: CallHandler,
   ): Observable<Response<T>> {
+
+    // Check if the handler method has the bypass metadata
+    const isBypassed = this.reflector.getAllAndOverride<boolean>(BYPASS_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isBypassed) {
+      return next.handle(); // Skip processing and return raw data
+    }
+
     const response = context.switchToHttp().getResponse();
     const statusCode = response.statusCode;
 
