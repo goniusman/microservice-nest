@@ -8,6 +8,7 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { DiscoveryModule } from '@nestjs/core';
 import { BooksConsumer } from './book.consumer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { RedisModule } from '../shared/redis/redis.module';
 
 @Module({
   imports: [
@@ -33,13 +34,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         ],
         uri: configService.get<string>('RABBITMQ_URL', 'amqp://guest:guest@localhost:5672'),
         registerHandlers: true,
-        connectionInitOptions: {wait: true},
+        connectionInitOptions: { wait: true },
       }),
     }),
 
     MongooseModule.forFeature([
       { name: Book.name, schema: BookSchema },
     ]),
+
+
   ],
   controllers: [BooksController],
   providers: [BooksService, BooksConsumer],

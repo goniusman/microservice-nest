@@ -11,8 +11,6 @@ import { AmqpConnection, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 @Injectable()
 export class OrdersService {
 
-  private orders: CreateOrderDto[] = []
-
   constructor(
     @InjectModel(Order.name) private orderModel: Model<Order>,
     private readonly amqpConnection: AmqpConnection
@@ -21,15 +19,16 @@ export class OrdersService {
 
   async placeOrder(orderDto: CreateOrderDto) {
     try {
-      let newOrder: CreateOrderDto = {
-        orderId: `order_${Date.now()}`,
+      const orderId = `order_${Date.now()}`;
+      let orderBody: CreateOrderDto = {
         ...orderDto,
+        orderId: orderId,
         status: OrderStatus.PENDING
       };
+      console.log('[Order Service] Placing order with body:', orderBody);
+      const newOrder = await this.orderModel.create(orderBody);
 
-      this.orders.push(newOrder);
-      console.log('[Order Service] Order saved as PENDING:', newOrder.orderId);  
-      await this.orderModel.create(newOrder)
+      console.log('[Order Service] Order saved as PENDING:', newOrder.orderId);
       this.amqpConnection.publish('bookverse_global_exchange', 'order_created', newOrder);
       return { message: 'Order processing started', orderId: newOrder.orderId };
     } catch (error) {

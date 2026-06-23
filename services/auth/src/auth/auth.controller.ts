@@ -11,9 +11,17 @@ import { JwtGatewayGuard } from './guards/jwt-gateway.guard';
 // import { Response, Request } from 'express';
 import type { Request } from 'express';
 import type { Response } from 'express';
+import { RedisService } from '../shared/redis/redis.service';
+// import { REDIS_CLIENT } from './redis.module';
+
+
+
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(
+    private readonly authService: AuthService,
+    private readonly redisService: RedisService
+  ) { }
 
   // @Post()
   // create(@Body() createAuthDto: CreateAuthDto) {
@@ -80,10 +88,29 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(
+  async getProfile(
     @Req() req: any,
   ) {
-    return req.user;
+
+    const data = req.user;
+    const cacheKey = `book:${data.id}`;
+console.log('data', data);
+    // 1. Check Redis Cache
+    const cachedBook = await this.redisService.get(cacheKey);
+    console.log('cachedBook', cachedBook);
+    if (cachedBook) {
+      return { data: cachedBook, source: 'Redis Cache' };
+    }
+
+    // 2. Cache Miss - Simulate fetching from DB
+    const dbBook = data;
+
+    // 3. Save to Redis for 5 minutes (300 seconds)
+    await this.redisService.set(cacheKey, dbBook, 300);
+
+    return { data: dbBook, source: 'Database' };
+
+    // return req.user;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -110,6 +137,8 @@ export class AuthController {
     // Return a clean 200 OK back to NGINX with an empty body
     return res.status(HttpStatus.OK).send();
   }
+
+
 
 
 }

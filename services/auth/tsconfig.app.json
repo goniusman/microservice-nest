@@ -1,0 +1,7 @@
+// apps/book-service/tsconfig.app.json
+{
+  "extends": "../../../tsconfig.json", // Make sure this points back to your root config!
+  "compilerOptions": {
+    "outDir": "../../../dist/services/auth"
+  }
+}

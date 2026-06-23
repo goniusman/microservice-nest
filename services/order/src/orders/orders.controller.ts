@@ -25,8 +25,8 @@ export class OrdersController {
     @Headers('x-user-email') userEmail: string,
     @Headers('x-user-role') userRole: string,
     @Body() dto: CreateOrderDto) {
-    console.log(`User ${userEmail} (${userId}) with role ${userRole} is making an order!`);
-    console.log(dto)
+    // console.log(`User ${userEmail} (${userId}) with role ${userRole} is making an order!`);
+    // console.log(dto)
     return this.ordersService.placeOrder(dto);
   }
 

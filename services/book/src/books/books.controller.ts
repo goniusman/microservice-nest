@@ -4,6 +4,7 @@ import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { ClientProxy, EventPattern, Payload } from '@nestjs/microservices';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { RedisService } from '../shared/redis/redis.service';
 
 @Controller('books')
 export class BooksController {
@@ -12,6 +13,7 @@ export class BooksController {
   constructor(
     private readonly booksService: BooksService,
     // @Inject('BROADCAST_BROKER') private readonly client: ClientProxy
+    private readonly redisService: RedisService
   ) { }
 
   @Post()
@@ -55,7 +57,24 @@ export class BooksController {
 
   @Get()
   findAll() {
-    return this.booksService.findAll();
+    const redisKey = 'all_books_cache';
+    // Check Redis cache first
+    return this.redisService.get(redisKey).then(cached => {
+      if (cached) {
+        console.log('[BooksController] Cache hit for all books');
+        return {  source: 'cache', books: cached };
+      } else {
+        console.log('[BooksController] Cache miss for all books, fetching from DB');
+        return this.booksService.findAll().then(books => {
+          this.redisService.set(redisKey, books, 60); // Cache for 60 seconds
+          return { source: 'database', books: books };
+        });
+      }
+    }).catch(err => {
+      console.error('[BooksController] Redis error:', err);
+      return this.booksService.findAll(); // Fallback to DB on Redis failure
+    });
+
   }
 
   @Get(':id')

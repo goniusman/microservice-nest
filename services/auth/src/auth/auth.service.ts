@@ -11,7 +11,6 @@ import { RegisterDto } from './dto/register.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto';
 
-
 @Injectable()
 export class AuthService {
 
@@ -19,6 +18,7 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
+
   ) { }
 
   private async generateAccessToken(
