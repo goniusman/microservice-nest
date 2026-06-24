@@ -56,7 +56,7 @@ export class UsersService {
     }
   }
 
-  async findAll() {
+  async findAll(): Promise<User[]> {
     return await this.userRepository.find()
   }
 
@@ -73,6 +73,14 @@ export class UsersService {
   }
 
 
+  // async getFreshProfile(userId: string): Promise<User> {
+  //   // Bypasses the read replica pool entirely to avoid replication lag issues
+  //   return await this.userRepository.manager.findOne(User, {
+  //     where: { id: userId },
+  //     replicationMode: 'master',
+  //   });
+  // }
+
   @RabbitRPC({
     exchange: 'bookverse_global_exchange',
     routingKey: 'user.validate',
@@ -81,7 +89,7 @@ export class UsersService {
   async validateUser(data: { userId: string }) {
     console.log('[User Service] RPC validateUser:', data);
 
-    const user = this.userRepository.findOneBy({ "id": data?.userId })
+    const user = await this.userRepository.findOneBy({ "id": data?.userId });
 
     if (!user) {
       return { valid: false };

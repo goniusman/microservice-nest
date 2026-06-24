@@ -64,14 +64,15 @@ export class BooksService {
     console.log(`[Book Service] Checking and reserving stock for book: ${payload.bookId}`);
 
     try {
+      const quantity = Number(payload.quantity);
       // 1. Atomically check stock AND decrement it in one query
       const updatedBook = await this.bookModel.findOneAndUpdate(
         {
           _id: payload.bookId,
-          quantity: { $gte: payload.quantity }
+          quantity: { $gte: quantity }
         },
         {
-          $inc: { quantity: -payload.quantity } // Decrement the stock atomically
+          $inc: { quantity: -quantity } // Decrement the stock atomically
         },
         {
           new: true // Returns the modified document instead of the original
@@ -86,6 +87,7 @@ export class BooksService {
         this.amqpConnection.publish('bookverse_global_exchange', 'inventory_reserved', {
           orderId: payload.orderId,
           bookId: payload.bookId,
+          quantity: quantity,
           userId: payload.userId
         });
       } else {
