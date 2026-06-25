@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,6 +10,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './guards/roles.guard';
 import { RedisModule } from '../shared/redis/redis.module';
 import { RedisService } from '../shared/redis/redis.service';
+import { DataSource } from 'typeorm';
 // import { REDIS_CLIENT } from '../shared/redis/redis.module';
 @Module({
   imports: [
@@ -46,4 +47,19 @@ import { RedisService } from '../shared/redis/redis.service';
     },
   ],
 })
-export class AuthModule { }
+export class AuthModule implements OnModuleInit {
+  // Inject the TypeORM DataSource object directly
+  constructor(private readonly dataSource: DataSource) {}
+
+  async onModuleInit() {
+    if (this.dataSource.isInitialized) {
+      console.log('======================================================');
+      console.log('✅ DATABASE CONNECTED SUCCESSFULLY IN KUBERNETES');
+      console.log(`Primary (Master) Target: ${process.env.DB_MASTER_HOST}`);
+      console.log(`Replica (Slave) Target:  ${process.env.DB_REPLICA_HOST}`);
+      console.log('======================================================');
+    } else {
+      console.error('❌ Database initialization failed.');
+    }
+  }
+}

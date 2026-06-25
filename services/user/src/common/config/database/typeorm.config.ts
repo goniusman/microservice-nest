@@ -15,6 +15,7 @@ export const getTypeOrmConfig = (
       username: configService.get<string>('DB_USERNAME'),
       password: configService.get<string>('DB_PASSWORD'),
       database: configService.get<string>('DB_NAME_AUTH'),
+      ssl: false,
     },
     // 2. All Read commands go to the Read Replica Load-Balancer Service
     slaves: [
@@ -24,6 +25,7 @@ export const getTypeOrmConfig = (
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME_AUTH'),
+        ssl: false,
       },
     ],
   },
@@ -34,7 +36,7 @@ export const getTypeOrmConfig = (
   synchronize: true,
 
   // 1. Enable query logging
-  logging: ['query', 'error'],
+  logging: ['query', 'error', 'schema'],
   // 2. Use 'advanced-console' to see structured outputs
   logger: 'advanced-console',
 
