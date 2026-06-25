@@ -21,8 +21,8 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
   app.useGlobalInterceptors(new TransformInterceptor(reflector));
   app.useGlobalFilters(new GlobalExceptionFilter());
-  const port = process.env.PORT || 3004;
-  await app.listen(port);
+  const port = process.env.PORT || 3000;
+  await app.listen(port, '0.0.0.0');
   console.log(`🚀 User Application is running on: ${port}`);
 
 }
