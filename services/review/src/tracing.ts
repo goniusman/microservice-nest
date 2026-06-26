@@ -2,6 +2,38 @@
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
+import { Attributes, Context, Link, SpanKind } from '@opentelemetry/api';
+import { AlwaysOnSampler, AlwaysOffSampler, Sampler, SamplingResult, SamplingDecision } from '@opentelemetry/sdk-trace-base';
+
+
+// Create a custom structural sampler wrapper
+export class HealthCheckIgnoreSampler implements Sampler {
+  shouldSample(
+    context: Context,
+    traceId: string,
+    name: string,
+    spanKind: SpanKind,
+    attributes: Attributes,
+    links: Link[]
+  ): SamplingResult {
+    // Look at the HTTP target path string
+    const httpTarget = attributes['http.target'] || attributes['url.path'] || '';
+
+    // If it hits your health check routes, drop it completely
+    if (typeof httpTarget === 'string' && (httpTarget.startsWith('/health') || httpTarget === '/metrics')) {
+      return {
+        decision: SamplingDecision.NOT_RECORD, // 👈 Directly tells OTEL to ignore this trace
+      };
+    }
+
+    // Otherwise, delegate to the standard AlwaysOn sampler logic (0 arguments)
+    return new AlwaysOnSampler().shouldSample();
+  }
+
+  toString(): string {
+    return 'HealthCheckIgnoreSampler';
+  }
+}
 
 // The URL points directly to the Jaeger Kubernetes service we created in Step 2
 const traceExporter = new OTLPTraceExporter({
@@ -11,6 +43,7 @@ const traceExporter = new OTLPTraceExporter({
 });
 
 export const otelSDK = new NodeSDK({
+  sampler: new HealthCheckIgnoreSampler(),
   traceExporter,
   instrumentations: [
     getNodeAutoInstrumentations({

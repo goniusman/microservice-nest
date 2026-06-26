@@ -1,0 +1,28 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+"""Represents a book item in the catalog"""
+type BookItem {
+  description: String
+  id: ID!
+  price: Float!
+  quantity: Float!
+  title: String!
+}
+
+"""Represents a book item in the catalog"""
+type CatalogItem {
+  description: String
+  id: ID!
+  price: Float!
+  title: String!
+}
+
+type Query {
+  """Get all catalog items"""
+  catalog: [CatalogItem!]!
+
+  """Fetches books from the legacy REST service"""
+  externalBooks: [BookItem!]!
+}

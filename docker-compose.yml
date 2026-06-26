@@ -235,6 +235,8 @@ services:
     container_name: bookverse-redis
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -251,6 +253,7 @@ volumes:
   mongo_data:
   primary_data:
   replica_data:
+  redis_data:
 
     # docker compose up --build --force-recreate --no-cache && docker image prune -f
     # docker compose build --no-cache && docker compose up --force-recreate
