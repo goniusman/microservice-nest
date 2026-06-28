@@ -65,6 +65,14 @@ export class BooksService {
 
     try {
       const quantity = Number(payload.quantity);
+
+
+      // 2. Validate that it's a valid, positive number greater than 0
+      if (isNaN(quantity) || quantity <= 0) {
+        throw new Error(`Invalid stock reservation quantity: ${payload.quantity}`);
+      }
+
+
       // 1. Atomically check stock AND decrement it in one query
       const updatedBook = await this.bookModel.findOneAndUpdate(
         {
