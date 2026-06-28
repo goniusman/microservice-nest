@@ -17,7 +17,7 @@ import { RedisModule } from './shared/redis/redis.module';
     }),
 
     MongooseModule.forRoot(
-      process.env.MONGO_URL ||
+      process.env.MONGO_BOOKS_URL ||
       'mongodb://localhost:27017/bookverse_books',
     ),
     PrometheusModule.register({

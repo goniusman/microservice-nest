@@ -18,7 +18,7 @@ import { EnterpriseLoggerMiddleware } from './common/middleware/logger.middlewar
       path: '/metrics',
     }),
     MongooseModule.forRoot(
-      process.env.MONGO_URL ||
+      process.env.MONGO_ORDERS_URL ||
       'mongodb://localhost:27017/bookverse_orders',
     ),
     OrdersModule,

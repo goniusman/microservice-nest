@@ -14,8 +14,8 @@ import { EnterpriseLoggerMiddleware } from './common/middleware/logger.middlewar
       isGlobal: true,
     }),
     MongooseModule.forRoot(
-      process.env.MONGO_URL ||
-      'mongodb://localhost:27017/bookverse_books',
+      process.env.MONGO_REVIEWS_URL ||
+      'mongodb://localhost:27017/bookverse_reviews',
     ),
     PrometheusModule.register({
       path: '/metrics', 
