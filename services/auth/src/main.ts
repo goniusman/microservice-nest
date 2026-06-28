@@ -18,8 +18,6 @@ async function bootstrap() {
     logger: process.env.NODE_ENV === 'production'
       ? ['error', 'warn']
       : ['log', 'error', 'warn']
-
-      // logger: false, // 👈 Total silence from NestJS framework logs
   });
 
   app.useGlobalPipes(
