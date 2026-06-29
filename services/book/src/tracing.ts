@@ -3,7 +3,7 @@ import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { Attributes, Context, Link, SpanKind } from '@opentelemetry/api';
-import { AlwaysOnSampler, AlwaysOffSampler, Sampler, SamplingResult, SamplingDecision } from '@opentelemetry/sdk-trace-base';
+import { AlwaysOnSampler, Sampler, SamplingResult, SamplingDecision } from '@opentelemetry/sdk-trace-base';
 
 
 // Create a custom structural sampler wrapper
@@ -39,10 +39,16 @@ export class HealthCheckIgnoreSampler implements Sampler {
 const traceExporter = new OTLPTraceExporter({
   url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT ||
     process.env.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT ||
-    'http://jaeger-collector.istio-system.svc.cluster.local:4317',
+    'jaeger-collector.istio-system.svc.cluster.local:4317',
 });
 
 export const otelSDK = new NodeSDK({
+  resource: {
+    attributes: {
+      'service.name': process.env.OTEL_SERVICE_NAME,
+    },
+    merge: (other: any) => other, // satisfying basic internal method duck-typing if needed
+  } as any,
   sampler: new HealthCheckIgnoreSampler(),
   traceExporter,
   instrumentations: [
