@@ -7,6 +7,8 @@ import { CreateOrderDto, OrderStatus } from './dto/create-order.dto';
 // import { RabbitMQService } from '../rabbitmq/rabbitmq.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { AmqpConnection, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { propagation, context } from '@opentelemetry/api';
+
 
 @Injectable()
 export class OrdersService {
@@ -28,8 +30,13 @@ export class OrdersService {
       console.log('[Order Service] Placing order with body:', orderBody);
       const newOrder = await this.orderModel.create(orderBody);
 
+      const headers: Record<string, any> = {};
+
+      // 2. Inject the current trace context into the headers object
+      propagation.inject(context.active(), headers);
+
       console.log('[Order Service] Order saved as PENDING:', newOrder.orderId);
-      this.amqpConnection.publish('bookverse_global_exchange', 'order_created', newOrder);
+      this.amqpConnection.publish('bookverse_global_exchange', 'order_created', newOrder, { headers });
       return { message: 'Order processing started', orderId: newOrder.orderId };
     } catch (error) {
       throw error;

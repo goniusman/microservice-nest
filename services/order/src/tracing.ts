@@ -8,6 +8,7 @@ import { AlwaysOnSampler, Sampler, SamplingResult, SamplingDecision } from '@ope
 
 // Create a custom structural sampler wrapper
 export class HealthCheckIgnoreSampler implements Sampler {
+  private _fallbackSampler = new AlwaysOnSampler();
   shouldSample(
     context: Context,
     traceId: string,
@@ -16,6 +17,16 @@ export class HealthCheckIgnoreSampler implements Sampler {
     attributes: Attributes,
     links: Link[]
   ): SamplingResult {
+
+    // 1. Check the span name (e.g., "GET /health/live" or "GET /metrics")
+    const lowerName = name.toLowerCase();
+    if (
+      lowerName.includes('/health') || 
+      lowerName.includes('/metrics')
+    ) {
+      return { decision: SamplingDecision.NOT_RECORD };
+    }
+
     // Look at the HTTP target path string
     const httpTarget = attributes['http.target'] || attributes['url.path'] || '';
 
@@ -28,6 +39,8 @@ export class HealthCheckIgnoreSampler implements Sampler {
 
     // Otherwise, delegate to the standard AlwaysOn sampler logic (0 arguments)
     return new AlwaysOnSampler().shouldSample();
+    // Delegate properly with all arguments passed down
+    // return this._fallbackSampler.shouldSample(context, traceId, name, spanKind, attributes, links);
   }
 
   toString(): string {
@@ -55,6 +68,15 @@ export const otelSDK = new NodeSDK({
     getNodeAutoInstrumentations({
       // Suppress noisy internal framework logs if necessary
       '@opentelemetry/instrumentation-fs': { enabled: false },
+
+      // the HTTP/Express instrumentation to ignore specific paths
+      '@opentelemetry/instrumentation-http': {
+        ignoreIncomingRequestHook: (req) => {
+          const url = req.url || '';
+          // Ignore /health, /health/live, /metrics
+          return url.startsWith('/health') || url === '/metrics';
+        },
+      },
     }),
   ],
 });
