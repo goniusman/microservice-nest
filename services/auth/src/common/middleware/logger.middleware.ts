@@ -6,7 +6,7 @@ import { trace } from '@opentelemetry/api';
 export class EnterpriseLoggerMiddleware implements NestMiddleware {
 
   // 1. Define the endpoints you want to ignore
-  private readonly ignoredUris = ['/metrics', '/health/live', '/health/ready', '/health/startup']; '];
+  private readonly ignoredUris = ['/metrics', '/health/live', '/health/ready', '/health/startup'];
 
   use(req: Request, res: Response, next: NextFunction) {
 
