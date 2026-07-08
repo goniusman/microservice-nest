@@ -6,6 +6,7 @@ import { Book, BookDocument } from './schemas/book.schema';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { AmqpConnection, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
+import { trace } from '@opentelemetry/api';
 
 @Injectable()
 // export class BooksService implements OnModuleInit {
@@ -64,6 +65,15 @@ export class BooksService {
     console.log(`[Book Service] Checking and reserving stock for book: ${payload.bookId}`);
 
     try {
+      // 1. Grab whatever span is currently wrapping this execution thread
+      const activeSpan = trace.getActiveSpan();
+
+      if (activeSpan) {
+        // 2. Set an attribute inline
+        activeSpan.setAttribute('inventory.status', 'stock_reserved');
+        activeSpan.setAttribute('bookId', payload.bookId);
+      }
+
       const quantity = Number(payload.quantity);
 
 

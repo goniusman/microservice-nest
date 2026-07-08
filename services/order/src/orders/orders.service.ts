@@ -8,6 +8,7 @@ import { CreateOrderDto, OrderStatus } from './dto/create-order.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { AmqpConnection, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { propagation, context } from '@opentelemetry/api';
+import { AmqpTracer } from '../common/helper/amqp-tracer.util';
 
 
 @Injectable()
@@ -30,16 +31,25 @@ export class OrdersService {
       console.log('[Order Service] Placing order with body:', orderBody);
       const newOrder = await this.orderModel.create(orderBody);
 
-      const headers: Record<string, any> = {};
+      // const headers: Record<string, any> = {};
 
       // 2. Inject the current trace context into the headers object
-      propagation.inject(context.active(), headers);
-      
-      console.log('Injected Tracing Headers:', headers); // 👈 Add this log! 
+      // propagation.inject(context.active(), headers);
+
+      // console.log('Injected Tracing Headers:', headers); // 👈 Add this log! 
       // You should see something like: { traceparent: '00-4bf92f3577b3...01' }
 
       console.log('[Order Service] Order saved as PENDING:', newOrder.orderId);
-      this.amqpConnection.publish('bookverse_global_exchange', 'order_created', newOrder, { headers });
+      // this.amqpConnection.publish('bookverse_global_exchange', 'order_created', newOrder, { headers });
+      AmqpTracer.publishWithTrace(
+        this.amqpConnection,
+        'bookverse_global_exchange',
+        'order_created',
+        newOrder,
+        {},
+        { 'order.id': newOrder.id, 'customer.plan': 'premium' }
+      );
+
       return { message: 'Order processing started', orderId: newOrder.orderId };
     } catch (error) {
       throw error;
