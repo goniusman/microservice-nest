@@ -6,7 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { HealthModule } from './health/health.module';
-import { UsersModule } from './users/user.module';
+// import { UsersModule } from './users/user.module';
 import { EnterpriseLoggerMiddleware } from './common/middleware/logger.middleware';
 import { RedisModule } from './shared/redis/redis.module';
 
@@ -25,7 +25,7 @@ import { RedisModule } from './shared/redis/redis.module';
     }),
     BooksModule,
     HealthModule,
-    UsersModule,
+    // UsersModule,
     RedisModule.register({
       maxRetriesPerRequest: 5,
     })// More aggressive retry for enterprise resilience
