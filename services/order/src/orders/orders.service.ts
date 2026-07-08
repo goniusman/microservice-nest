@@ -34,6 +34,9 @@ export class OrdersService {
 
       // 2. Inject the current trace context into the headers object
       propagation.inject(context.active(), headers);
+      
+      console.log('Injected Tracing Headers:', headers); // 👈 Add this log! 
+      // You should see something like: { traceparent: '00-4bf92f3577b3...01' }
 
       console.log('[Order Service] Order saved as PENDING:', newOrder.orderId);
       this.amqpConnection.publish('bookverse_global_exchange', 'order_created', newOrder, { headers });

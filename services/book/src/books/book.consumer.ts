@@ -5,7 +5,7 @@ import { UpdateBookDto } from './dto/update-book.dto';
 import { ClientProxy, EventPattern, Payload } from '@nestjs/microservices';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { propagation, context, trace, SpanKind } from '@opentelemetry/api';
-import { ConsumeMessage } from 'amqplib'; // Import types from amqplib
+// import { ConsumeMessage } from 'amqplib'; // Import types from amqplib
 
 
 @Injectable()
@@ -19,7 +19,15 @@ export class BooksConsumer {
 
 
   // 📻 RABBITMQ CONSUMER: Listens for order placement
-  public async handleOrderCreated(msg: any, rawMessage: ConsumeMessage) {
+  @RabbitSubscribe({
+    exchange: 'bookverse_global_exchange',
+    routingKey: 'order_created',
+    queue: 'book_inventory_queue',
+  })
+  public async handleOrderCreated(msg: any, rawMessage: any) {
+    // Log this to verify RabbitMQ is actually carrying your traceparent header over the wire
+    console.log('Received Message Headers:', rawMessage?.properties?.headers);
+
     // 1. Extract the trace headers from the raw AMQP message
     const amqpHeaders = rawMessage?.properties?.headers || {};
 
