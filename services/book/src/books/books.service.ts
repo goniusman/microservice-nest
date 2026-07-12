@@ -36,8 +36,8 @@ export class BooksService {
     return this.bookModel.create(dto);
   }
 
-  async findAll() {
-    return this.bookModel.find();
+  async findAll(): Promise<any> {
+    return this.bookModel.find().lean().exec();
   }
 
   async findOne(id: string) {

@@ -9,6 +9,7 @@ import { DiscoveryModule } from '@nestjs/core';
 import { BooksConsumer } from './book.consumer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from '../shared/redis/redis.module';
+import { BookResolver } from './book.resolver';
 
 @Module({
   imports: [
@@ -45,6 +46,6 @@ import { RedisModule } from '../shared/redis/redis.module';
 
   ],
   controllers: [BooksController],
-  providers: [BooksService, BooksConsumer],
+  providers: [BooksService, BooksConsumer, BookResolver],
 })
 export class BooksModule { }

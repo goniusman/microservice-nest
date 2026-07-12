@@ -9,11 +9,24 @@ import { HealthModule } from './health/health.module';
 // import { UsersModule } from './users/user.module';
 import { EnterpriseLoggerMiddleware } from './common/middleware/logger.middleware';
 import { RedisModule } from './shared/redis/redis.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: true, // join(process.cwd(), 'src/schema.gql'),
+      sortSchema: true,
+      playground: true, // process.env.NODE_ENV !== 'production',
+      // introspection: process.env.NODE_ENV !== 'production',
+      context: ({ req, res }) => ({
+        req,
+        res,
+      }),
     }),
 
     MongooseModule.forRoot(

@@ -2,17 +2,29 @@ import { Directive, Field, ID, ObjectType, Float } from '@nestjs/graphql';
 
 @ObjectType()
 export class Book {
-  @Field(() => ID)
-  id: string;
+  // @Field(() => ID)
+  // id: string;
 
   @Field()
   title: string;
 
-  @Field(() => Float)
-  price: number;
+  // @Field(() => Float)
+  // price: number;
 
   @Field()
-  authorId: string;
+  author: string;
+
+  @Field()
+  description: string;
+
+  @Field()
+  quantity: number;
+
+
+  @Field()
+  price: number;
+  
+
 }
 
 // Stub configuration of Author entity inside the Book service
