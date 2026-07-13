@@ -1,4 +1,5 @@
 import { IsString, IsNotEmpty, IsOptional, IsNumber, IsPositive, IsInt, Min } from 'class-validator';
+import { BookGenre } from '../graphql-type/book.type';
 
 export class CreateBookDto {
   @IsString()
@@ -10,6 +11,11 @@ export class CreateBookDto {
   author: string;
 
   @IsString()
+  // @IsNotEmpty({ message: 'Author name is required' })
+  @IsOptional()
+  genre: BookGenre;
+
+  @IsString()
   @IsOptional()
   description?: string;
 
@@ -17,6 +23,7 @@ export class CreateBookDto {
   @IsPositive({ message: 'Price must be a positive number' })
   @IsNotEmpty()
   price: number;
+
 
   @IsInt()
   @Min(0, { message: 'Stock quantity cannot be less than 0' })

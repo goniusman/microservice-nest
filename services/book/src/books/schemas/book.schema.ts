@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { BookGenre } from '../graphql-type/book.type';
 
 export type BookDocument = Book & Document;
 
@@ -17,11 +18,17 @@ export class Book extends Document {
   @Prop({ required: true, min: 0 })
   price: number;
 
-  @Prop({ required: true, min: 0, default: 0 })
+  @Prop({ required: true, min: 1, default: 1 })
   quantity: number;
 
+  @Prop({ required: false, type: String, enum: BookGenre, default: BookGenre.FICTION })
+  genre: BookGenre;
+
+  // @Prop({ required: true })
+  // createdAt: Date;
+
   @Prop({ type: Boolean, required: true, default: false })
-  isPublished: boolean; 
+  isPublished: boolean;
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);

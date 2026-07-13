@@ -33,7 +33,16 @@ export class BooksService {
 
 
   async create(dto: CreateBookDto) {
-    return this.bookModel.create(dto);
+    try {
+      return await this.bookModel.create(dto);
+    } catch (e: any) {
+      console.log("========== MONGOOSE ERROR ==========");
+      console.log(e);
+      console.log(e.message);
+      console.log(e.errors);
+      throw e;
+    }
+
   }
 
   async findAll(): Promise<any> {
@@ -49,16 +58,17 @@ export class BooksService {
   async update(id: string, dto: UpdateBookDto) {
     const book = await this.bookModel.findByIdAndUpdate(id, dto, {
       new: true,
-    });
+    }).lean().exec();
 
     if (!book) throw new NotFoundException('Book not found');
     return book;
   }
 
   async delete(id: string) {
-    const book = await this.bookModel.findByIdAndDelete(id);
+    const book = await this.bookModel.findByIdAndDelete(id).lean().exec();
     if (!book) throw new NotFoundException('Book not found');
-    return { message: 'Deleted successfully' };
+    return book;
+    // return { message: 'Deleted successfully' };
   }
 
   async processStockReservation(payload: { orderId: string; bookId: string; quantity: number, userId: string }) {
@@ -139,6 +149,9 @@ export class BooksService {
       book,
     };
   }
+
+
+  //  write a quick hello world function  
 
 
 }

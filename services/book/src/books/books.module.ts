@@ -9,7 +9,7 @@ import { DiscoveryModule } from '@nestjs/core';
 import { BooksConsumer } from './book.consumer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from '../shared/redis/redis.module';
-import { BookResolver } from './book.resolver';
+import { BookResolver } from './book-resolver';
 
 @Module({
   imports: [
