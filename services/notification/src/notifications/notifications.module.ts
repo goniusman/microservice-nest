@@ -33,6 +33,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
             exchange: 'bookverse_global_exchange',
             routingKey: 'inventory_failed',
           },
+          {
+            name: 'notification_review_queue',
+            exchange: 'bookverse_global_exchange',
+            routingKey: 'review_created',
+          },
         ],
         uri: configService.get<string>('RABBITMQ_URL', 'amqp://guest:guest@localhost:5672'),
         registerHandlers: true,

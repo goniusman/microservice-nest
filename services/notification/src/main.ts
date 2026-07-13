@@ -15,6 +15,22 @@ async function bootstrap() {
   });
 
 
+  // {
+  //       transport: Transport.RMQ,
+  //       options: {
+  //         // Point to your active RabbitMQ instance server broker
+  //         urls: ['amqp://localhost:5672'],
+  //         // Must match the exact delivery queue string configured in the review proxy
+  //         queue: 'notification_queue',
+  //         // Manual acknowledgment setting can be configured here for advanced tracking
+  //         noAck: false, 
+  //         queueOptions: {
+  //           durable: true, // Persists the queue across RabbitMQ server reboots
+  //         },
+  //       },
+  //     },
+
+
   // const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   //   transport: Transport.RMQ,
   //   options: {

@@ -25,14 +25,18 @@
     "@nestjs/apollo": "^13.4.2",
     "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.0.1",
     "@nestjs/graphql": "^13.4.2",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/typeorm": "^11.0.3",
+    "@opentelemetry/api": "^1.9.1",
     "axios": "^1.18.1",
     "graphql": "^16.14.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "ts-morph": "^28.0.0"
+    "ts-morph": "^28.0.0",
+    "typeorm": "^1.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

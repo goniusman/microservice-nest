@@ -1,6 +1,7 @@
 
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
+import { EventPattern, Payload, Payload } from '@nestjs/microservices';
 
 
 @Injectable()
@@ -35,7 +36,15 @@ export class NotificationConsumer {
     }
 
 
-
+    @RabbitSubscribe({
+        exchange: 'bookverse_global_exchange',
+        routingKey: 'review_created', // 🔑 Matches the queue mapping routingKey precisely
+        queue: 'notification_review_queue',
+    })
+    public async handleReviewCreatedEvent(payload: any) {
+        console.log(`Notification service captured review event from global exchange for user: ${payload.userId}`);
+        // Execute messaging notification workflows (Email, SMS, Push, etc.) here
+    }
 }
 
 
