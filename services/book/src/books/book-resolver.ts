@@ -4,6 +4,9 @@ import { BookGenre, BookType } from './graphql-type/book.type';
 import { CreateBookInput } from './graphql-type/create-book.input';
 import { BooksService } from './books.service';
 import { UpdateBookInput } from './graphql-type/update-book.input';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from '../common/guards/gql-auth.guard';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 // import { BookType } from './book.type';
 // import { CreateBookInput } from './create-book.input';
 
@@ -16,7 +19,8 @@ export class BookResolver {
 
 // 2. Dynamic Fetch: Pull all books from MongoDB
   @Query(() => [BookType], { name: 'books' })
-  async getBooks(): Promise<BookType[]> {
+  @UseGuards(GqlAuthGuard)
+  async getBooks(@CurrentUser() user: any): Promise<BookType[]> {
     const books = await this.bookService.findAll();
     
     // Mongoose maps _id to id when lean() is used, or GraphQL handles the string conversion

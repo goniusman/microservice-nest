@@ -8,14 +8,20 @@ import { UsersModule } from './users/users.module';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { HealthModule } from './health/health.module';
 import { EnterpriseLoggerMiddleware } from './common/middleware/logger.middleware';
+import { ApolloFederationDriver, ApolloFederationDriverConfig } from '@nestjs/apollo';
+import { GraphQLModule } from '@nestjs/graphql';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    GraphQLModule.forRoot<ApolloFederationDriverConfig>({
+      driver: ApolloFederationDriver,
+      autoSchemaFile: true,
+    }),
     PrometheusModule.register({
-      path: '/metrics', 
+      path: '/metrics',
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],

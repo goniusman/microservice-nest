@@ -1,5 +1,5 @@
 
-import { ObjectType, Field, ID, registerEnumType, Float, Int } from '@nestjs/graphql';
+import { ObjectType, Field, ID, registerEnumType, Float, Int, Directive } from '@nestjs/graphql';
 
 // 1. Define an Enum for Book Categories / Genres
 export enum BookGenre {
@@ -12,7 +12,11 @@ export enum BookGenre {
 // Register the enum with NestJS GraphQL framework
 registerEnumType(BookGenre, { name: 'BookGenre' });
 
+// Cache this entire entity for 60 seconds
+// @Directive('@cacheControl(maxAge: 60)')
 @ObjectType() // Marks this class as a GraphQL Object Type
+// PRIVATE ensures this cache is unique per user session and not shared on a CDN
+// @Directive('@cacheControl(maxAge: 120, scope: PRIVATE)')
 export class BookType {
   @Field(() => ID)
   id: string;
@@ -27,6 +31,7 @@ export class BookType {
   description?: string;
 
   @Field(() => Float) // Maps numbers explicitly to Float
+  // @Directive('@cacheControl(maxAge: 10)') // Price changes often, cache for only 10s
   price: number;
 
   @Field(() => Int) // Maps quantity explicitly to Int
@@ -44,6 +49,16 @@ export class BookType {
 
 
 
+
+@Directive('@key(fields: "id")') // <--- Defines this type as a federated entity
+@ObjectType()
+export class UserType {
+  @Field(() => ID)
+  id: string;
+
+  @Field()
+  username: string;
+}
 
 
 

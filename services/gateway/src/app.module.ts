@@ -37,7 +37,17 @@ import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
-
+GraphQLModule.forRoot<ApolloGatewayDriverConfig>({
+      driver: ApolloGatewayDriver,
+      gateway: {
+        supergraphSdl: new IntrospectAndCompose({
+          subgraphs: [
+            { name: 'users', url: 'http://localhost:3001/graphql' },
+            { name: 'books', url: 'http://localhost:3002/graphql' },
+          ],
+        }),
+      },
+    }),
     CacheModule.register({
       // ttl: 60*60, // seconds
       max: 100000000, // maximum number of items in cache

@@ -11,23 +11,65 @@ import { EnterpriseLoggerMiddleware } from './common/middleware/logger.middlewar
 import { RedisModule } from './shared/redis/redis.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+
+// const redisCache = new Keyv({
+//   store: new KeyvRedis('redis://localhost:6379'),
+// });
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    
+
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true, // join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       playground: true, // process.env.NODE_ENV !== 'production',
       // introspection: process.env.NODE_ENV !== 'production',
-      context: ({ req, res }) => ({
-        req,
-        res,
-      }),
+      context: ({ req, res }) => {
+        // Extract a JWT token from HTTP headers and attach user to context
+        const token = req.headers.authorization || '';
+        // const user = decryptToken(token);
+        // return { req, res, user };
+        return { req, res };
+      },
+      formatError: (error: any) => {
+        // 1. Log the real internal error to your server console or monitoring tool
+        console.error('[GraphQL Execution Error]:', error);
+
+        // 2. Build a safe production payload
+        const graphQLFormattedError = {
+          message: error.message || 'An unexpected error occurred.',
+          path: error.path,
+          extensions: {
+            code: error.extensions?.code || 'INTERNAL_SERVER_ERROR',
+            // Return status code if NestJS HTTP exception provided one
+            statusCode: error.extensions?.originalError?.statusCode || 500, 
+          },
+        };
+
+        // 3. Only attach stack traces if running in local development
+        if (process.env.NODE_ENV !== 'production') {
+          Object.assign(graphQLFormattedError.extensions, {
+            stacktrace: error.extensions?.exception?.stacktrace || error.stack,
+            originalError: error.extensions?.originalError,
+          });
+        }
+
+        return graphQLFormattedError;
+      },
+      plugins: [ApolloServerPluginLandingPageLocalDefault()],
+      allowBatchedHttpRequests: true,
+      // cache: redisCache,
+      // // 1. Enable cache control configuration
+      // cacheControl: {
+      //   defaultMaxAge: 5, // Default global cache time in seconds
+      // },
+      // // 2. Register the response cache plugin
+      // plugins: [responseCachePlugin()],
     }),
 
     MongooseModule.forRoot(
