@@ -8,6 +8,7 @@ import { HealthModule } from './health/health.module';
 import { EnterpriseLoggerMiddleware } from './common/middleware/logger.middleware';
 import { GlobalExceptionFilter } from './common/interceptors/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
     PrometheusModule.register({
       path: '/metrics', // The path Prometheus will scan
     }),
-    HealthModule
+    HealthModule,
+    EmailModule
   ],
   controllers: [AppController],
   providers: [AppService, GlobalExceptionFilter, TransformInterceptor],

@@ -1,11 +1,14 @@
 
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
-import { EventPattern, Payload, Payload } from '@nestjs/microservices';
+import { EventPattern, Payload } from '@nestjs/microservices';
+import { EmailService } from '../../email/email.service.interface';
 
 
 @Injectable()
 export class NotificationConsumer {
+
+    constructor(private readonly emailService: EmailService) { }
 
     //   @EventPattern('inventory_reserved')
     //   async sendOrderConfirmationEmail(@Payload() data: any) {
@@ -24,6 +27,12 @@ export class NotificationConsumer {
     })
     public async handleOrderSuccess(msg: { orderId: string }) {
         console.log(`[Notification Service] ✉️ Email Dispatched: Your order ${msg.orderId} is complete and shipped!`);
+
+        await this.emailService.send({
+            to: 'goniusman400@gmail.com',
+            subject: 'New Notification',
+            body: `<p>[Notification Service] ✉️ Email Dispatched: Your order ${msg.orderId} is complete and shipped!.</p>`,
+        });
     }
 
     @RabbitSubscribe({
@@ -33,6 +42,11 @@ export class NotificationConsumer {
     })
     public async handleOrderFailure(msg: { orderId: string }) {
         console.log(`[Notification Service] ❌ Email Dispatched: Order ${msg.orderId} failed due to short inventory.`);
+        await this.emailService.send({
+            to: 'goniusman400@gmail.com',
+            subject: 'New Notification',
+            body: `<p>[Notification Service] ❌ Email Dispatched: Order ${msg.orderId} failed due to short inventory.</p>`,
+        });
     }
 
 
@@ -42,8 +56,15 @@ export class NotificationConsumer {
         queue: 'notification_review_queue',
     })
     public async handleReviewCreatedEvent(payload: any) {
-        console.log(`Notification service captured review event from global exchange for user: ${payload.userId}`);
+        console.log(`Notification service captured review event from global exchange for user: ${payload}`);
         // Execute messaging notification workflows (Email, SMS, Push, etc.) here
+
+        await this.emailService.send({
+            to: 'goniusman400@gmail.com',
+            subject: 'New Notification',
+            body: `<p>Notification service captured review event from global exchange for user: ${payload}.</p>`,
+        });
+
     }
 }
 

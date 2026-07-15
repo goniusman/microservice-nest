@@ -5,7 +5,7 @@ import { NotificationsService } from './notifications.service';
 import { NotificationController } from './notification.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
-import { NotificationConsumer } from './notification.consumer';
+import { NotificationConsumer } from './consumers/notification.consumer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
