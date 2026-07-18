@@ -61,7 +61,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 
         return graphQLFormattedError;
       },
-      plugins: [ApolloServerPluginLandingPageLocalDefault()],
+      // plugins: [ApolloServerPluginLandingPageLocalDefault()],
       allowBatchedHttpRequests: true,
       // cache: redisCache,
       // // 1. Enable cache control configuration

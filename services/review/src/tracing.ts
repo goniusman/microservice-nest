@@ -67,7 +67,7 @@ export const otelSDK = new NodeSDK({
   instrumentations: [
     getNodeAutoInstrumentations({
       // Suppress noisy internal framework logs if necessary
-      '@opentelemetry/instrumentation-fs': { enabled: false },
+      // '@opentelemetry/instrumentation-fs': { enabled: false },
 
       // the HTTP/Express instrumentation to ignore specific paths
       '@opentelemetry/instrumentation-http': {

@@ -47,19 +47,4 @@ import { DataSource } from 'typeorm';
     },
   ],
 })
-export class AuthModule implements OnModuleInit {
-  // Inject the TypeORM DataSource object directly
-  constructor(private readonly dataSource: DataSource) {}
-
-  async onModuleInit() {
-    if (this.dataSource.isInitialized) {
-      console.log('======================================================');
-      console.log('✅ DATABASE CONNECTED SUCCESSFULLY IN KUBERNETES');
-      console.log(`Primary (Master) Target: ${process.env.DB_MASTER_HOST}`);
-      console.log(`Replica (Slave) Target:  ${process.env.DB_REPLICA_HOST}`);
-      console.log('======================================================');
-    } else {
-      console.error('❌ Database initialization failed.');
-    }
-  }
-}
+export class AuthModule {}

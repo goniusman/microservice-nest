@@ -8,7 +8,7 @@ import { randomUUID } from 'crypto'
 
 async function bootstrap() {
   // Bootstraps using whatever configuration is defined in AppModule
-  const app = await NestFactory.createApplicationContext(AppModule, {
+  const app = await NestFactory.createMicroservice(AppModule, {
     logger: process.env.NODE_ENV === 'production'
       ? ['error', 'warn']
       : ['log', 'error', 'warn']
@@ -77,7 +77,7 @@ async function bootstrap() {
   // const reflector = app.get(Reflector);
   // app.useGlobalInterceptors(new TransformInterceptor(reflector));
   // app.useGlobalFilters(new GlobalExceptionFilter());
-
+  app.listen()
   console.log('📨 Notification Service running (event consumer only)')
 
 }

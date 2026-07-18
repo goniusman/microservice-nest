@@ -29,7 +29,7 @@ export class NotificationConsumer {
         console.log(`[Notification Service] ✉️ Email Dispatched: Your order ${msg.orderId} is complete and shipped!`);
 
         await this.emailService.send({
-            to: 'goniusman400@gmail.com',
+            to: 'osman@gmail.com',
             subject: 'New Notification',
             body: `<p>[Notification Service] ✉️ Email Dispatched: Your order ${msg.orderId} is complete and shipped!.</p>`,
         });
@@ -43,7 +43,7 @@ export class NotificationConsumer {
     public async handleOrderFailure(msg: { orderId: string }) {
         console.log(`[Notification Service] ❌ Email Dispatched: Order ${msg.orderId} failed due to short inventory.`);
         await this.emailService.send({
-            to: 'goniusman400@gmail.com',
+            to: 'osman@gmail.com',
             subject: 'New Notification',
             body: `<p>[Notification Service] ❌ Email Dispatched: Order ${msg.orderId} failed due to short inventory.</p>`,
         });
@@ -60,7 +60,7 @@ export class NotificationConsumer {
         // Execute messaging notification workflows (Email, SMS, Push, etc.) here
 
         await this.emailService.send({
-            to: 'goniusman400@gmail.com',
+            to: 'osman@gmail.com',
             subject: 'New Notification',
             body: `<p>Notification service captured review event from global exchange for user: ${payload}.</p>`,
         });

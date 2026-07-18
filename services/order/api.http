@@ -14,7 +14,7 @@ content-type: application/json
     "userId": "1",
     "bookId": "6a36a14bf130e619a183136b",
     "price": 23,
-    "quantity": 5
+    "quantity": 1
 }
 
 ####

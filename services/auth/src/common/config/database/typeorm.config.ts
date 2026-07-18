@@ -1,75 +1,75 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { ConfigService } from '@nestjs/config';
+// import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+// import { ConfigService } from '@nestjs/config';
 
-export const getTypeOrmConfig = (
-  configService: ConfigService,
-): TypeOrmModuleOptions => ({
-  type: 'postgres',
+// export const getTypeOrmConfig = (
+//   configService: ConfigService,
+// ): TypeOrmModuleOptions => ({
+//   type: 'postgres',
 
-  // The replication object replaces the standard single-connection parameters
+//   // The replication object replaces the standard single-connection parameters
 
-  replication: {
-    // 1. All Write commands go to the Primary Service
-    master: {
-      host: configService.get<string>('DB_MASTER_HOST'), // e.g., "bookverse-postgresql-primary"
-      port: configService.get<number>('DB_MASTER_PORT', 5432), // K8s service internal port
-      username: configService.get<string>('DB_USERNAME'),
-      password: configService.get<string>('DB_PASSWORD'),
-      database: configService.get<string>('DB_NAME_AUTH'),
-      ssl: false,
-    },
-    // 2. All Read commands go to the Read Replica Load-Balancer Service
-    slaves: [
-      {
-        host: configService.get<string>('DB_REPLICA_HOST'), // e.g., "bookverse-postgresql-read"
-        port: configService.get<number>('DB_REPLICA_PORT', 5432), // K8s service internal port
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_NAME_AUTH'),
-        ssl: false,
-      },
-    ],
-  },
+//   replication: {
+//     // 1. All Write commands go to the Primary Service
+//     master: {
+//       host: configService.get<string>('DB_MASTER_HOST'), // e.g., "bookverse-postgresql-primary"
+//       port: configService.get<number>('DB_MASTER_PORT', 5432), // K8s service internal port
+//       username: configService.get<string>('DB_USERNAME'),
+//       password: configService.get<string>('DB_PASSWORD'),
+//       database: configService.get<string>('DB_NAME_AUTH'),
+//       ssl: false,
+//     },
+//     // 2. All Read commands go to the Read Replica Load-Balancer Service
+//     slaves: [
+//       {
+//         host: configService.get<string>('DB_REPLICA_HOST'), // e.g., "bookverse-postgresql-read"
+//         port: configService.get<number>('DB_REPLICA_PORT', 5432), // K8s service internal port
+//         username: configService.get<string>('DB_USERNAME'),
+//         password: configService.get<string>('DB_PASSWORD'),
+//         database: configService.get<string>('DB_NAME_AUTH'),
+//         ssl: false,
+//       },
+//     ],
+//   },
 
-  // replication: {
-  //   master: {
-  //     host: configService.get<string>('DB_MASTER_HOST', 'localhost'),
-  //     port: configService.get<number>('DB_MASTER_PORT', 5432),
-  //     username: configService.get<string>('DB_USERNAME'),
-  //     password: configService.get<string>('DB_PASSWORD'),
-  //     database: configService.get<string>('DB_NAME'),
-  //   },
-  //   slaves: [
-  //     {
-  //       host: configService.get<string>('DB_REPLICA_HOST', 'localhost'),
-  //       port: configService.get<number>('DB_REPLICA_PORT', 5433),
-  //       username: configService.get<string>('DB_USERNAME'),
-  //       password: configService.get<string>('DB_PASSWORD'),
-  //       database: configService.get<string>('DB_NAME'),
-  //     },
-  //     {
-  //       host: configService.get<string>('DB_REPLICA_HOST', 'localhost'),
-  //       port: configService.get<number>('DB_REPLICA_PORT', 5434),
-  //       username: configService.get<string>('DB_USERNAME'),
-  //       password: configService.get<string>('DB_PASSWORD'),
-  //       database: configService.get<string>('DB_NAME'),
-  //     },
-  //   ],
-  // },
+//   // replication: {
+//   //   master: {
+//   //     host: configService.get<string>('DB_MASTER_HOST', 'localhost'),
+//   //     port: configService.get<number>('DB_MASTER_PORT', 5432),
+//   //     username: configService.get<string>('DB_USERNAME'),
+//   //     password: configService.get<string>('DB_PASSWORD'),
+//   //     database: configService.get<string>('DB_NAME'),
+//   //   },
+//   //   slaves: [
+//   //     {
+//   //       host: configService.get<string>('DB_REPLICA_HOST', 'localhost'),
+//   //       port: configService.get<number>('DB_REPLICA_PORT', 5433),
+//   //       username: configService.get<string>('DB_USERNAME'),
+//   //       password: configService.get<string>('DB_PASSWORD'),
+//   //       database: configService.get<string>('DB_NAME'),
+//   //     },
+//   //     {
+//   //       host: configService.get<string>('DB_REPLICA_HOST', 'localhost'),
+//   //       port: configService.get<number>('DB_REPLICA_PORT', 5434),
+//   //       username: configService.get<string>('DB_USERNAME'),
+//   //       password: configService.get<string>('DB_PASSWORD'),
+//   //       database: configService.get<string>('DB_NAME'),
+//   //     },
+//   //   ],
+//   // },
 
-  autoLoadEntities: true,
+//   autoLoadEntities: true,
 
-  // Keep this false in production environments to avoid race conditions 
-  // between multiple running application instances.
-  synchronize: true,
+//   // Keep this false in production environments to avoid race conditions 
+//   // between multiple running application instances.
+//   synchronize: true,
 
-  // 1. Enable query logging
-  logging: ['query', 'error', 'schema'],
-  // 2. Use 'advanced-console' to see structured outputs
-  logger: 'advanced-console',
+//   // 1. Enable query logging
+//   logging: ['query', 'error', 'schema'],
+//   // 2. Use 'advanced-console' to see structured outputs
+//   logger: 'advanced-console',
 
 
-});
+// });
 
 
 
@@ -81,23 +81,23 @@ export const getTypeOrmConfig = (
 
 // Without Replication
 
-// import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-// import { ConfigService } from '@nestjs/config';
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
 
-// export const getTypeOrmConfig = (
-//   configService: ConfigService,
-// ): TypeOrmModuleOptions => ({
-//   type: 'postgres',
+export const getTypeOrmConfig = (
+  configService: ConfigService,
+): TypeOrmModuleOptions => ({
+  type: 'postgres',
 
-//   host: configService.get<string>('DB_HOST'),
-//   port: configService.get<number>('DB_PORT'),
+  host: configService.get<string>('DB_HOST'),
+  port: configService.get<number>('DB_PORT'),
 
-//   username: configService.get<string>('DB_USERNAME'),
-//   password: configService.get<string>('DB_PASSWORD'),
+  username: configService.get<string>('DB_USERNAME'),
+  password: configService.get<string>('DB_PASSWORD'),
 
-//   database: configService.get<string>('DB_NAME'),
+  database: configService.get<string>('DB_NAME_AUTH'),
 
-//   autoLoadEntities: true,
+  autoLoadEntities: true,
 
-//   synchronize: true,
-// });
+  synchronize: true,
+});

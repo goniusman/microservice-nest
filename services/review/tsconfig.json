@@ -21,6 +21,7 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
+    "isolatedModules": false,
     "strict": true,
     "strictPropertyInitialization": false,
   }

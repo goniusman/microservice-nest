@@ -52,6 +52,7 @@ export class OrdersService {
 
       return { message: 'Order processing started', orderId: newOrder.orderId };
     } catch (error) {
+      console.log(error)
       throw error;
     }
 

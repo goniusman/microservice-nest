@@ -151,6 +151,16 @@ export class BooksService {
   }
 
 
+    async findByAuthorId(id: any) {
+    const book = await this.bookModel.findById(id);
+
+    return {
+      valid: !!book,
+      book,
+    };
+  }
+
+
   //  write a quick hello world function  
 
 

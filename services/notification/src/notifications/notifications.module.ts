@@ -7,11 +7,12 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { NotificationConsumer } from './consumers/notification.consumer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [
 
-
+    EmailModule,
     RabbitMQModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -51,8 +52,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
     // RabbitMQService,
     NotificationsService,
-    NotificationConsumer
+    NotificationConsumer,
     // OrderConsumer,
+
 
   ],
 })
