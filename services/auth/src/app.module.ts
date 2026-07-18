@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule, OnModuleInit } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -29,7 +34,7 @@ import { DataSource } from 'typeorm';
       path: '/metrics', // The path Prometheus will scan
     }),
     AuthModule,
-    HealthModule
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [
@@ -37,13 +42,11 @@ import { DataSource } from 'typeorm';
 
     // {
     //   provide: APP_INTERCEPTOR,
-    //   useClass: TransformInterceptor, 
+    //   useClass: TransformInterceptor,
     // },
-  ]
+  ],
 })
-
 export class AppModule implements NestModule, OnModuleInit {
-  
   // 1. Injected dependencies in the constructor
   constructor(private readonly dataSource: DataSource) {}
 

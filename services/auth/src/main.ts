@@ -2,7 +2,6 @@ import { otelSDK } from './tracing';
 // Start the OpenTelemetry SDK before any other imports!
 otelSDK.start();
 
-
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
@@ -11,13 +10,12 @@ import { randomUUID } from 'crypto';
 import { GlobalExceptionFilter } from './common/interceptors/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
-
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: process.env.NODE_ENV === 'production'
-      ? ['error', 'warn']
-      : ['log', 'error', 'warn']
+    logger:
+      process.env.NODE_ENV === 'production'
+        ? ['error', 'warn']
+        : ['log', 'error', 'warn'],
   });
 
   app.useGlobalPipes(
@@ -50,5 +48,3 @@ async function bootstrap() {
   console.log(`🚀 Auth Application is running on: ${port}`);
 }
 bootstrap();
-
-

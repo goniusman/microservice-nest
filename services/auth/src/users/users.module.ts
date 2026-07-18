@@ -23,10 +23,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           {
             name: 'user_created_queue',
             exchange: 'bookverse_global_exchange',
-            routingKey: 'user.created', 
+            routingKey: 'user.created',
           },
         ],
-        uri: configService.get<string>('RABBITMQ_URL', 'amqp://guest:guest@localhost:5672'),
+        uri: configService.get<string>(
+          'RABBITMQ_URL',
+          'amqp://guest:guest@localhost:5672',
+        ),
         registerHandlers: true,
         connectionInitOptions: { wait: true },
       }),
@@ -35,4 +38,4 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   controllers: [UsersController],
   providers: [UsersService],
 })
-export class UsersModule { }
+export class UsersModule {}

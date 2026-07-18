@@ -59,7 +59,7 @@
 
 //   autoLoadEntities: true,
 
-//   // Keep this false in production environments to avoid race conditions 
+//   // Keep this false in production environments to avoid race conditions
 //   // between multiple running application instances.
 //   synchronize: true,
 
@@ -68,16 +68,7 @@
 //   // 2. Use 'advanced-console' to see structured outputs
 //   logger: 'advanced-console',
 
-
 // });
-
-
-
-
-
-
-
-
 
 // Without Replication
 

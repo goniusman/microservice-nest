@@ -9,59 +9,47 @@ import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     // private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     try {
-
-      const existingUser =
-        await this.userRepository.findOne({
-          where: {
-            email: createUserDto.email,
-          },
-        });
+      const existingUser = await this.userRepository.findOne({
+        where: {
+          email: createUserDto.email,
+        },
+      });
 
       if (existingUser) {
-        throw new ConflictException(
-          'Email already exists',
-        );
+        throw new ConflictException('Email already exists');
       }
 
-      const hashedPassword =
-        await bcrypt.hash(
-          createUserDto.password,
-          10,
-        );
+      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
-      const user =
-        this.userRepository.create({
-          email: createUserDto.email,
-          password: hashedPassword,
-        });
+      const user = this.userRepository.create({
+        email: createUserDto.email,
+        password: hashedPassword,
+      });
 
       await this.userRepository.save(user);
 
       return {
-        message:
-          'User registered successfully',
+        message: 'User registered successfully',
       };
-
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 
   async findAll(): Promise<User[]> {
-    return await this.userRepository.find()
+    return await this.userRepository.find();
   }
 
   async findOne(id: string) {
-    return await this.userRepository.findOneBy({ "id": id });
+    return await this.userRepository.findOneBy({ id: id });
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
@@ -71,7 +59,6 @@ export class UsersService {
   async remove(id: string) {
     return await this.userRepository.delete(id);
   }
-
 
   // async getFreshProfile(userId: string): Promise<User> {
   //   // Bypasses the read replica pool entirely to avoid replication lag issues
@@ -89,7 +76,7 @@ export class UsersService {
   async validateUser(data: { userId: string }) {
     console.log('[User Service] RPC validateUser:', data);
 
-    const user = await this.userRepository.findOneBy({ "id": data?.userId });
+    const user = await this.userRepository.findOneBy({ id: data?.userId });
 
     if (!user) {
       return { valid: false };
@@ -100,5 +87,4 @@ export class UsersService {
       user,
     };
   }
-
 }

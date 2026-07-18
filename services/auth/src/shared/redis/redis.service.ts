@@ -9,7 +9,8 @@ export class RedisService implements OnApplicationShutdown {
   constructor(@Inject(REDIS_CLIENT) private readonly redisClient: Redis) {}
 
   async set(key: string, value: any, ttlSeconds?: number): Promise<void> {
-    const stringValue = typeof value === 'object' ? JSON.stringify(value) : value;
+    const stringValue =
+      typeof value === 'object' ? JSON.stringify(value) : value;
     if (ttlSeconds) {
       await this.redisClient.set(key, stringValue, 'EX', ttlSeconds);
     } else {

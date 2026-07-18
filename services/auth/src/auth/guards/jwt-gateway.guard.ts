@@ -1,5 +1,10 @@
 // jwt-gateway.guard.ts
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
@@ -10,15 +15,15 @@ export class JwtGatewayGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractTokenFromHeader(request);
-    
+
     if (!token) {
       throw new UnauthorizedException('Missing token');
     }
-    
+
     try {
       // Decode the payload (e.g., { sub: "user-uuid-123", email: "test@gmail.com", role: "USER" })
       const payload = await this.jwtService.verifyAsync(token);
-      
+
       // Attach user info to the request context
       request['user'] = payload;
     } catch {

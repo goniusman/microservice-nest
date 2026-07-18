@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { TerminusModule } from '@nestjs/terminus';
 import { HealthController } from './health.controller';
@@ -7,16 +6,16 @@ import { HealthController } from './health.controller';
 // import { TerminusLogger } from '../common/interceptors/terminus-logger.service';
 
 @Module({
-    imports: [
-        // TerminusModule.forRoot({
-        //     logger: TerminusLogger,
-        //     // logger: false,
-        //     // errorLogStyle: 'pretty',
-        //     // gracefulShutdownTimeoutMs: 1000,
-        // }),
-        // HttpModule
-    ],
-    controllers: [HealthController],
-    providers: []
+  imports: [
+    // TerminusModule.forRoot({
+    //     logger: TerminusLogger,
+    //     // logger: false,
+    //     // errorLogStyle: 'pretty',
+    //     // gracefulShutdownTimeoutMs: 1000,
+    // }),
+    // HttpModule
+  ],
+  controllers: [HealthController],
+  providers: [],
 })
-export class HealthModule { }
+export class HealthModule {}

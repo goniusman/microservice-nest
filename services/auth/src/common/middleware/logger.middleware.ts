@@ -4,12 +4,15 @@ import { trace } from '@opentelemetry/api';
 
 @Injectable()
 export class EnterpriseLoggerMiddleware implements NestMiddleware {
-
   // 1. Define the endpoints you want to ignore
-  private readonly ignoredUris = ['/metrics', '/health/live', '/health/ready', '/health/startup'];
+  private readonly ignoredUris = [
+    '/metrics',
+    '/health/live',
+    '/health/ready',
+    '/health/startup',
+  ];
 
   use(req: Request, res: Response, next: NextFunction) {
-
     // 2. Check if the current URI (or originalUrl) is in the ignored list
     if (this.ignoredUris.includes(req.originalUrl || req.url)) {
       return next(); // Skip logging completely and move to the next middleware
@@ -26,7 +29,9 @@ export class EnterpriseLoggerMiddleware implements NestMiddleware {
       const activeSpan = trace.getActiveSpan();
       const realTraceId = activeSpan
         ? activeSpan.spanContext().traceId
-        : (req.headers['x-b3-traceid'] || req.headers['traceparent'] || 'no-trace-id');
+        : req.headers['x-b3-traceid'] ||
+          req.headers['traceparent'] ||
+          'no-trace-id';
       //   const activeSpan = trace.getActiveSpan();
       //   const traceId = activeSpan ? activeSpan.spanContext().traceId : req.headers['x-request-id'] || 'no-trace-id';
 

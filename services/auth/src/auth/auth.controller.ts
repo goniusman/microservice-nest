@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Res, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+  Res,
+  HttpStatus,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
@@ -13,14 +25,12 @@ import type { Response } from 'express';
 import { RedisService } from '../shared/redis/redis.service';
 // import { REDIS_CLIENT } from './redis.module';
 
-
-
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly redisService: RedisService
-  ) { }
+    private readonly redisService: RedisService,
+  ) {}
 
   // @Post()
   // create(@Body() createAuthDto: CreateAuthDto) {
@@ -47,15 +57,12 @@ export class AuthController {
   //   return this.authService.remove(+id);
   // }
 
-
   @Post('register')
   register(
     @Body()
     registerDto: RegisterDto,
   ) {
-    return this.authService.register(
-      registerDto,
-    );
+    return this.authService.register(registerDto);
   }
 
   @Post('login')
@@ -63,33 +70,23 @@ export class AuthController {
     @Body()
     loginDto: LoginDto,
   ) {
-    return this.authService.login(
-      loginDto,
-    );
+    return this.authService.login(loginDto);
   }
-
 
   @Post('refresh')
   refresh(@Body() body: any) {
-    return this.authService.refreshToken(
-      body.refreshToken,
-    );
+    return this.authService.refreshToken(body.refreshToken);
   }
 
   @UseGuards(JwtGatewayGuard)
   @Post('logout')
   logout(@Req() req: any) {
-    return this.authService.logout(
-      req.user.id,
-    );
+    return this.authService.logout(req.user.id);
   }
-
 
   @UseGuards(JwtGatewayGuard)
   @Get('profile')
-  async getProfile(
-    @Req() req: any,
-  ) {
+  async getProfile(@Req() req: any) {
     try {
       const data = req.user;
       const cacheKey = `book:${data.id}`;
@@ -108,10 +105,9 @@ export class AuthController {
       await this.redisService.set(cacheKey, dbBook, 300);
 
       return { data: dbBook, source: 'Database' };
-
     } catch (error) {
-      console.log(error)
-      throw error
+      console.log(error);
+      throw error;
     }
 
     // return req.user;
@@ -125,11 +121,10 @@ export class AuthController {
     return 'admin data';
   }
 
-
   @Get('validate-gateway')
   @UseGuards(JwtGatewayGuard)
   async validateGateway(@Req() req: Request, @Res() res: Response) {
-    console.log('validadin')
+    console.log('validadin');
     const user = req.user as any; // Retreived from our Guard above
     if (!user) {
       return res.status(HttpStatus.UNAUTHORIZED).send();
@@ -142,8 +137,4 @@ export class AuthController {
     // Return a clean 200 OK back to NGINX with an empty body
     return res.status(HttpStatus.OK).send();
   }
-
-
-
-
 }

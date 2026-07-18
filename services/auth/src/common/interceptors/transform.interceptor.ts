@@ -18,15 +18,17 @@ export interface Response<T> {
 }
 
 @Injectable()
-export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> {
-  constructor(private reflector: Reflector) { }
+export class TransformInterceptor<T> implements NestInterceptor<
+  T,
+  Response<T>
+> {
+  constructor(private reflector: Reflector) {}
   intercept(
     context: ExecutionContext,
     next: CallHandler,
   ): Observable<Response<T>> {
     const httpContext = context.switchToHttp();
     const request = httpContext.getRequest();
-
 
     // 1. HARD EXCLUSIONS: Instantly bypass by URL path strings
     // This catches Kubernetes liveness probes and Prometheus metrics endpoints perfectly!
@@ -45,8 +47,6 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
       return next.handle();
     }
 
-
-
     const response = context.switchToHttp().getResponse();
     const statusCode = response.statusCode;
 
@@ -55,7 +55,7 @@ export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> 
         success: true,
         statusCode: statusCode,
         message: 'Request processed successfully',
-        // If your controller returns an object with a custom message, you can extract it here, 
+        // If your controller returns an object with a custom message, you can extract it here,
         // otherwise default to standard data payload
         data: data ?? null,
         timestamp: new Date().toISOString(),

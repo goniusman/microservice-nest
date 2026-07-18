@@ -36,7 +36,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       success: false, // 👈 Explicitly false for errors
       statusCode: status,
       message: Array.isArray(message) ? message.join(', ') : message,
-      data: null, 
+      data: null,
       timestamp: new Date().toISOString(),
     });
   }
