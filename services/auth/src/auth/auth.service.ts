@@ -21,23 +21,30 @@ export class AuthService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   private async generateAccessToken(user: User) {
     const payload = {
       sub: user.id,
       email: user.email,
-      role: user.role,
+      role: user.roles,
     };
 
     return this.jwtService.sign(payload);
   }
 
   private async generateTokens(user: User) {
+    
+    const permissions = new Set<string>();
+    user.roles.forEach(role => {
+      role.permissions.forEach(perm => permissions.add(perm.name));
+    });
+
     const payload = {
       sub: user.id,
       email: user.email,
-      role: user.role,
+      roles: user.roles.map(r => r.name),
+      permissions: Array.from(permissions),
     };
 
     const accessToken = this.jwtService.sign(payload, {
@@ -112,6 +119,7 @@ export class AuthService {
         where: {
           email: loginDto.email,
         },
+
       });
 
       if (!user) {

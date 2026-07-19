@@ -7,6 +7,8 @@ import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { AmqpConnection, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { trace } from '@opentelemetry/api';
+import { IUserProfile } from '@my-app/shared'; // Clean, direct workspace lookup
+
 
 @Injectable()
 // export class BooksService implements OnModuleInit {
@@ -151,7 +153,7 @@ export class BooksService {
   }
 
 
-    async findByAuthorId(id: any) {
+  async findByAuthorId(id: any) {
     const book = await this.bookModel.findById(id);
 
     return {
@@ -160,8 +162,8 @@ export class BooksService {
     };
   }
 
-
-  //  write a quick hello world function  
-
+  async validate(user: IUserProfile) {
+    console.log(user.status);
+  }
 
 }

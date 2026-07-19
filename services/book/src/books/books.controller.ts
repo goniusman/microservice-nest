@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Inject, UseGuards } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
@@ -7,6 +7,7 @@ import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { RedisService } from '../shared/redis/redis.service';
 
 @Controller('books')
+@UseGuards(JwtAuthGuard, PermissionGuard)
 export class BooksController {
   private bookStock = { book_123: 5 };
 
