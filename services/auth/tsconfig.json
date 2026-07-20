@@ -15,8 +15,12 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@shared/libs/redis": ["../../shared/libs/redis/src/index.ts"],
-      "@shared/libs/redis/*": ["../../shared/libs/redis/src/*"]
+      "@shared/libs/redis": [
+        "../../shared/libs/redis/src/index.ts"
+      ],
+      "@shared/libs/redis/*": [
+        "../../shared/libs/redis/src/*"
+      ]
     },
     "incremental": true,
     "skipLibCheck": true,
@@ -27,5 +31,8 @@
     "noFallthroughCasesInSwitch": false,
     "strict": true,
     "strictPropertyInitialization": false,
+  },
+  "watchOptions": {
+    "watchFile": "fixedPollingInterval"
   }
 }

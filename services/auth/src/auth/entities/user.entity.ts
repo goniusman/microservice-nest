@@ -9,19 +9,17 @@ import {
 } from 'typeorm';
 import { Role } from './role.entity';
 
-export enum UserRole {
-  USER = 'USER',
-  ADMIN = 'ADMIN',
-}
+// export enum UserRole {
+//   USER = 'USER',
+//   ADMIN = 'ADMIN',
+// }
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({
-    unique: true,
-  })
+  @Column({ unique: true })
   email: string;
 
   @Column()

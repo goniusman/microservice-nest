@@ -11,10 +11,12 @@ import { RolesGuard } from './guards/roles.guard';
 import { RedisModule } from '../shared/redis/redis.module';
 import { RedisService } from '../shared/redis/redis.service';
 import { DataSource } from 'typeorm';
+import { Role } from './entities/role.entity';
+import { Permission } from './entities/permission.entity';
 // import { REDIS_CLIENT } from '../shared/redis/redis.module';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Role, Permission]),
 
     // JwtModule.register({
     //   secret: process.env.JWT_ACCESS_SECRET,

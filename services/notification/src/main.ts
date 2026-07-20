@@ -33,6 +33,7 @@ async function bootstrap() {
 
   // const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
   //   transport: Transport.RMQ,
+  // { inheritAppConfig: true },
   //   options: {
   //     urls: [`${process.env.RABBITMQ_URL}`],
   //     queue: 'notification_email_queue', // Isolated queue

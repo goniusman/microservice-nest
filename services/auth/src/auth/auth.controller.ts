@@ -10,6 +10,9 @@ import {
   Req,
   Res,
   HttpStatus,
+  ForbiddenException,
+  HttpCode,
+  Headers
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
@@ -24,13 +27,20 @@ import type { Request } from 'express';
 import type { Response } from 'express';
 import { RedisService } from '../shared/redis/redis.service';
 // import { REDIS_CLIENT } from './redis.module';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+
+
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly redisService: RedisService,
-  ) {}
+    @InjectRepository(User) private userRepository: Repository<User>
+  ) { }
 
   // @Post()
   // create(@Body() createAuthDto: CreateAuthDto) {
@@ -124,7 +134,7 @@ export class AuthController {
   @Get('validate-gateway')
   @UseGuards(JwtGatewayGuard)
   async validateGateway(@Req() req: Request, @Res() res: Response) {
-    console.log('validadin');
+    // console.log('validadin');
     const user = req.user as any; // Retreived from our Guard above
     if (!user) {
       return res.status(HttpStatus.UNAUTHORIZED).send();
@@ -137,4 +147,69 @@ export class AuthController {
     // Return a clean 200 OK back to NGINX with an empty body
     return res.status(HttpStatus.OK).send();
   }
+
+
+  // @Post('validate-gateway')
+  // @HttpCode(HttpStatus.OK)
+  // async gatewayCheck(
+  //   @Headers('x-user-id') userId: string, // Assumes JWT signature check has run and populated this header
+  //   @Headers('x-original-method') method: string,
+  //   @Headers('x-original-uri') uri: string,
+  //   @Res() res: Response
+  // ) {
+  //   if (!userId || !method || !uri) {
+  //     throw new ForbiddenException('Missing routing context headers.');
+  //   }
+
+  //   const result = await this.authService.validateRequest(userId, method, uri);
+
+  //   if (!result.authorized) {
+  //     throw new ForbiddenException('Access Denied: Insufficient permissions.');
+  //   }
+
+  //   // Return 200 OK and return user identity metadata back to NGINX
+  //   return res.status(HttpStatus.OK).send();
+  //   // return {
+  //   //   status: 'Success',
+  //   //   userId: userId,
+  //   //   roles: result.roles.join(','),
+  //   // };
+  // }
+
+  // Listens for 'get_user_permissions' packets over TCP
+  @MessagePattern({ cmd: 'get_user_permissions' })
+  async getUserPermissions(@Payload() data: { userId: string }) {
+    console.log(data)
+    const user = await this.userRepository.findOne({
+      where: { id: data.userId },
+      relations: {
+        roles: {
+          permissions: true
+        }
+      }
+    });
+
+    if (!user) {
+      return { userId: data.userId, roles: [], permissions: [] };
+    }
+
+    const roles = user.roles.map(r => r.name);
+    const permissionMap = new Map<string, { method: string; path: string }>();
+
+    user.roles.forEach(role => {
+      role.permissions.forEach(perm => {
+        const key = `${perm.httpMethod}:${perm.pathPattern}`;
+        permissionMap.set(key, { method: perm.httpMethod, path: perm.pathPattern });
+      });
+    });
+
+    return {
+      userId: data.userId,
+      roles: roles,
+      permissions: Array.from(permissionMap.values()),
+    };
+  }
+
+
+
 }

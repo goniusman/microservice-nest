@@ -60,7 +60,7 @@ export class CreateReviewHandler implements ICommandHandler<CreateReviewCommand>
     await Promise.all([
       this.amqpConnection.publish('bookverse_global_exchange', 'review_published', {
         reviewId: review.id,
-        authorId: userId,
+        author: userId,
         bookId: bookId,
       }),
       this.amqpConnection.publish('bookverse_global_exchange', 'book_rating_changed', {

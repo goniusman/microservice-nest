@@ -1,20 +1,25 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, Inject, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Inject, UseGuards, NotFoundException, ForbiddenException, Req } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { ClientProxy, EventPattern, Payload } from '@nestjs/microservices';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { RedisService } from '../shared/redis/redis.service';
+import { PermissionGuard } from '../auth/guards/permission.guard';
+import { BookPolicy } from './policies/book.policy';
+import { AbacEngineService } from '../auth/abac/abac-engine.service';
 
 @Controller('books')
-@UseGuards(JwtAuthGuard, PermissionGuard)
+@UseGuards(PermissionGuard)
 export class BooksController {
   private bookStock = { book_123: 5 };
 
   constructor(
     private readonly booksService: BooksService,
     // @Inject('BROADCAST_BROKER') private readonly client: ClientProxy
-    private readonly redisService: RedisService
+    private readonly redisService: RedisService,
+    private readonly bookPolicy: BookPolicy,
+    private readonly abacEngine: AbacEngineService,
   ) { }
 
   @Post()
@@ -63,7 +68,7 @@ export class BooksController {
     return this.redisService.get(redisKey).then(cached => {
       if (cached) {
         console.log('[BooksController] Cache hit for all books');
-        return {  source: 'cache', books: cached };
+        return { source: 'cache', books: cached };
       } else {
         console.log('[BooksController] Cache miss for all books, fetching from DB');
         return this.booksService.findAll().then(books => {
@@ -83,13 +88,73 @@ export class BooksController {
     return this.booksService.findOne(id);
   }
 
+  // @Put(':id')
+  // update(@Param('id') id: string, @Body() dto: UpdateBookDto) {
+  //   return this.booksService.update(id, dto);
+  // }
+
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateBookDto) {
-    return this.booksService.update(id, dto);
+  async updateBook(
+    @Param('id') bookId: string,
+    @Body() updateBookDto: any,
+    @Req() request: any,
+  ) {
+    const user = request.user; // Appended by PermissionGuard: { id, roles }
+
+    // Fetch the raw document configuration from MongoDB
+    const book = await this.booksService.findOne(bookId);
+    if (!book) throw new NotFoundException('Target document cannot be found.');
+
+    // Layer 2: ReBAC Check (Verifies Resource Ownership Mapping)
+    const hasOwnership = this.bookPolicy.canUpdate(user, book);
+    if (!hasOwnership) {
+      throw new ForbiddenException('Access Denied: Relationship owner check failed.');
+    }
+
+    // Layer 3: ABAC Check (Validates Environmental Attributes Matrix)
+    try {
+      this.abacEngine.evaluate({
+        user: user,
+        resource: {
+          type: 'book',
+          status: book.status, // e.g., 'DRAFT', 'UNDER_REVIEW', 'ARCHIVED'
+          author: book.author
+        },
+        environment: {
+          // Captures client IP proxy headers passed from NGINX setup out front
+          clientIp: request.headers['x-forwarded-for'] || request.ip || '127.0.0.1',
+          requestTime: new Date(), // Real-time timestamp execution
+        }
+      });
+    } catch (abacError: any) {
+      // Catch validation rule issues and bubble down descriptive errors to clients
+      throw new ForbiddenException(abacError.message);
+    }
+
+    // All structural protection checks cleared successfully
+    return this.booksService.update(bookId, updateBookDto);
   }
 
+  // @Delete(':id')
+  // delete(@Param('id') id: string) {
+  //   return this.booksService.delete(id);
+  // }
+
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.booksService.delete(id);
+  async deleteBook(@Param('id') bookId: string, @Req() request: any) {
+    const user = request.user;
+
+    const book = await this.booksService.findOne(bookId);
+    if (!book) throw new NotFoundException('Book not found.');
+
+    // Enforce deletion rule context
+    if (!this.bookPolicy.canDelete(user, book)) {
+      throw new ForbiddenException('Access Denied: Insufficient ownership relationship status.');
+    }
+
+    return this.booksService.delete(bookId);
   }
+
+
+
 }

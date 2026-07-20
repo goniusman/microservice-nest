@@ -10,6 +10,9 @@ import { BooksConsumer } from './book.consumer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from '../shared/redis/redis.module';
 import { BookResolver } from './book-resolver';
+import { AuthModule } from '../auth/auth.module';
+import { BookPolicy } from './policies/book.policy';
+import { AbacEngineService } from '../auth/abac/abac-engine.service';
 
 @Module({
   imports: [
@@ -43,9 +46,10 @@ import { BookResolver } from './book-resolver';
       { name: Book.name, schema: BookSchema },
     ]),
 
+    AuthModule
 
   ],
   controllers: [BooksController],
-  providers: [BooksService, BooksConsumer, BookResolver],
+  providers: [BooksService, BooksConsumer, BookResolver, BookPolicy, AbacEngineService],
 })
 export class BooksModule { }

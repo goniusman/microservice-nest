@@ -6,7 +6,7 @@ import {
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsRelations, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
 import { User } from './entities/user.entity';
@@ -34,7 +34,7 @@ export class AuthService {
   }
 
   private async generateTokens(user: User) {
-    
+
     const permissions = new Set<string>();
     user.roles.forEach(role => {
       role.permissions.forEach(perm => permissions.add(perm.name));
@@ -59,6 +59,67 @@ export class AuthService {
 
     return { accessToken, refreshToken };
   }
+
+  // Triggered once upon Login or Token generation to build the user cache
+  async buildAndCachePermissions(userId: string): Promise<any[]> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId as any // Casting as any safely bypasses strict UUID string matching bottlenecks
+      },
+      relations: {
+        roles: {
+          permissions: true
+        }
+      } as FindOptionsRelations<User> // Explicitly enforces the correct TypeORM relation structural contract
+    });
+    if (!user) throw new UnauthorizedException('User not found');
+
+    const compiledPermissions = new Map<string, { method: string; path: string }>();
+
+    user.roles.forEach((role) => {
+      role.permissions.forEach((perm) => {
+        const key = `${perm.httpMethod}:${perm.pathPattern}`;
+        compiledPermissions.set(key, { method: perm.httpMethod, path: perm.pathPattern });
+      });
+    });
+
+    const permissionList = Array.from(compiledPermissions.values());
+    const roleList = user.roles.map(r => r.name);
+
+    // Save to Redis for sub-millisecond lookups later
+    // await this.redis.set(`user:perms:${userId}`, JSON.stringify({ permissions: permissionList, roles: roleList }), 3600);
+
+    return permissionList;
+  }
+
+
+  // Intercepts NGINX auth requests
+  // async validateRequest(userId: string, incomingMethod: string, incomingUri: string): Promise<{ authorized: boolean; roles: string[] }> {
+  //   // 1. Fetch compiled permissions from Redis cache (fallback to DB if cache missed)
+  //   // const cachedData = JSON.parse(await this.redis.get(`user:perms:${userId}`));
+  //   const sampleCachedData = {
+  //     roles: ['moderator'],
+  //     permissions: [
+  //       { method: 'GET', path: '/books' },
+  //       { method: 'GET', path: '/books/:id' },
+  //       { method: 'POST', path: '/books' },
+  //       { method: 'DELETE', path: '/books/:id' },
+  //       { method: '*', path: '/books/:bookId/reviews*' } // Covers all review sub-routes
+  //     ]
+  //   };
+
+  //   const cleanPath = incomingUri.split('?')[0]; // Strip out query params (?sort=asc)
+
+  //   const isMatch = sampleCachedData.permissions.some((rule) => {
+  //     const methodMatch = rule.method === '*' || rule.method.toUpperCase() === incomingMethod.toUpperCase();
+  //     if (!methodMatch) return false;
+
+  //     const regex = pathToRegexp(rule.path);
+  //     return regex.test(cleanPath);
+  //   });
+
+  //   return { authorized: isMatch, roles: sampleCachedData.roles };
+  // }
 
   private async hashToken(token: string) {
     return crypto.createHash('sha256').update(token).digest('hex');

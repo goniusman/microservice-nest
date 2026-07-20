@@ -7,7 +7,7 @@ import {
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { getTypeOrmConfig } from './common/config/database/typeorm.config';
+import { getTypeOrmConfig } from './common/config/database/database.config';
 
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
@@ -18,9 +18,12 @@ import { EnterpriseLoggerMiddleware } from './common/middleware/logger.middlewar
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { DataSource } from 'typeorm';
+import { SentryModule } from "@sentry/nestjs/setup";
+
 
 @Module({
   imports: [
+    SentryModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
     }),

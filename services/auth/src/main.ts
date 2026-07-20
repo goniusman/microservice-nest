@@ -2,13 +2,17 @@ import { otelSDK } from './tracing';
 // Start the OpenTelemetry SDK before any other imports!
 otelSDK.start();
 
+// Import this first!
+import "./instrument";
+
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 
-import { GlobalExceptionFilter } from './common/interceptors/http-exception.filter';
+import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -17,6 +21,17 @@ async function bootstrap() {
         ? ['error', 'warn']
         : ['log', 'error', 'warn'],
   });
+
+
+  const microserviceTcp = app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.TCP,
+    options: {
+      host: '127.0.0.1',
+      port: 8877, // Internal TCP port
+    },
+  });
+
+
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -43,6 +58,7 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
   app.useGlobalInterceptors(new TransformInterceptor(reflector));
   app.useGlobalFilters(new GlobalExceptionFilter());
+  await app.startAllMicroservices();
   const port = process.env.PORT || 3000;
   await app.listen(port, '0.0.0.0');
   console.log(`🚀 Auth Application is running on: ${port}`);

@@ -10,7 +10,10 @@ export class Book extends Document {
   title: string;
 
   @Prop({ required: true, trim: true, index: true })
-  author: string;
+  author: string;  
+  
+  @Prop({ required: false })
+  status: string;
 
   @Prop({ type: String, default: '' })
   description: string;

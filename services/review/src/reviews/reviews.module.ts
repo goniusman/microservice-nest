@@ -36,6 +36,7 @@ const QueryHandlers = [GetReviewByIdHandler, GetReviewsByProductHandler];
     //   {
     //     name: 'NOTIFICATION_SERVICE_PROXY',
     //     transport: Transport.RMQ,
+    // { inheritAppConfig: true }, // inherit global pipes, interceptors, guards and filters configured for the main (HTTP-based) application
     //     options: {
     //       urls: ['amqp://localhost:5672'], // Your RabbitMQ server instance address
     //       queue: 'review_created',

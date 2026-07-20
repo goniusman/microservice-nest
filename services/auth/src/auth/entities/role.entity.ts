@@ -1,4 +1,4 @@
-// src/auth/entities/role.entity.ts
+// auth-service/src/auth/entities/role.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
 import { Permission } from './permission.entity';
 import { User } from './user.entity';
@@ -9,13 +9,13 @@ export class Role {
   id: string;
 
   @Column({ unique: true })
-  name: string; // e.g., 'admin', 'writer', 'reader'
+  name: string; // e.g., 'administrator', 'moderator', 'author', 'user'
 
-  @ManyToMany(() => Permission, (permission) => permission.roles)
+  @ManyToMany(() => Permission, (permission) => permission.roles, { eager: true })
   @JoinTable({
     name: 'role_permissions',
     joinColumn: { name: 'role_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'permission_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'permission_id', referencedColumnName: 'id' }
   })
   permissions: Permission[];
 
