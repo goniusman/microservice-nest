@@ -4,22 +4,21 @@ WORKDIR /usr/src/app
 
 ARG SERVICE_NAME
 
-# Copy root package manifests ONLY
+# Copy root package manifests
 COPY package*.json ./
 
-# Copy shared configs and package manifest
+# Copy all package.json files from shared and services
 COPY shared/package*.json ./shared/
-COPY shared/tsconfig.json ./shared/
+COPY services/*/package*.json ./services/
 
-# Copy service package manifest and configs
-COPY services/${SERVICE_NAME}/package*.json ./services/${SERVICE_NAME}/
-COPY services/${SERVICE_NAME}/tsconfig*.json ./services/${SERVICE_NAME}/
-
+# Install dependencies for ALL workspaces
 RUN npm install --legacy-peer-deps
 
+# Copy source code and configs
 COPY shared/ ./shared/
 COPY services/${SERVICE_NAME}/ ./services/${SERVICE_NAME}/
 
+# Build shared library first, then target service
 RUN npm run build --workspace=@my-app/shared
 RUN npm run build --workspace=${SERVICE_NAME}
 
@@ -33,15 +32,23 @@ WORKDIR /usr/src/app
 ARG SERVICE_NAME
 ENV TARGET_SERVICE=${SERVICE_NAME}
 
-# Copy node_modules and built dist folders only
+# Copy root manifests & pruned node_modules
 COPY --from=builder /usr/src/app/package*.json ./
 COPY --from=builder /usr/src/app/node_modules ./node_modules
+
+# COPY BOTH package.json AND dist FOR SHARED (Fixes MODULE_NOT_FOUND)
+COPY --from=builder /usr/src/app/shared/package*.json ./shared/
 COPY --from=builder /usr/src/app/shared/dist ./shared/dist
+
+# Copy built service output
+COPY --from=builder /usr/src/app/services/${SERVICE_NAME}/package*.json ./services/${SERVICE_NAME}/
 COPY --from=builder /usr/src/app/services/${SERVICE_NAME}/dist ./services/${SERVICE_NAME}/dist
 
 EXPOSE 3000
 
-CMD node services/${TARGET_SERVICE}/dist/main.js
+CMD ["sh", "-c", "node services/${TARGET_SERVICE}/dist/main.js"]
+
+
 
 
 
