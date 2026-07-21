@@ -1,5 +1,0 @@
-// // book-service/src/auth/decorators/permissions.decorator.ts
-// import { SetMetadata } from '@nestjs/common';
-
-// export const PERMISSIONS_KEY = 'permissions';
-// export const SetPermissions = (...permissions: string[]) => SetMetadata(PERMISSIONS_KEY, permissions);

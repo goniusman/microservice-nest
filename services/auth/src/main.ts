@@ -28,6 +28,9 @@ async function bootstrap() {
     options: {
       host: '127.0.0.1',
       port: 8877, // Internal TCP port
+      // Socket reconnect/retry handling configuration
+      retryAttempts: 5,
+      retryDelay: 1000,
     },
   });
 
@@ -60,6 +63,7 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
   await app.startAllMicroservices();
   const port = process.env.PORT || 3000;
+  app.enableShutdownHooks()
   await app.listen(port, '0.0.0.0');
   console.log(`🚀 Auth Application is running on: ${port}`);
 }

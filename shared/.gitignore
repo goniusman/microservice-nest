@@ -54,19 +54,3 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-
-/generated/prisma
-# Build output folders
-dist/
-build/
-
-# Ignore generated js files in src directories (if any escape)
-services/**/src/**/*.js
-services/**/src/**/*.js.map
-services/**/src/**/*.d.ts
-shared/src/**/*.js
-shared/src/**/*.js.map
-shared/src/**/*.d.ts
-
-GarbaseCode/
-

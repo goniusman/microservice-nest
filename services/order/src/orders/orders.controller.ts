@@ -6,14 +6,17 @@ import {
   Param,
   Put,
   Delete,
-  Headers
+  Headers,
+  UseGuards
 } from '@nestjs/common';
 
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { EventPattern, Payload } from '@nestjs/microservices';
+import { PermissionGuard, RedisService } from '@my-app/shared';
 
 @Controller('orders')
+@UseGuards(PermissionGuard)
 export class OrdersController {
   constructor(
     private readonly ordersService: OrdersService,

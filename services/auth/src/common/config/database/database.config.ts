@@ -88,7 +88,8 @@ export const getTypeOrmConfig = (
   autoLoadEntities: true,
   
   // Set this to false now that you are using migrations!
-  synchronize: false, 
+  synchronize: true, 
+  // synchronize: false, 
   
   // Tells NestJS where to look for migrations at runtime
   migrations: [__dirname + '/../migrations/*{.ts,.js}'],

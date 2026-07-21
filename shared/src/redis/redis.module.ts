@@ -4,7 +4,7 @@ import Redis, { RedisOptions } from 'ioredis';
 import { ConfigService } from '@nestjs/config';
 
 export const REDIS_CLIENT = 'REDIS_CLIENT';
-
+ 
 @Global()
 @Module({})
 export class RedisModule {

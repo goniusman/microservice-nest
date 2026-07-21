@@ -4,10 +4,11 @@ import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { ClientProxy, EventPattern, Payload } from '@nestjs/microservices';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { RedisService } from '../shared/redis/redis.service';
-import { PermissionGuard } from '../auth/guards/permission.guard';
+// import { RedisService } from '../shared/redis/redis.service';
+// import { PermissionGuard } from '../auth/guards/permission.guard';
 import { BookPolicy } from './policies/book.policy';
 import { AbacEngineService } from '../auth/abac/abac-engine.service';
+import { PermissionGuard, RedisService } from '@my-app/shared';
 
 @Controller('books')
 @UseGuards(PermissionGuard)

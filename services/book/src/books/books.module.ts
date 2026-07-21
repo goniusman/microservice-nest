@@ -8,11 +8,12 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { DiscoveryModule } from '@nestjs/core';
 import { BooksConsumer } from './book.consumer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { RedisModule } from '../shared/redis/redis.module';
+// import { RedisModule } from '../shared/redis/redis.module';
 import { BookResolver } from './book-resolver';
 import { AuthModule } from '../auth/auth.module';
 import { BookPolicy } from './policies/book.policy';
 import { AbacEngineService } from '../auth/abac/abac-engine.service';
+import { IUserProfile } from '@my-app/shared';
 
 @Module({
   imports: [

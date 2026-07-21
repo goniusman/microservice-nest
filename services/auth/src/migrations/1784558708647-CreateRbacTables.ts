@@ -5,8 +5,8 @@ export class CreateRbacTables1784558708647 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE "users" ADD "status" character varying NOT NULL DEFAULT 'ACTIVE'`);
-        await queryRunner.query(`CREATE TYPE "public"."users_role_enum" AS ENUM('USER', 'ADMIN')`);
-        await queryRunner.query(`ALTER TABLE "users" ADD "role" "public"."users_role_enum" NOT NULL DEFAULT 'USER'`);
+        await queryRunner.query(`CREATE TYPE "public"."users_role_enum" AS ENUM('administrator', 'author', 'user', 'moderator')`);
+        await queryRunner.query(`ALTER TABLE "users" ADD "role" "public"."users_role_enum" NOT NULL DEFAULT 'user'`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {

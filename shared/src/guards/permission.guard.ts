@@ -3,12 +3,12 @@ import { Injectable, CanActivate, ExecutionContext, ForbiddenException, Inject }
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { pathToRegexp } from 'path-to-regexp';
-import { RedisService } from '../../shared/redis/redis.service'; // Make sure the path matches your folder tree
+import { RedisService } from '../redis/redis.service'; // Make sure the path matches your folder tree
 
 interface AuthProfile {
   roles: string[];
   permissions: Array<{ method: string; path: string }>;
-}
+} 
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
@@ -21,7 +21,7 @@ export class PermissionGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     let userId = request.headers['x-user-id'] as string; 
     userId = 'a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1'
-    userId = '52434d51-5da3-4057-8894-6cec8ebff12d'
+    // userId = '52434d51-5da3-4057-8894-6cec8ebff12d'
     if (!userId) {
       throw new ForbiddenException('Access Denied: Unauthenticated payload.');
     }

@@ -6,6 +6,8 @@ import { Order, OrderSchema } from './schemas/order.schema';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { OrdersConsumer } from './order.consumer';
+import { PermissionGuard, RedisModule, RedisService } from '@my-app/shared';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -27,11 +29,28 @@ import { OrdersConsumer } from './order.consumer';
         connectionInitOptions: { wait: true },
       }),
     }),
+
+    ClientsModule.register([
+      {
+        name: 'AUTH_TCP_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          host: '127.0.0.1',
+          // host: 'auth',
+          port: 8877,
+        },
+      },
+    ]),
+    RedisModule.register({
+      maxRetriesPerRequest: 5,
+    })// More aggressive retry for enterprise resilience
   ],
   controllers: [OrdersController],
   providers: [
     OrdersService,
-    OrdersConsumer
+    OrdersConsumer,
+    PermissionGuard,
+    RedisService
   ],
   exports: [OrdersService]
 })

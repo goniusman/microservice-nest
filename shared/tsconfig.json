@@ -1,0 +1,16 @@
+// /shared/tsconfig.json
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2021",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "forceConsistentCasingInFileNames": true,
+    /* --- ADD THESE 3 LINES FOR NESTJS --- */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"]
+}

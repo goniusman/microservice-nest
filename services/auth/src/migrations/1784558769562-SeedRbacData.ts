@@ -4,19 +4,35 @@ import * as bcrypt from "bcrypt";
 export class SeedRbacData20260720000000 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        // 1. Seed Core Permissions with standard, valid UUID strings
+        // 1. Seed Core Permissions with unique, valid UUID strings
         const permissions = [
-            { id: '11111111-1111-1111-1111-111111111111', name: 'book:create', method: 'POST', path: '/books' },
-            { id: '22222222-2222-2222-2222-222222222222', name: 'book:read', method: 'GET', path: '/books' },
-            { id: '33333333-3333-3333-3333-333333333333', name: 'book:read_one', method: 'GET', path: '/books/:id' },
-            { id: '44444444-4444-4444-4444-444444444444', name: 'book:update', method: 'PUT', path: '/books/:id' },
-            { id: '55555555-5555-5555-5555-555555555555', name: 'book:delete', method: 'DELETE', path: '/books/:id' },
-            
-            { id: '66666666-6666-6666-6666-666666666666', name: 'order:create', method: 'POST', path: '/orders' },
-            { id: '77777777-7777-7777-7777-777777777777', name: 'order:manage', method: '*', path: '/orders/:id' },
+            // User Permissions
+            { id: '11111111-1111-1111-1111-111111111111', name: 'user:create', method: 'POST', path: '/users' },
+            { id: '11111111-1111-1111-1111-222222222222', name: 'user:read', method: 'GET', path: '/users' },
+            { id: '11111111-1111-1111-1111-333333333333', name: 'user:read_one', method: 'GET', path: '/users/:id' },
+            { id: '11111111-1111-1111-1111-444444444444', name: 'user:update', method: 'PUT', path: '/users/:id' },
+            { id: '11111111-1111-1111-1111-555555555555', name: 'user:delete', method: 'DELETE', path: '/users/:id' },
 
-            { id: '88888888-8888-8888-8888-888888888888', name: 'review:create', method: 'POST', path: '/books/:bookId/reviews' },
-            { id: '99999999-9999-9999-9999-999999999999', name: 'review:delete', method: 'DELETE', path: '/books/:bookId/reviews/:id' }
+            // Book Permissions
+            { id: '22222222-2222-2222-2222-111111111111', name: 'book:create', method: 'POST', path: '/books' },
+            { id: '22222222-2222-2222-2222-222222222222', name: 'book:read', method: 'GET', path: '/books' },
+            { id: '22222222-2222-2222-2222-333333333333', name: 'book:read_one', method: 'GET', path: '/books/:id' },
+            { id: '22222222-2222-2222-2222-444444444444', name: 'book:update', method: 'PUT', path: '/books/:id' },
+            { id: '22222222-2222-2222-2222-555555555555', name: 'book:delete', method: 'DELETE', path: '/books/:id' },
+            
+            // Order Permissions
+            { id: '33333333-3333-3333-3333-111111111111', name: 'order:create', method: 'POST', path: '/orders' },
+            { id: '33333333-3333-3333-3333-222222222222', name: 'order:get', method: '*', path: '/orders/:id' },
+            { id: '33333333-3333-3333-3333-333333333333', name: 'order:update', method: 'PUT', path: '/orders/:id' },
+            { id: '33333333-3333-3333-3333-444444444444', name: 'order:delete', method: 'DELETE', path: '/orders/:id' },
+
+            // Review Permissions
+            { id: '44444444-4444-4444-4444-111111111111', name: 'review:create', method: 'POST', path: '/reviews' },
+            { id: '44444444-4444-4444-4444-222222222222', name: 'review:read', method: 'GET', path: '/reviews' },
+            { id: '44444444-4444-4444-4444-333333333333', name: 'review:read_one', method: 'GET', path: '/reviews/:id' },
+            { id: '44444444-4444-4444-4444-444444444444', name: 'review:book_id', method: 'GET', path: '/reviews/book/:bookId' },
+            { id: '44444444-4444-4444-4444-555555555555', name: 'review:update', method: 'PUT', path: '/reviews/:id' },
+            { id: '44444444-4444-4444-4444-666666666666', name: 'review:delete', method: 'DELETE', path: '/reviews/:id' },
         ];
 
         for (const perm of permissions) {
@@ -67,12 +83,11 @@ export class SeedRbacData20260720000000 implements MigrationInterface {
         const dummyUsers = [
             { id: 'a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1', name: 'Admin User', email: 'admin@enterprise.com', role: 'administrator' },
             { id: 'b2b2b2b2-b2b2-b2b2-b2b2-b2b2b2b2b2b2', name: 'Author John', email: 'john@author.com', role: 'author' },
-            { id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', name: 'Regular Customer', email: 'customer@user.com', role: 'user' }
+            { id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', name: 'Regular Customer', email: 'customer@user.com', role: 'user' },
+            { id: 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4', name: 'Regular Moderator', email: 'moderator@enterprise.com', role: 'moderator' }
         ];
 
         for (const user of dummyUsers) {
-            // Check if your user table uses fields like "name" or if it is part of a profile. 
-            // If your entity only has email and password, remove the name field below.
             await queryRunner.query(`
                 INSERT INTO "users" (id, email, password) 
                 VALUES ('${user.id}', '${user.email}', '${hashedPassword}')

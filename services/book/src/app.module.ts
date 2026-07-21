@@ -7,11 +7,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { HealthModule } from './health/health.module';
 // import { UsersModule } from './users/user.module';
+
 import { EnterpriseLoggerMiddleware } from './common/middleware/logger.middleware';
-import { RedisModule } from './shared/redis/redis.module';
+// import { RedisModule } from './shared/redis/redis.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import { RedisModule } from '@my-app/shared';
 
 // const redisCache = new Keyv({
 //   store: new KeyvRedis('redis://localhost:6379'),
@@ -19,9 +21,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+   
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -72,6 +72,9 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
       // plugins: [responseCachePlugin()],
     }),
 
+     ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     MongooseModule.forRoot(
       process.env.MONGO_BOOKS_URL ||
       'mongodb://localhost:27017/bookverse_books',

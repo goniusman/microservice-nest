@@ -44,6 +44,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor(reflector));
   app.useGlobalFilters(new GlobalExceptionFilter());
   const port = process.env.PORT || 3000;
+   app.enableShutdownHooks()
   await app.listen(port, '0.0.0.0');
   console.log(`🚀 Order Application is running on: ${port}`);
 

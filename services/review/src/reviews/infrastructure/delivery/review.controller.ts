@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, Put, Delete, Query, Patch } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Put, Delete, Query, Patch, UseGuards } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { CreateReviewDto } from './dtos/create-review.dto';
 import { CreateReviewCommand } from '../../application/commands/create-review.command';
@@ -10,8 +10,10 @@ import { UpdateReviewDto } from './dtos/update-review.dto';
 import { GetReviewByIdQuery } from '../../application/queries/get-review.query';
 import { GetReviewsQueryDto } from './dtos/get-reviews-query.dto';
 import { PaginatedReviewsResponseDto } from './dtos/paginated-reviews-response.dto';
+import { PermissionGuard } from '@my-app/shared';
 
 @Controller('reviews')
+@UseGuards(PermissionGuard)
 export class ReviewController {
   constructor(
     private readonly commandBus: CommandBus,
@@ -46,7 +48,7 @@ export class ReviewController {
     return await this.queryBus.execute(query);
   }
 
-  @Get('product/:productId')
+  @Get('book/:bookId')
   async getByProduct(
     @Param('productId') productId: string,
     @Query() paginationDto: GetReviewsQueryDto, // Bind URL query strings (?page=1&limit=20)

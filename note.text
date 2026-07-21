@@ -1,0 +1,13 @@
+# In Git Bash (safely skips node_modules)
+find . -type f \( -name "*.js" -o -name "*.js.map" -o -name "*.d.ts" \) -path "*/src/*" -not -path "*/node_modules/*" -delete
+npm install
+
+
+
+
+Wipe all node_modules folders
+npx rimraf node_modules services/*/node_modules shared/node_modules package-lock.json
+
+
+
+

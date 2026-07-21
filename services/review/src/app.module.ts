@@ -6,6 +6,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getTypeOrmConfig } from './common/database/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { PermissionGuard, RedisModule } from '@my-app/shared';
+
 
 @Module({
   imports: [
@@ -32,7 +35,11 @@ import { getTypeOrmConfig } from './common/database/config';
     //   maxRetriesPerRequest: 5,
     // }),
 
-    ReviewsModule
+    ReviewsModule,
+  
+    RedisModule.register({
+      maxRetriesPerRequest: 5,
+    })// More aggressive retry for enterprise resilience
   ],
   controllers: [AppController],
   providers: [AppService],

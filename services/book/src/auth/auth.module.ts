@@ -3,9 +3,10 @@ import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 // import { CacheModule } from '@nestjs/cache-manager';
 // import * as redisStore from 'cache-manager-redis-store';
-import { PermissionGuard } from './guards/permission.guard';
-import { RedisModule } from '../shared/redis/redis.module';
+// import { PermissionGuard } from './guards/permission.guard';
+// import { RedisModule } from '../shared/redis/redis.module';
 import { AbacEngineService } from './abac/abac-engine.service';
+import { PermissionGuard } from '@my-app/shared';
 
 @Module({
     imports: [

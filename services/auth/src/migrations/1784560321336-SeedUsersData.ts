@@ -11,7 +11,8 @@ export class SeedUsersData20260720010000 implements MigrationInterface {
         const dummyUsers = [
             { id: 'a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1', email: 'admin@enterprise.com', role: 'administrator' },
             { id: 'b2b2b2b2-b2b2-b2b2-b2b2-b2b2b2b2b2b2', email: 'john@author.com', role: 'author' },
-            { id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', email: 'customer@user.com', role: 'user' }
+            { id: 'c3c3c3c3-c3c3-c3c3-c3c3-c3c3c3c3c3c3', email: 'customer@user.com', role: 'user' },
+            { id: 'd4d4d4d4-d4d4-d4d4-d4d4-d4d4d4d4d4d4', email: 'moderator@enterprise.com', role: 'moderator' }
         ];
 
         for (const user of dummyUsers) {
@@ -19,7 +20,7 @@ export class SeedUsersData20260720010000 implements MigrationInterface {
             // make sure it matches your actual entity property names exactly.
             await queryRunner.query(`
                 INSERT INTO "users" (id, email, password) 
-                VALUES ('${user.id}', '${user.email}', '${hashedPassword}')
+                VALUES ('${user.id}', '${user.email}', '${hashedPassword}' )
                 ON CONFLICT (email) DO NOTHING;
             `);
 
