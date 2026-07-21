@@ -8,7 +8,7 @@ import "./instrument";
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { randomUUID } from 'crypto';
+// import { randomUUID } from 'crypto';
 
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
@@ -65,6 +65,6 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   app.enableShutdownHooks()
   await app.listen(port, '0.0.0.0');
-  console.log(`🚀 Auth Application is running on: ${port}`);
+  console.log(`🚀 Auth Application is running on: ${port} `); 
 }
 bootstrap();
