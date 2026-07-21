@@ -4,9 +4,16 @@ WORKDIR /usr/src/app
 
 ARG SERVICE_NAME
 
-COPY package*.json tsconfig.json ./
+# Copy root package manifests ONLY
+COPY package*.json ./
+
+# Copy shared configs and package manifest
 COPY shared/package*.json ./shared/
+COPY shared/tsconfig.json ./shared/
+
+# Copy service package manifest and configs
 COPY services/${SERVICE_NAME}/package*.json ./services/${SERVICE_NAME}/
+COPY services/${SERVICE_NAME}/tsconfig*.json ./services/${SERVICE_NAME}/
 
 RUN npm install --legacy-peer-deps
 
