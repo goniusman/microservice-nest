@@ -116,8 +116,8 @@ jobs:
           token: ${{ secrets.GITOPS_PAT }}
           repository: goniusman/GitOps
           event-type: update-images
-          client-payload: |
+          client-payload: >-
             {
-              "services": ["${{ needs.detect-changes.outputs.services }}"],
+              "services": ${{ needs.detect-changes.outputs.services }},
               "sha": "${{ github.sha }}"
             }
