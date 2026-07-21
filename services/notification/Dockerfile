@@ -4,19 +4,15 @@ WORKDIR /usr/src/app
 
 ARG SERVICE_NAME
 
-# Copy root manifests AND tsconfig.json
+# Copy root configs
 COPY package*.json tsconfig*.json ./
 
-# Copy all workspace package.json files so npm links binaries properly
-COPY shared/package*.json ./shared/
-COPY services/*/package*.json ./services/
-
-# Install ALL workspace dependencies at root level
-RUN npm install --legacy-peer-deps
-
-# Copy full source code
+# Copy full services and shared folders so npm sees all workspace package.json files in their exact paths
 COPY shared/ ./shared/
-COPY services/${SERVICE_NAME}/ ./services/${SERVICE_NAME}/
+COPY services/ ./services/
+
+# Install ALL workspace dependencies across all microservices
+RUN npm install --legacy-peer-deps
 
 # Build shared library first, then target service
 RUN npm run build --workspace=@my-app/shared
@@ -44,9 +40,6 @@ COPY --from=builder /usr/src/app/services/${SERVICE_NAME}/dist ./services/${SERV
 EXPOSE 3000
 
 CMD ["sh", "-c", "node services/${TARGET_SERVICE}/dist/main.js"]
-
-
-
 
 
 
