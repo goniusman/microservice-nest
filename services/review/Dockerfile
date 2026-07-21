@@ -17,6 +17,9 @@ RUN npm install --legacy-peer-deps
 # Deduplicate nested modules to enforce single instances of peer dependencies
 RUN npm dedupe --legacy-peer-deps
 
+# Remove any nested node_modules created inside workspace packages
+RUN rm -rf shared/node_modules services/*/node_modules
+
 # Build shared library first, then target service
 RUN npm run build --workspace=@my-app/shared
 RUN npm run build --workspace=${SERVICE_NAME}
