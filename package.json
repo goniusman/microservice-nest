@@ -8,33 +8,30 @@
   "scripts": {
     "infra:up": "docker-compose up -d",
     "infra:down": "docker-compose down",
-
     "shared:build": "npm run build --workspace=@my-app/shared",
-
     "auth:dev": "npm run shared:build && npm run start:dev --workspace=auth",
     "auth:migration:generate": "npm run migration:generate --workspace=auth",
     "auth:migration:run": "npm run migration:run --workspace=auth",
     "auth:migration:revert": "npm run migration:revert --workspace=auth",
     "auth:build": "npm run shared:build && npm run build --workspace=auth",
     "auth:test": "npm run test --workspace=auth",
-
     "book:dev": "npm run shared:build && npm run start:dev --workspace=book",
     "book:build": "npm run shared:build && npm run build --workspace=book",
     "book:test": "npm run test --workspace=book",
-
     "notification:dev": "npm run shared:build && npm run start:dev --workspace=notification",
     "notification:build": "npm run shared:build && npm run build --workspace=notification",
     "notification:test": "npm run test --workspace=notification",
-
     "order:dev": "npm run shared:build && npm run start:dev --workspace=order",
     "order:build": "npm run shared:build && npm run build --workspace=order",
     "order:test": "npm run test --workspace=order",
-
     "review:dev": "npm run shared:build && npm run start:dev --workspace=review",
     "review:build": "npm run shared:build && npm run build --workspace=review",
     "review:test": "npm run test --workspace=review",
-
     "dev:all": "npm run shared:build && (npm run auth:dev & npm run book:dev & npm run notification:dev & npm run order:dev & npm run review:dev)",
     "build:all": "npm run shared:build && npm run build --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.0.0",
+    "typescript": "^5.0.0"
   }
 }
