@@ -24,7 +24,7 @@ RUN npm run build --workspace=${SERVICE_NAME}
 
 # Prune devDependencies for production
 RUN npm prune --production
-
+ 
 # --- Stage 2: Production Stage ---
 FROM node:22-alpine AS runner
 WORKDIR /usr/src/app

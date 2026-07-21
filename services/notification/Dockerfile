@@ -1,7 +1,7 @@
 # --- Stage 1: Build Stage ---
 FROM node:22-alpine AS builder
 WORKDIR /usr/src/app
-
+ 
 ARG SERVICE_NAME
 
 # Copy root package manifests

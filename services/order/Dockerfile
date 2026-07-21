@@ -6,7 +6,7 @@ ARG SERVICE_NAME
 
 # Copy root package manifests
 COPY package*.json ./
-
+ 
 # Copy all package.json files from shared and services
 COPY shared/package*.json ./shared/
 COPY services/*/package*.json ./services/
