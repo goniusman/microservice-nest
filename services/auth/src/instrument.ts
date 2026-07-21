@@ -18,3 +18,9 @@ Sentry.init({
   // This is relative to tracesSampleRate
   profilesSampleRate: 1.0,
 });
+
+
+
+
+
+
