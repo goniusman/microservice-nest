@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { getTypeOrmConfig } from './common/database/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { PermissionGuard, RedisModule } from '@my-app/shared';
+import { HealthModule } from './health/health.module';
 
 
 @Module({
@@ -34,9 +35,9 @@ import { PermissionGuard, RedisModule } from '@my-app/shared';
     // RedisModule.register({
     //   maxRetriesPerRequest: 5,
     // }),
-
+    HealthModule,
     ReviewsModule,
-  
+
     RedisModule.register({
       maxRetriesPerRequest: 5,
     })// More aggressive retry for enterprise resilience
