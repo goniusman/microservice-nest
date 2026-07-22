@@ -19,8 +19,8 @@ export class PermissionGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    let userId = request.headers['x-user-id'] as string; 
-    userId = 'a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1'
+    let userId = request.headers['X-User-Id'] as string; 
+    // userId = 'a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1'
     // userId = '52434d51-5da3-4057-8894-6cec8ebff12d'
     if (!userId) {
       throw new ForbiddenException('Access Denied: Unauthenticated payload.');
