@@ -10,11 +10,11 @@ export class Permission {
   @Column({ unique: true })
   name: string; // e.g., 'book:create', 'review:delete'
 
-  @Column()
-  httpMethod: string; // 'POST', 'GET', 'PUT', 'DELETE', or '*' for all
+  @Column({default: null})
+  method: string; // 'POST', 'GET', 'PUT', 'DELETE', or '*' for all
 
-  @Column()
-  pathPattern: string; // e.g., '/books', '/books/:id', '/orders/*'
+  @Column({default:null})
+  path: string; // e.g., '/books', '/books/:id', '/orders/*'
 
   @ManyToMany(() => Role, (role) => role.permissions)
   roles: Role[];

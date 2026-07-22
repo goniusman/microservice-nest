@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -6,6 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { Role } from '../auth/entities/role.entity';
 
 @Injectable()
 export class UsersService {
@@ -13,7 +14,10 @@ export class UsersService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     // private readonly jwtService: JwtService,
-  ) {}
+
+    @InjectRepository(Role)
+    private readonly roleRepository: Repository<Role>,
+  ) { }
 
   async create(createUserDto: CreateUserDto) {
     try {
@@ -86,5 +90,24 @@ export class UsersService {
       valid: true,
       user,
     };
+  }
+
+  async assignRole(email: string, roleName: string): Promise<User> {
+    const user = await this.userRepository.findOneBy({ email });
+    if (!user) {
+      throw new NotFoundException(`User with email ${email} not found`);
+    }
+
+    const role = await this.roleRepository.findOneBy({ name: roleName });
+    if (!role) {
+      throw new NotFoundException(`Role '${roleName}' not found`);
+    }
+
+    const alreadyHasRole = user.roles.some((r) => r.id === role.id);
+    if (!alreadyHasRole) {
+      user.roles.push(role);
+    }
+
+    return this.userRepository.save(user);
   }
 }

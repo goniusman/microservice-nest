@@ -11,6 +11,7 @@ import { AmqpConnection, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AssignRoleDto } from '../auth/dto/assign-role.dto';
 
 @Controller('users')
 export class UsersController {
@@ -56,4 +57,10 @@ export class UsersController {
   async remove(@Param('id') id: string) {
     return await this.usersService.remove(id);
   }
+
+  @Post('assign-role')
+  assignRole(@Body() dto: AssignRoleDto) {
+    return this.usersService.assignRole(dto.email, dto.role);
+  }
+  
 }

@@ -1,6 +1,6 @@
 import { Module, OnModuleInit } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
+import { AuthService, PermissionService, RolesService } from './auth.service';
+import { AuthController, PermissionController, RolesController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { User } from './entities/user.entity';
@@ -38,7 +38,7 @@ import { Permission } from './entities/permission.entity';
       maxRetriesPerRequest: 3,
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, PermissionController, RolesController],
   providers: [
     AuthService,
     JwtStrategy,
@@ -47,6 +47,8 @@ import { Permission } from './entities/permission.entity';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    PermissionService,
+    RolesService
   ],
 })
 export class AuthModule {}

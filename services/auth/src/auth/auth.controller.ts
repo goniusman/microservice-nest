@@ -12,9 +12,10 @@ import {
   HttpStatus,
   ForbiddenException,
   HttpCode,
-  Headers
+  Headers,
+  ParseUUIDPipe
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthService, PermissionService, RolesService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { LoginDto } from './dto/login.dto';
@@ -31,6 +32,12 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { PermissionDto } from './dto/permission.dto';
+import { CreateRoleDto } from './dto/create-role.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
+import { AssignPermissionsDto } from './dto/assign-permissions.dto';
+import { CreatePermissionDto } from './dto/create-permission.dto';
+import { UpdatePermissionDto } from './dto/update-permission.dto';
 
 
 
@@ -198,8 +205,8 @@ export class AuthController {
 
     user.roles.forEach(role => {
       role.permissions.forEach(perm => {
-        const key = `${perm.httpMethod}:${perm.pathPattern}`;
-        permissionMap.set(key, { method: perm.httpMethod, path: perm.pathPattern });
+        const key = `${perm.method}:${perm.path}`;
+        permissionMap.set(key, { method: perm.method, path: perm.path });
       });
     });
 
@@ -213,3 +220,79 @@ export class AuthController {
 
 
 }
+
+
+@Controller('permissions')
+export class PermissionController {
+  constructor(
+    private readonly permissionService: PermissionService,
+    // private readonly redisService: RedisService,
+    // @InjectRepository(User) private userRepository: Repository<User>
+  ) { }
+  @Post()
+  create(@Body() permissionDto: CreatePermissionDto) {
+    return this.permissionService.create(permissionDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.permissionService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.permissionService.findOne(id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() permissionDto: UpdatePermissionDto) {
+    return this.permissionService.update(id, permissionDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.permissionService.remove(id);
+  }
+}
+
+
+
+@Controller('roles')
+export class RolesController {
+  constructor(private readonly rolesService: RolesService) { }
+
+  @Post()
+  create(@Body() createRoleDto: CreateRoleDto) {
+    return this.rolesService.create(createRoleDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.rolesService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.rolesService.findOne(id);
+  }
+
+  @Patch(':id')
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateRoleDto: UpdateRoleDto) {
+    return this.rolesService.update(id, updateRoleDto);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.rolesService.remove(id);
+  }
+
+  @Post(':name/permissions')
+  assignPermissions(
+    @Param('name') name: string,
+    @Body() dto: AssignPermissionsDto,
+  ) {
+    return this.rolesService.assignPermissionsByName(name, dto.permissions);
+  }
+}
+

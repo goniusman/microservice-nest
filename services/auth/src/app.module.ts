@@ -19,6 +19,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { DataSource } from 'typeorm';
 import { SentryModule } from "@sentry/nestjs/setup";
+import { UsersModule } from './users/users.module';
 
 
 @Module({
@@ -37,6 +38,7 @@ import { SentryModule } from "@sentry/nestjs/setup";
       path: '/metrics', // The path Prometheus will scan
     }),
     AuthModule,
+    UsersModule,
     HealthModule,
   ],
   controllers: [AppController],
