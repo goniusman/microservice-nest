@@ -25,8 +25,8 @@ import { PermissionGuard } from '@my-app/shared';
                 name: 'AUTH_TCP_SERVICE',
                 transport: Transport.TCP,
                 options: {
-                    host: '127.0.0.1',
-                    // host: 'auth',
+                    // host: '127.0.0.1',
+                    host: 'auth',
                     port: 8877,
                 },
             },
