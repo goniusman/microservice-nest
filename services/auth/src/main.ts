@@ -26,7 +26,7 @@ async function bootstrap() {
   const microserviceTcp = app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,
     options: {
-      // host: '0.0.0.0',
+      host: '0.0.0.0',
       // host: 'auth',
       port: 8877, // Internal TCP port
       // Socket reconnect/retry handling configuration

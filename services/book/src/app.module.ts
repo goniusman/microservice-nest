@@ -21,7 +21,7 @@ import { RedisModule } from '@my-app/shared';
 
 @Module({
   imports: [
-   
+
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -47,7 +47,7 @@ import { RedisModule } from '@my-app/shared';
           extensions: {
             code: error.extensions?.code || 'INTERNAL_SERVER_ERROR',
             // Return status code if NestJS HTTP exception provided one
-            statusCode: error.extensions?.originalError?.statusCode || 500, 
+            statusCode: error.extensions?.originalError?.statusCode || 500,
           },
         };
 
@@ -72,7 +72,7 @@ import { RedisModule } from '@my-app/shared';
       // plugins: [responseCachePlugin()],
     }),
 
-     ConfigModule.forRoot({
+    ConfigModule.forRoot({
       isGlobal: true,
     }),
     MongooseModule.forRoot(
