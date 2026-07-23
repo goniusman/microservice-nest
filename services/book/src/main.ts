@@ -11,7 +11,7 @@ import { GlobalExceptionFilter } from './common/interceptors/http-exception.filt
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: process.env.NODE_ENV === 'production'
-      ? ['error', 'warn']
+      ? ['error', 'warn','log']
       : ['log', 'error', 'warn']
   });
 
