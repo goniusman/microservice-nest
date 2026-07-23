@@ -8,7 +8,7 @@ export const REDIS_CLIENT = 'REDIS_CLIENT';
 @Global()
 @Module({})
 export class RedisModule {
-    static register(options: RedisOptions): DynamicModule {
+    static register(options: RedisOptions): any {
         return {
             module: RedisModule,
             providers: [

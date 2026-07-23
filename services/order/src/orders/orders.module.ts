@@ -43,7 +43,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     ]),
     RedisModule.register({
       maxRetriesPerRequest: 5,
-    })// More aggressive retry for enterprise resilience
+    })
   ],
   controllers: [OrdersController],
   providers: [

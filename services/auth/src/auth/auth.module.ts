@@ -8,11 +8,10 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './guards/roles.guard';
-import { RedisModule } from '../shared/redis/redis.module';
-import { RedisService } from '../shared/redis/redis.service';
 import { DataSource } from 'typeorm';
 import { Role } from './entities/role.entity';
 import { Permission } from './entities/permission.entity';
+import { RedisModule } from '../../dist/shared/redis/redis.module';
 // import { REDIS_CLIENT } from '../shared/redis/redis.module';
 @Module({
   imports: [

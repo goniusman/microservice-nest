@@ -15,6 +15,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { RedisModule } from '@my-app/shared';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { AuthModule } from './auth/auth.module';
 
 // const redisCache = new Keyv({
 //   store: new KeyvRedis('redis://localhost:6379'),
@@ -97,11 +98,11 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       },
     ]),
 
-
+    AuthModule,
     // UsersModule,
     RedisModule.register({
       maxRetriesPerRequest: 5,
-    })// More aggressive retry for enterprise resilience
+    })
   ],
   controllers: [AppController],
   providers: [AppService],

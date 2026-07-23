@@ -40,7 +40,7 @@ import { HealthModule } from './health/health.module';
 
     RedisModule.register({
       maxRetriesPerRequest: 5,
-    })// More aggressive retry for enterprise resilience
+    })
   ],
   controllers: [AppController],
   providers: [AppService],

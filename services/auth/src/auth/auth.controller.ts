@@ -26,7 +26,6 @@ import { JwtGatewayGuard } from './guards/jwt-gateway.guard';
 // import { Response, Request } from 'express';
 import type { Request } from 'express';
 import type { Response } from 'express';
-import { RedisService } from '../shared/redis/redis.service';
 // import { REDIS_CLIENT } from './redis.module';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -39,6 +38,7 @@ import { AssignPermissionsDto } from './dto/assign-permissions.dto';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { propagation, context, trace } from '@opentelemetry/api';
+import { RedisService } from '../../dist/shared/redis/redis.service';
 
 const tracer = trace.getTracer('auth-tcp-service');
 
