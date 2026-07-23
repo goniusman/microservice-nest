@@ -86,17 +86,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     BooksModule,
     HealthModule,
-    ClientsModule.register([
-      {
-        name: 'AUTH_TCP_SERVICE',
-        transport: Transport.TCP,
-        options: {
-          // host: '127.0.0.1',
-          host: 'auth',
-          port: 8877,
-        },
-      },
-    ]),
+   
 
     AuthModule,
     // UsersModule,
@@ -105,8 +95,7 @@ import { AuthModule } from './auth/auth.module';
     })
   ],
   controllers: [AppController],
-  providers: [AppService],
-  exports: [ClientsModule]
+  providers: [AppService]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

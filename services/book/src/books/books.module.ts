@@ -8,12 +8,12 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { DiscoveryModule } from '@nestjs/core';
 import { BooksConsumer } from './book.consumer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-// import { RedisModule } from '../shared/redis/redis.module';
 import { BookResolver } from './book-resolver';
 import { AuthModule } from '../auth/auth.module';
 import { BookPolicy } from './policies/book.policy';
 import { AbacEngineService } from '../auth/abac/abac-engine.service';
 import { IUserProfile } from '@my-app/shared';
+import { PermissionGuard } from '@my-app/shared';
 
 @Module({
   imports: [
@@ -47,10 +47,21 @@ import { IUserProfile } from '@my-app/shared';
       { name: Book.name, schema: BookSchema },
     ]),
 
-    AuthModule
-
+    AuthModule,
+    ClientsModule.register([
+      {
+        name: 'AUTH_TCP_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          // host: '127.0.0.1',
+          host: 'auth',
+          port: 8877,
+        },
+      },
+    ]),
   ],
   controllers: [BooksController],
-  providers: [BooksService, BooksConsumer, BookResolver, BookPolicy, AbacEngineService],
+  providers: [BooksService, BooksConsumer, BookResolver, BookPolicy, AbacEngineService, PermissionGuard],
+  exports: [PermissionGuard, ClientsModule]
 })
 export class BooksModule { }

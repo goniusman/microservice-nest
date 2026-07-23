@@ -6,7 +6,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 // import { PermissionGuard } from './guards/permission.guard';
 // import { RedisModule } from '../shared/redis/redis.module';
 import { AbacEngineService } from './abac/abac-engine.service';
-import { PermissionGuard } from '@my-app/shared';
+// import { PermissionGuard } from '@my-app/shared';
 
 @Module({
     imports: [
@@ -22,7 +22,7 @@ import { PermissionGuard } from '@my-app/shared';
         // Register the internal TCP connection network mapping
         
     ],
-    providers: [PermissionGuard, AbacEngineService],
-    exports: [ PermissionGuard],
+    providers: [ AbacEngineService],
+
 })
 export class AuthModule { }
