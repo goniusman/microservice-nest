@@ -19,10 +19,11 @@ export class PermissionGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    console.log(request.headers)
-    console.log(request.headers['X-User-Id'])
-    console.log(request.headers['x-user-roels'])
-    let userId = request.headers['X-User-Id'] as string; 
+    const userRole = request.headers['x-user-roles'] as string;
+    const userEmail = request.headers['x-user-email'] as string;
+    const userPermissions = request.headers['x-user-permissions'] as string;
+    const userId = request.headers['x-user-id'] as string;
+    // let userId = request.headers['X-User-Id'] as string; 
     // userId = 'a1a1a1a1-a1a1-a1a1-a1a1-a1a1a1a1a1a1'
     // userId = '52434d51-5da3-4057-8894-6cec8ebff12d'
     if (!userId) {
