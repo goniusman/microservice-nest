@@ -20,10 +20,22 @@ content-type: application/json
 POST http://localhost:3001/auth/login HTTP/1.1
 content-type: application/json
 
+# {
+#     "email": "goniusman300@gmail.com",
+#     "password": "Osman@#1"
+# }
+
 {
-    "email": "goniusman300@gmail.com",
-    "password": "Osman@#1"
+    "email": "admin@enterprise.com",
+    "password": "Password123!"
 }
+
+###
+GET http://localhost:3001/auth/validate-gateway HTTP/1.1
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImExYTFhMWExLWExYTEtYTFhMS1hMWExLWExYTFhMWExYTFhMSIsImVtYWlsIjoiYWRtaW5AZW50ZXJwcmlzZS5jb20iLCJyb2xlcyI6WyJhZG1pbmlzdHJhdG9yIl0sInBlcm1pc3Npb25zIjpbInVzZXI6Y3JlYXRlIiwidXNlcjpyZWFkIiwidXNlcjpyZWFkX29uZSIsInVzZXI6dXBkYXRlIiwidXNlcjpkZWxldGUiLCJib29rOmNyZWF0ZSIsImJvb2s6cmVhZCIsImJvb2s6cmVhZF9vbmUiLCJib29rOnVwZGF0ZSIsImJvb2s6ZGVsZXRlIiwib3JkZXI6Y3JlYXRlIiwib3JkZXI6Z2V0Iiwib3JkZXI6dXBkYXRlIiwib3JkZXI6ZGVsZXRlIiwicmV2aWV3OmNyZWF0ZSIsInJldmlldzpyZWFkIiwicmV2aWV3OnJlYWRfb25lIiwicmV2aWV3OmJvb2tfaWQiLCJyZXZpZXc6dXBkYXRlIiwicmV2aWV3OmRlbGV0ZSJdLCJpYXQiOjE3ODQ3OTQ2NjUsImV4cCI6MTc4NTM5OTQ2NX0.BkkaGQnCbkyNDy-voO5vSY-cyatb2Fa15So5ONlaXKw
+
+
 
 ###
 POST http://localhost:3001/auth/refresh HTTP/1.1

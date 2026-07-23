@@ -149,7 +149,7 @@ export class AuthController {
     // Set the user identity fields into the outgoing response headers
     if (user.id) res.setHeader('X-User-Id', user.id);
     if (user.email) res.setHeader('X-User-Email', user.email);
-    if (user.role) res.setHeader('X-User-Role', user.role);
+    if (user.roles) res.setHeader('X-User-Roles', user.roles);
     if (user.permissions) res.setHeader('X-User-Permissions', user.permissions);
 
     // Return a clean 200 OK back to NGINX with an empty body
