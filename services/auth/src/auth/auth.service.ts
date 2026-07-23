@@ -52,7 +52,7 @@ export class AuthService {
     });
 
     const payload = {
-      sub: user.id,
+      id: user.id,
       email: user.email,
       roles: user.roles.map(r => r.name),
       permissions: Array.from(permissions),

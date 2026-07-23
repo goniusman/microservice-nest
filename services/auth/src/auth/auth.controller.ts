@@ -147,9 +147,10 @@ export class AuthController {
       return res.status(HttpStatus.UNAUTHORIZED).send();
     }
     // Set the user identity fields into the outgoing response headers
-    res.setHeader('X-User-Id', user.sub || '');
-    res.setHeader('X-User-Email', user.email || '');
-    res.setHeader('X-User-Role', user.role || '');
+    if (user.id) res.setHeader('X-User-Id', user.id);
+    if (user.email) res.setHeader('X-User-Email', user.email);
+    if (user.role) res.setHeader('X-User-Role', user.role);
+    if (user.permissions) res.setHeader('X-User-Permissions', user.permissions);
 
     // Return a clean 200 OK back to NGINX with an empty body
     return res.status(HttpStatus.OK).send();
