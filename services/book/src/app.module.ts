@@ -14,6 +14,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { RedisModule } from '@my-app/shared';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 // const redisCache = new Keyv({
 //   store: new KeyvRedis('redis://localhost:6379'),
@@ -84,6 +85,19 @@ import { RedisModule } from '@my-app/shared';
     }),
     BooksModule,
     HealthModule,
+    ClientsModule.register([
+      {
+        name: 'AUTH_TCP_SERVICE',
+        transport: Transport.TCP,
+        options: {
+          // host: '127.0.0.1',
+          host: 'auth',
+          port: 8877,
+        },
+      },
+    ]),
+
+
     // UsersModule,
     RedisModule.register({
       maxRetriesPerRequest: 5,
@@ -91,6 +105,7 @@ import { RedisModule } from '@my-app/shared';
   ],
   controllers: [AppController],
   providers: [AppService],
+  exports: [ClientsModule]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

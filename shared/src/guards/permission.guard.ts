@@ -4,18 +4,19 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { pathToRegexp } from 'path-to-regexp';
 import { RedisService } from '../redis/redis.service'; // Make sure the path matches your folder tree
+import { propagation, context as otelContext } from '@opentelemetry/api';
 
 interface AuthProfile {
   roles: string[];
   permissions: Array<{ method: string; path: string }>;
-} 
+}
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
   constructor(
     @Inject('AUTH_TCP_SERVICE') private readonly tcpClient: ClientProxy,
     private readonly redisService: RedisService, // Injecting your custom wrapper here
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -42,9 +43,13 @@ export class PermissionGuard implements CanActivate {
       authProfile = await this.redisService.get<AuthProfile>(cacheKey);
       console.log(authProfile)
       if (!authProfile) {
-        // 2. STEP 2: Cache Miss. Fire standard TCP request packet to the Auth Service
+        const telemetryHeaders: Record<string, string> = {};
+
+        // Inject active context (traceparent / tracestate) into a plain object
+        // 2. Use otelContext.active() instead of context.active()
+        propagation.inject(otelContext.active(), telemetryHeaders);// 2. STEP 2: Cache Miss. Fire standard TCP request packet to the Auth Service
         authProfile = await firstValueFrom(
-          this.tcpClient.send<AuthProfile>({ cmd: 'get_user_permissions' }, { userId })
+          this.tcpClient.send<AuthProfile>({ cmd: 'get_user_permissions' }, { userId, _telemetry: telemetryHeaders, })
         );
 
         if (authProfile) {

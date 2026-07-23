@@ -20,19 +20,9 @@ import { PermissionGuard } from '@my-app/shared';
         //     maxRetriesPerRequest: 5,
         // }), // More aggressive retry for enterprise resilience
         // Register the internal TCP connection network mapping
-        ClientsModule.register([
-            {
-                name: 'AUTH_TCP_SERVICE',
-                transport: Transport.TCP,
-                options: {
-                    // host: '127.0.0.1',
-                    host: 'auth',
-                    port: 8877,
-                },
-            },
-        ]),
+        
     ],
     providers: [PermissionGuard, AbacEngineService],
-    exports: [ClientsModule, PermissionGuard],
+    exports: [ PermissionGuard],
 })
 export class AuthModule { }

@@ -38,8 +38,9 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { AssignPermissionsDto } from './dto/assign-permissions.dto';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
+import { propagation, context, trace } from '@opentelemetry/api';
 
-
+const tracer = trace.getTracer('auth-tcp-service');
 
 @Controller('auth')
 export class AuthController {
@@ -186,36 +187,50 @@ export class AuthController {
 
   // Listens for 'get_user_permissions' packets over TCP
   @MessagePattern({ cmd: 'get_user_permissions' })
-  async getUserPermissions(@Payload() data: { userId: string }) {
-    console.log(data)
-    const user = await this.userRepository.findOne({
-      where: { id: data.userId },
-      relations: {
-        roles: {
-          permissions: true
+  async getUserPermissions(@Payload() data: { userId: string, _telemetry: string }) {
+    // 1. Extract context sent by the client
+    const parentContext = propagation.extract(context.active(), data._telemetry || {});
+    // 2. Wrap handler logic in the active trace scope
+    return context.with(parentContext, async () => {
+      return tracer.startActiveSpan('tcp.get_user_permissions', async (span) => {
+        try {
+          console.log(data)
+          const user = await this.userRepository.findOne({
+            where: { id: data.userId },
+            relations: {
+              roles: {
+                permissions: true
+              }
+            }
+          });
+
+          if (!user) {
+            return { userId: data.userId, roles: [], permissions: [] };
+          }
+
+          const roles = user.roles.map(r => r.name);
+          const permissionMap = new Map<string, { method: string; path: string }>();
+
+          user.roles.forEach(role => {
+            role.permissions.forEach(perm => {
+              const key = `${perm.method}:${perm.path}`;
+              permissionMap.set(key, { method: perm.method, path: perm.path });
+            });
+          });
+
+          return {
+            userId: data.userId,
+            roles: roles,
+            permissions: Array.from(permissionMap.values()),
+          };
+
+        } finally {
+          span.end();
         }
-      }
-    });
-
-    if (!user) {
-      return { userId: data.userId, roles: [], permissions: [] };
-    }
-
-    const roles = user.roles.map(r => r.name);
-    const permissionMap = new Map<string, { method: string; path: string }>();
-
-    user.roles.forEach(role => {
-      role.permissions.forEach(perm => {
-        const key = `${perm.method}:${perm.path}`;
-        permissionMap.set(key, { method: perm.method, path: perm.path });
       });
     });
 
-    return {
-      userId: data.userId,
-      roles: roles,
-      permissions: Array.from(permissionMap.values()),
-    };
+
   }
 
 

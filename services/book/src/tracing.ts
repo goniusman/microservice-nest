@@ -21,7 +21,7 @@ export class HealthCheckIgnoreSampler implements Sampler {
     // 1. Check the span name (e.g., "GET /health/live" or "GET /metrics")
     const lowerName = name.toLowerCase();
     if (
-      lowerName.includes('/health') || 
+      lowerName.includes('/health') ||
       lowerName.includes('/metrics')
     ) {
       return { decision: SamplingDecision.NOT_RECORD };
@@ -66,6 +66,29 @@ export const otelSDK = new NodeSDK({
   traceExporter,
   instrumentations: [
     getNodeAutoInstrumentations({
+
+      // Enable low-level TCP socket tracing
+      '@opentelemetry/instrumentation-net': { enabled: true },
+
+      // Enable and configure Redis auto-instrumentation
+      '@opentelemetry/instrumentation-redis': {
+        enabled: true,
+        // Optional: Add DB statement (e.g. "GET auth:profile:123") to span attributes
+        dbStatementSerializer: (cmdName, cmdArgs) => `${cmdName} ${cmdArgs.join(' ')}`,
+      },
+
+      '@opentelemetry/instrumentation-mongoose' : {
+        enabled: true
+      },
+      
+      '@opentelemetry/instrumentation-mongodb' : {
+        enabled: true
+      },
+
+      // If you are using ioredis instead of redis v4/v5:
+      '@opentelemetry/instrumentation-ioredis': {
+        enabled: true,
+      },
       // Suppress noisy internal framework logs if necessary
       '@opentelemetry/instrumentation-fs': { enabled: false },
 
