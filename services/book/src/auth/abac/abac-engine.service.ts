@@ -27,10 +27,10 @@ export class AbacEngineService {
     this.rules.push((ctx) => {
       const isAdminRole = ctx.user.roles.some(r => ['administrator', 'moderator'].includes(r));
       const isInternalIp = ctx.environment.clientIp === '127.0.0.1' || ctx.environment.clientIp.startsWith('192.168.');
-
-      if (isAdminRole && !isInternalIp) {
-        return { allowed: false, reason: 'Privileged operations restricted to corporate internal network paths.' };
-      }
+      // later will enable
+      // if (isAdminRole && !isInternalIp) {
+      //   return { allowed: false, reason: 'Privileged operations restricted to corporate internal network paths.' };
+      // }
       return { allowed: true };
     });
 

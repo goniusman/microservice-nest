@@ -7,7 +7,7 @@ export interface UserContext {
 export interface ResourceDocument {
   id: string;
   createdBy?: string;
-  authorId?: string; // Adjust based on your schema fields
+  author?: string; // Adjust based on your schema fields
   [key: string]: any;
 }
 

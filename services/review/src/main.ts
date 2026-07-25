@@ -1,6 +1,6 @@
-// import { otelSDK } from './tracing';
+import { otelSDK } from '@my-app/shared';
 // // Start the OpenTelemetry SDK before any other imports!
-// otelSDK.start();
+otelSDK.start();
 
 
 import { NestFactory, Reflector } from '@nestjs/core';

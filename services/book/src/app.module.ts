@@ -77,17 +77,19 @@ import { AuthModule } from './auth/auth.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+
     MongooseModule.forRoot(
       process.env.MONGO_BOOKS_URL ||
       'mongodb://localhost:27017/bookverse_books',
     ),
+
     PrometheusModule.register({
       path: '/metrics',
     }),
+
     BooksModule,
     HealthModule,
    
-
     AuthModule,
     // UsersModule,
     RedisModule.register({
