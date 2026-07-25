@@ -38,7 +38,7 @@ import { AssignPermissionsDto } from './dto/assign-permissions.dto';
 import { CreatePermissionDto } from './dto/create-permission.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { propagation, context, trace } from '@opentelemetry/api';
-import { RedisService } from '../../dist/shared/redis/redis.service';
+import { RedisService } from '@my-app/shared';
 
 const tracer = trace.getTracer('auth-tcp-service');
 

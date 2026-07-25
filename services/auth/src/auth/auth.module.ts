@@ -11,7 +11,8 @@ import { RolesGuard } from './guards/roles.guard';
 import { DataSource } from 'typeorm';
 import { Role } from './entities/role.entity';
 import { Permission } from './entities/permission.entity';
-import { RedisModule } from '../../dist/shared/redis/redis.module';
+import { RedisModule } from '@my-app/shared';
+
 // import { REDIS_CLIENT } from '../shared/redis/redis.module';
 @Module({
   imports: [
