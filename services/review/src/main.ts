@@ -10,7 +10,7 @@ import { randomUUID } from 'crypto';
 
 // import { GlobalExceptionFilter } from './common/interceptors/http-exception.filter';
 // import { TransformInterceptor } from './common/interceptors/transform.interceptor';
-
+  
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: process.env.NODE_ENV === 'production'

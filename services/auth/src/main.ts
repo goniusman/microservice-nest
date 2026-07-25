@@ -68,4 +68,5 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
   console.log(`🚀 Auth Application is running on: ${port} `); 
 }
-bootstrap();
+
+bootstrap(); 
