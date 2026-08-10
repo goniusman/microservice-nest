@@ -5,6 +5,10 @@
     "services/*",
     "shared"
   ],
+  
+  "overrides": {
+    "rxjs": "$rxjs"
+  },
   "scripts": {
     "infra:up": "docker-compose up -d",
     "infra:down": "docker-compose down",
@@ -29,6 +33,12 @@
     "review:test": "npm run test --workspace=review",
     "dev:all": "npm run shared:build && (npm run auth:dev & npm run book:dev & npm run notification:dev & npm run order:dev & npm run review:dev)",
     "build:all": "npm run shared:build && npm run build --workspaces --if-present"
+  },
+  "dependencies": {
+    "rxjs": "^7.8.1",
+     "@golevelup/nestjs-rabbitmq": "^9.0.2",
+    "amqplib": "^0.10.4", 
+    "amqp-connection-manager": "^4.1.14"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

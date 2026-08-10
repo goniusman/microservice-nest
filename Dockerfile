@@ -1,31 +1,45 @@
-# --- Stage 1: Build Stage ---
+# --- Stage 1: Build Stage (Includes devDeps for compilation) ---
 FROM node:22-alpine AS builder
 WORKDIR /usr/src/app
 
 ARG SERVICE_NAME
 
-# Copy root configs
 COPY package*.json tsconfig*.json ./
+COPY shared/package*.json ./shared/
+COPY services/${SERVICE_NAME}/package*.json ./services/${SERVICE_NAME}/
 
-# Copy full services and shared folders so npm sees all workspace package.json files in their exact paths
-COPY shared/ ./shared/
-COPY services/ ./services/
-
-# Install ALL workspace dependencies across all microservices
 RUN npm install --legacy-peer-deps
 
-# Deduplicate nested modules to enforce single instances of peer dependencies
-RUN npm dedupe --legacy-peer-deps
+COPY shared/ ./shared/
+COPY services/${SERVICE_NAME}/ ./services/${SERVICE_NAME}/
 
-# Remove any nested node_modules created inside workspace packages
-RUN rm -rf shared/node_modules services/*/node_modules
-
-# Build shared library first, then target service
 RUN npm run build --workspace=@my-app/shared
 RUN npm run build --workspace=${SERVICE_NAME}
 
 
-# --- Stage 2: Production Stage ---
+
+
+
+
+# --- Stage 2: Prod-Deps Stage (Installs strictly production node_modules) ---
+FROM node:22-alpine AS prod-deps
+WORKDIR /usr/src/app
+
+ARG SERVICE_NAME
+
+COPY package*.json ./
+COPY shared/package*.json ./shared/
+COPY services/${SERVICE_NAME}/package*.json ./services/${SERVICE_NAME}/
+
+# Install ONLY production dependencies
+RUN npm install --omit=dev --legacy-peer-deps
+
+
+
+
+
+
+# --- Stage 3: Runner Stage (Final lightweight image) ---
 FROM node:22-alpine AS runner
 WORKDIR /usr/src/app
 
@@ -33,20 +47,22 @@ ARG SERVICE_NAME
 ENV TARGET_SERVICE=${SERVICE_NAME}
 
 COPY --from=builder /usr/src/app/package*.json ./
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-
 COPY --from=builder /usr/src/app/shared/package*.json ./shared/
-COPY --from=builder /usr/src/app/shared/dist ./shared/dist
-
 COPY --from=builder /usr/src/app/services/${SERVICE_NAME}/package*.json ./services/${SERVICE_NAME}/
+
+# Copy production node_modules from prod-deps stage
+COPY --from=prod-deps /usr/src/app/node_modules ./node_modules
+
+# Copy compiled JavaScript from builder stage
+COPY --from=builder /usr/src/app/shared/dist ./shared/dist
 COPY --from=builder /usr/src/app/services/${SERVICE_NAME}/dist ./services/${SERVICE_NAME}/dist
+
+# Switch from default 'root' to 'node' user
+USER node
 
 EXPOSE 3000
 
 CMD ["sh", "-c", "node services/${TARGET_SERVICE}/dist/main.js"]
-
-
-
 
 
 # FROM node:22-alpine
