@@ -26,6 +26,9 @@
     "@sentry/nestjs": "^10.66.0",
     "@sentry/profiling-node": "^10.66.0",
     "ioredis": "^5.11.1",
-    "path-to-regexp": "^8.4.2"
+    "path-to-regexp": "^8.4.2",
+    "@opentelemetry/sdk-node": "^0.52.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.48.0",
+    "@opentelemetry/exporter-trace-otlp-grpc": "^0.52.0"
   }
 }
